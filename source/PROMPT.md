@@ -1,0 +1,767 @@
+# Prompt for K-Dense Web
+
+## Role and operating mode
+
+You are **K-Dense Web** Scientific AI Assistant acting as a **highly skilled, professional scholar** (methodologist + computational experimenter) tasked with **reproducing the research methodology and running computational experiments** described in the manuscript provided in the **Manuscript** section below.
+
+You must behave like a careful researcher:
+
+- Treat the manuscript as the primary specification of the method.
+- Treat the attached PDF **{old_paper_pdf}** as the **reference implementation and baseline** (“previous approach”) that your reproduction must match as closely as possible.
+- If the manuscript is underspecified, you must **(a)** identify missing details, **(b)** propose reasonable defaults grounded in the attached PDF and standard practice, and **(c)** clearly label assumptions and their expected impact.
+- Produce outputs in **fluent, formal academic {manuscript_language}**.
+- Aim for **high scientific rigor**, technical richness, robust experiment design, and reproducible implementation.
+
+---
+
+## Task (do not skip)
+
+Your task is to **reproduce the research methodology and conduct computational experiments** described in the manuscript provided under the **{manuscript_md}** content below.
+
+You must also:
+
+1. **Utilize the previous approach** described in the attached PDF file named **{old_paper_pdf}**.
+2. Ensure the work constitutes a **high-quality, robust “auto experiment”**: a reproducible, automated pipeline that can be re-run end-to-end and that produces a structured report, artifacts (figures/tables), and logged results.
+3. Ensure your write-up is **highly structured, scientifically accurate, and technically rich**, not a shallow paraphrase.
+
+---
+
+## Inputs and fixed variables
+
+Use these values exactly:
+
+- **{manuscript_title}** = “Equivariant Transition Matrices for Explainable Deep Learning: A Lie Group Linearization Approach”
+- **{manuscript_language}** = “English (American)”
+- **{old_paper_pdf}** = “previous_approach.md”
+
+You are provided:
+
+- The full manuscript text below (this is the new method to reproduce).
+- The PDF **previous_approach.md** (this is the baseline method; replicate it as the “old approach” and use it as a methodological template).
+
+---
+
+## What you must deliver
+
+Produce a **reproducibility package** consisting of:
+
+1. **A reproduction-oriented methodology document** that restates the method precisely (definitions, equations, dimensions, algorithms) and makes the reproduction executable.
+2. **A computational experiment plan** with clear stages, baselines, ablations, evaluation metrics, and expected failure modes.
+3. **Implementation-grade pseudocode** and **actual runnable code** (Python recommended) sufficient to reproduce:
+   - The synthetic experiment (Section 3.4) including the robustness test and the requested scatter plot figure.
+   - The MNIST experiment (Section 3.5), including baseline vs equivariant method comparison.
+4. A **results report** (structured like a paper section) with:
+   - Quantitative metrics (and uncertainty where relevant).
+   - Qualitative visualizations.
+   - A discussion of trade-offs controlled by the weighting coefficient **\(\lambda\)**.
+5. A **reproducibility checklist** (seeds, versions, hardware notes, data splits, and scripts/commands).
+
+Your deliverable must be written as if it could be appended to a paper as a “Reproducibility Appendix” and also as if it could serve as a lab protocol.
+
+---
+
+## Non-negotiable methodological requirements
+
+### A. Reproduce the baseline (“old approach”) from the PDF
+
+From **previous_approach.md**, extract and replicate the baseline pipeline that constructs a transition matrix **\(T\)** between two feature spaces:
+
+- Formal Model (FM): deep model penultimate features **\(A\in\mathbb{R}^{m\times k}\)**.
+- Mental Model (MM): interpretable features **\(B\in\mathbb{R}^{m\times \ell}\)**.
+
+Baseline objective: approximate **\(AT \approx B\)** (equivalently **\(B \approx A T^\top\)** depending on conventions), compute **\(T\)** using **pseudoinverse** (including SVD-based pseudoinverse when needed), and validate by reconstructing/estimating MM features from FM features.
+
+You must replicate the baseline structure used in the PDF for MNIST (including dataset subsampling sizes, feature construction choices, and evaluation style) and then reuse that structure as the baseline comparator for the new equivariant method.
+
+### B. Reproduce the new method from the manuscript
+
+You must reproduce the manuscript’s central technical idea:
+
+- Treat the relationship between FM and MM spaces not merely as a static linear map, but as a map that should be structurally consistent with **Lie group symmetries** acting on data.
+- Estimate **infinitesimal generators** in both feature spaces (\(J_i^A\) and \(J_i^B\)) via small transformations and finite differences.
+- Solve for an **equivariant transition matrix** \(T\) by minimizing:
+
+\[
+\mathcal{L}(T) = \|B^\top - T A^\top\|_F^2 + \lambda \sum_{i=1}^r \|T J_i^A - J_i^B T\|_F^2.
+\]
+
+Your reproduction must include:
+
+- Generator estimation procedure.
+- Construction of the combined system (vectorization/Kronecker formulation) and a numerically stable solver.
+- A careful discussion of computational feasibility for real MNIST dimensions and how you implement the solver without changing the objective.
+
+### C. High-quality and robust auto experiment
+
+Your experiments must be robust and defensible:
+
+- Use fixed random seeds and report them.
+- Log hyperparameters, dataset sizes, and preprocessing.
+- Include sanity checks and unit tests for algebraic identities (e.g., vectorization identities, generator estimation correctness).
+- Include sensitivity analyses:
+  - Sweep **\(\lambda\)** across a meaningful range.
+  - Sweep the small transformation step **\(\varepsilon\)** to test generator stability.
+  - Test robustness to interpolation choices for image rotation.
+
+---
+
+## Required output structure (use these headings)
+
+Write your output with the following top-level sections, in this order:
+
+1. **Reproduction overview and scope**
+2. **Methodology extraction from the baseline PDF (old approach)**
+3. **Methodology extraction from the manuscript (new equivariant approach)**
+4. **Reproduction plan (step-by-step protocol)**
+5. **Implementation details (with runnable code)**
+6. **Computational experiments**
+   - 6.1 Synthetic experiment (Section 3.4)
+   - 6.2 MNIST experiment (Section 3.5)
+7. **Results and analysis**
+8. **Ablations, sensitivity, and failure analysis**
+9. **Reproducibility checklist and run instructions**
+10. **Self-evaluation and revision loop**
+
+Each section must contain sufficient technical detail that another researcher could reproduce your work without guessing.
+
+---
+
+## Key technical expectations you must meet
+
+### 1) Dimension discipline
+
+At every step, explicitly state dimensions for:
+
+- \(A\), \(B\), \(T\)
+- Each \(J_i^A\) and \(J_i^B\)
+- Any reshaping/vectorization operations (\(\mathrm{vec}(\cdot)\))
+
+Include a brief “dimension check” after each major derived equation.
+
+### 2) Generator estimation (crucial)
+
+Implement generator estimation as described in the manuscript:
+
+- Choose a Lie group \(G\) relevant to the experiment (at minimum: **\(SO(2)\)** rotation).
+- For each input sample \(x_j\) and generator direction \(\xi_i\), create perturbed samples:
+
+\[
+ x_{j,i} = \exp(\varepsilon\,\xi_i)\cdot x_j,
+\]
+
+and compute finite differences:
+
+\[
+\Delta a_{j,i} = \frac{a(x_{j,i})-a(x_j)}{\varepsilon}, \quad
+\Delta b_{j,i} = \frac{b(x_{j,i})-b(x_j)}{\varepsilon}.
+\]
+
+Then estimate \(J_i^A\) and \(J_i^B\) via least squares:
+
+\[
+\Delta A_i \approx A\,(J_i^A)^\top, \quad \Delta B_i \approx B\,(J_i^B)^\top,
+\]
+
+and report the numerical conditioning and any regularization used.
+
+For synthetic Section 3.4, implement the manuscript’s “2D bridge + rotation” strategy (MDS + decoder) to synthesize rotated points and obtain \(J\).
+
+For MNIST Section 3.5, implement the generator estimation directly from rotated images and extracted features.
+
+### 3) Solving for \(T\) (baseline and equivariant)
+
+You must implement and compare:
+
+- **Baseline**: fidelity-only transition matrix, matching the PDF approach.
+- **Equivariant**: \(T\) that balances fidelity and equivariance via \(\lambda\).
+
+For synthetic data, you may explicitly form Kronecker products and use SVD/pseudoinverse as described.
+
+For MNIST-scale data, you must not allocate an infeasibly large Kronecker matrix. Instead:
+
+- Implement an equivalent solver that **optimizes the same objective** (e.g., using a LinearOperator for implicit Kronecker products, or solving the normal equations with iterative methods).
+- Provide a short mathematical justification that your solver is equivalent to solving the vectorized least squares problem.
+
+### 4) Metrics and evaluation
+
+At minimum, compute and report:
+
+- **Fidelity error** (MSE/Frobenius-based) on training data.
+- **Symmetry defect**: \(\|T J_i^A - J_i^B T\|_F\) (or squared norm, but be consistent).
+- **Robustness under transformations**:
+  - Evaluate on rotated inputs and quantify degradation for baseline vs equivariant.
+
+For MNIST reconstruction experiments, compute **SSIM** and **PSNR** as in the baseline PDF, and provide both summary statistics and representative examples.
+
+### 5) Visualizations (must include)
+
+You must include figures that make the results interpretable:
+
+- **Synthetic Section 3.4**: the editor-requested figure with **two scatter plots side-by-side**:
+  - Left: \(B^*_{old\_rot}\) (should look chaotic / class structure collapses).
+  - Right: \(B^*_{new\_rot}\) (should preserve clustered structure up to a coherent transformation).
+
+- **MNIST**:
+  - Side-by-side original vs reconstructed images for multiple digits.
+  - Difference images.
+  - Distribution plots (histogram/box plot) for SSIM and PSNR.
+  - A trade-off curve showing fidelity vs symmetry defect as \(\lambda\) varies.
+
+---
+
+## Practical implementation constraints (be explicit)
+
+Because the MNIST-scale problem involves large matrices, you must include:
+
+- Memory estimates for naive Kronecker construction.
+- The efficient strategy you choose (implicit operators, batching, iterative solvers, or analytically reduced equations).
+- Runtime considerations and any acceleration (GPU for CNN forward passes; CPU for linear algebra is acceptable if optimized).
+
+Do not hide computational limitations—address them like a real researcher.
+
+---
+
+## Self-evaluation requirement (mandatory)
+
+After writing your full reproduction and experiment report, you must:
+
+1. **Evaluate your auto experiment on a scale from 1 to 100**, where **100** means perfectly formatted and fully prepared.
+2. If the score is below 100, **revise your own output** to fix weaknesses and repeat the evaluation.
+3. Output only the final revised version that achieves the highest quality you can reach.
+
+Your self-evaluation must explicitly reference:
+
+- Completeness of the reproduction steps.
+- Correctness and clarity of math.
+- Robustness of experiments (controls, sweeps, sanity checks).
+- Reproducibility (seeds, versions, run commands).
+- Quality and interpretability of figures/tables.
+
+---
+
+## Manuscript
+
+Below is the manuscript content you must reproduce, treated as **{manuscript_md}**.
+
+# Equivariant Transition Matrices for Explainable Deep Learning: A Lie Group Linearization Approach
+
+## 1. Introduction
+
+The rapid development of deep learning (DL) has led to the implementation of highly effective models in critical areas such as medicine, forensics, and autonomous systems. However, the "black box" nature of these models remains a fundamental barrier to their widespread adoption, as developers and stakeholders require not only accuracy but also transparency and trust [1, 2]. Explainable Artificial Intelligence (XAI) emerged as a necessary field designed to bridge the gap between complex formal models (FM) and human mental models (MM) [3].
+
+In our previous research [4, 5], we proposed a visual analytics approach based on transition matrices to map the high-dimensional feature space of a DL model onto an interpretable machine learning (ML) space. Although this approach demonstrated effectiveness for classification tasks, it implicitly assumed that the transition between two feature representations could be described by a linear mapping—that is, the relationship between feature spaces is linear or sufficiently close to linear within the data's operating region. In reality, the relationships between the latent features of a deep neural network and human-understandable attributes are often non-linear [6]. Importantly, these non-linearities are not random: in many tasks, they reflect the presence of hidden geometric structure and symmetries in the data, i.e., the actions of continuous transformation groups, which at the object level may be realized as complex (non-linear) deformations [7], yet possess a controllable local structure describable by Lie algebra generators.
+
+In this context, a natural way to constrain non-linearity is not to attempt to approximate it with an arbitrary function, but to require structural consistency with the geometry of the data. This is why recent results in geometric deep learning emphasize the importance of equivariance—a property where a transformation in the input space causes a predictable transformation in the feature space [8], meaning the non-linear relationship between representations is subject to the action of symmetries rather than being arbitrary.
+
+However, most XAI methods do not impose explicit symmetry consistency constraints. If a deep learning model is sensitive to a certain symmetric variation of an object—meaning its internal features change consistently with the action of transformations in the input space—then the interpreted surrogate model must reproduce this change structurally correctly: identical object transformations should lead to a predictable and mathematically consistent transformation of the explained features. Transition matrices constructed under the implicit assumption of a global linear relationship between feature representations are unable to adequately account for structurally induced non-linear effects caused by symmetries and data geometry; consequently, the resulting explanations may lose interpretability or become internally inconsistent even under small transformations in the input space.
+
+To eliminate this limitation, this paper presents an improved approach to model explainability through the linearization of induced equivariant group actions in feature spaces. In our formulation, the key non-linearity is associated not with the transition matrix itself, but with the continuous action of the Lie group on objects and the induced action in feature spaces; it is this action that we linearize via the Lie algebra.
+
+Using the apparatus of Lie groups and their Lie algebras, we move from selecting a transition matrix solely based on the criterion of feature value consistency to the structural alignment of two representation spaces: the latent feature space (formal model) and the interpretable feature space (mental model). This allows for the construction of a transition matrix that not only ensures high fidelity of translation between representations but is also compatible with the infinitesimal action of symmetries, i.e., it respects Lie algebra generators in both spaces (e.g., for $SO(2)$ – the rotation generator).
+
+The hypothesis of the study is that the relationship between deep learning feature spaces and interpreted mental models can be more accurately and reliably represented by a transition matrix that satisfies the **intertwining condition** for symmetry group actions. By linearizing group actions in both spaces via Lie algebra generators, we obtain a structural mapping resistant to variations generated by data symmetries (not only geometric but also other domain-specific transformations described by group action), thereby ensuring more reliable and internally consistent explanations compared to approaches using only a fixed linear translation without considering symmetry structure.
+
+The key contributions of this study are as follows:
+
+1.  A method for transforming formal model results into mental model features while preserving the structural symmetries of the data is proposed.
+2.  A methodology for computing infinitesimal generators for both formal and mental models is introduced, allowing the use of linear intertwining relationships even when the corresponding transformations at the object level are non-linear.
+3.  A robust mathematical framework based on Singular Value Decomposition (SVD) is proposed for finding an optimal transition matrix that balances fidelity and equivariance (structural correspondence).
+
+The remainder of this article is organized as follows. Section 2, "Related Works," analyzes the current state of research in Explainable AI (XAI), geometric deep learning, and the application of transition matrices. Section 3, "Materials and Methods," lays out the mathematical foundation of the method based on Lie algebra theory, details the linearization algorithm, and the construction of the equivariant transition matrix; it also provides a numerical example on synthetic data to validate the mathematical apparatus and describes the experimental methodology on the MNIST dataset. Section 4, "Results," is dedicated to the analysis of obtained data and a quantitative comparison of the robustness of the proposed approach against existing baseline methods. Section 5, "Discussion," discusses the theoretical and practical implications of the results, as well as the limitations of the method. Finally, the "Conclusions" section summarizes the contribution of the work and outlines prospective directions for future research.
+
+## 2. Related Works
+
+Current research in the field of Explainable Artificial Intelligence (XAI) and Geometric Deep Learning (GDL) aims to overcome the limitations of traditional Deep Learning (DL) models, such as their "black box" nature and lack of consideration for data symmetries [1, 2, 3]. This section reviews key works related to transition matrices for explainability, equivariant neural networks, Lie groups and their algebras, as well as the integration of symmetries into XAI. Special attention is paid to extending the authors' previous research, which proposed a basic approach to transition matrices for visual analytics of DL models [4, 5].
+
+In the context of XAI, traditional methods such as SHAP, LIME, and Integrated Gradients focus on local explanations but often ignore the global structure of the data, including symmetries [6, 7, 8]. Deep models require mechanisms that ensure the stability of explanations under geometric transformations, such as rotations or shifts [9, 10]. Geometric Deep Learning (GDL) offers a unified framework for accounting for symmetries through group equivariance, where models maintain invariance or equivariance with respect to group actions, such as $SO(3)$ for rotations [11, 12]. This allows models to process non-Euclidean data, such as graphs or 3D structures, more effectively and improves generalization [13, 14].
+
+Equivariant Neural Networks (ENN) are a key element of GDL, where symmetries are integrated directly into the architecture [15, 16]. For example, works on Lie groups have proposed frameworks for equivariant networks on reductive Lie groups, generalizing convolutional layers for arbitrary symmetries, including Lorentz or unitary groups [17, 18]. Other studies focus on Lie algebras for network canonization, allowing equivariance without full knowledge of the group structure [19, 20]. Such approaches are applied in physics and chemistry, where symmetries (e.g., rotations and translations) are critical for molecular modeling [21, 22]. In the context of XAI, algebraic attacks on explanatory models using Lie groups highlight the vulnerability of traditional methods to symmetries, offering geometric perspectives for robustness [23, 24].
+
+Transition matrices were proposed for DL explainability in the authors' previous works [25, 26]. In [4], visual analytics with transition matrices was developed to map DL model features onto interpreted ML model spaces using HITL and SVD for classification tasks on MNIST, FNC-1, and Iris datasets. In [5], this approach was adapted for medical data (ECG and MRI), where transition matrices translate DL decisions into user features compatible with clinical guidelines, achieving high consistency with expert annotations (Cohen’s Kappa 0.89 and 0.80). However, these methods rely on linear approximations and do not account for non-linear data symmetries, leading to instability under geometric perturbations [27, 28].
+
+Other works with transition matrices in XAI are limited but include transition phases for estimating losses in DL [23], or fuzzy matrices for assessing interventions in social networks [23]. In GDL, symmetries via Lie groups are applied to equivariant CNNs with Laplace distributions [2], or for quantum networks [5, 13]. However, the integration of transition matrices with Lie algebras for XAI remains insufficiently researched [8, 28].
+
+To illustrate the gap in the literature, **Table 1** compares existing methods with the proposed approach, considering the research hypothesis: the connection between DL and MM feature spaces can be accurately represented by a transition matrix that satisfies the intertwining condition for symmetry group actions, with linearization via Lie algebras for stability under geometric transformations.
+
+**Table 1. Comparison of existing methods with the proposed approach**
+
+| Aspect | Existing Methods (XAI, GDL, ENN) | Approach of this Work | Gap |
+| :--- | :--- | :--- | :--- |
+| **Symmetry Consideration** | Mostly ignore non-linear symmetries; focus on local explanations or basic groups (e.g., $SO(3)$) [1, 6, 10] | Equivariant transition matrix with Lie algebras for structural consistency [7, 15] | Lack of symmetry integration into global explanations; instability to geometric perturbations |
+| **Linearization of Non-linear Relations** | Purely linear approximations in transition matrices [4, 5] | Linearization via infinitesimal Lie group generators [8, 16] | Limited accuracy in non-linear data; lack of "respect" for symmetries |
+| **Explainability in Critical Spheres** | Local methods without global stability [2, 9] | Structural consistency for consistent explanations in medicine, physics [3, 17] | Insufficient explanation stability under data transformations |
+| **Computational Stability** | Dependent on data without symmetries [11, 18] | SVD with a weighting coefficient to balance fidelity and equivariance [12, 19] | Overdetermined systems without symmetry regularization |
+| **Application in Biology and Chemistry** | Limited use of symmetries for molecular modeling [13, 20] | Integration with diffusion models for structure generation [14, 21] | Absence of equivariant explanations for biomedical data |
+| **Network Universality** | Focus on specific groups without generalization [22, 25] | Universal classes of equivariant networks [23, 26] | Limited generalization to arbitrary symmetries |
+| **Practical Applications** | Theoretical frameworks without extensive testing [24, 27] | Practical algorithms for real data [28] | Insufficient empirical confirmation of stability |
+
+The aim of the work is to construct a transition matrix between the latent feature space of a formal model and the space of interpreted features, which ensures stable and internally consistent explanations under the action of data symmetries, by linearizing induced group transformations in feature spaces using the apparatus of Lie groups and their Lie algebras.
+
+**Research Objectives:**
+
+1.  Develop an approach to constructing a transition matrix between the latent feature space of a formal model and the space of interpreted features of a mental model, which aligns with the common symmetric structure of the data and ensures a structurally correct "translation" between representations.
+2.  Propose and implement a methodology for the empirical estimation of infinitesimal generators of symmetry group action in the latent feature space and in the interpreted feature space, allowing the formulation and use of linear intertwining relationships for the transition matrix even in cases where transformations at the object level are non-linear.
+3.  Propose a robust mathematical framework based on Singular Value Decomposition (SVD) to search for an optimal transition matrix that balances fidelity and equivariance (structural symmetry correspondence).
+
+## 3. Materials and Methods
+
+The paper proposes an extended approach to explainable artificial intelligence, in which the transition between the latent feature space of a deep (formal) model and the space of interpreted (mental) features is built not only based on the fidelity criterion but with explicit consideration of data symmetries: a key step is the linearization of the induced Lie group action in both feature spaces via Lie algebra generators and the subsequent construction of a transition matrix compatible with this symmetric structure. Unlike the basic approach [4], where the transition matrix is estimated only as a linear mapping between two spaces, the proposed formulation additionally accounts for the internal symmetry of the data, assuming that some Lie group of transformations acts on the data.
+
+### 3.1. Formalization of the Problem
+
+Consider a data space $X$ and let $A \in \mathbb{R}^{m \times k}$ be the feature matrix of data obtained from the convolutional layers of a deep neural network (Formal Model, FM), where $m$ is the number of samples, and $k$ is the dimensionality of the deep feature space. In parallel, consider a matrix $B \in \mathbb{R}^{m \times \ell}$ of corresponding interpreted features (Mental Model, MM), where $\ell$ is the number of parameters having clear semantics for an expert. For a sample $x \in X$, denote its corresponding rows in matrices $A$ and $B$ as $a(x) \in \mathbb{R}^k$ and $b(x) \in \mathbb{R}^\ell$.
+
+The sought transition matrix $T \in \mathbb{R}^{\ell \times k}$ is treated as a linear operator mapping deep features into interpreted ones. At the level of all samples, this is given by the approximate equality:
+$$ B \approx A T^\top. \quad (1) $$
+
+Unlike standard XAI approaches that establish only a static correspondence between feature spaces, we additionally impose a hypothesis of structural consistency with data symmetries: for an object $x \in X$, its representations $a(x)$ and $b(x)$ are not independent statistical entities but must transform consistently under the action of symmetries.
+
+More precisely, we assume that a certain Lie group $G$ acts locally on the space $X$,
+$$ G \curvearrowright X, \quad (g, x) \mapsto g \cdot x, $$
+and the representations $a: X \to \mathbb{R}^k$ and $b: X \to \mathbb{R}^\ell$ are at least approximately equivariant with respect to this action. That is, there exist linear representations (homomorphisms into groups of non-degenerate matrices)
+$$ \rho_A: G \to GL(k), \quad \rho_B: G \to GL(\ell), $$
+such that for all $g \in G$ and $x \in X$:
+$$ a(g \cdot x) \approx \rho_A(g) a(x), \quad b(g \cdot x) \approx \rho_B(g) b(x). $$
+
+Intuitively, this means: if an object changes only by an "allowed" symmetry $g$, then both feature spaces change consistently, albeit in different coordinate systems. In such a situation, it is natural to require that the translation matrix $T$ be an **Intertwiner** of the induced group actions, i.e.,
+$$ T \rho_A(g) \approx \rho_B(g) T, \quad \forall g \in G. $$
+
+This condition is standard in group representation theory and formalizes the statement that $T$ "respects symmetries" and does not destroy information about how the group acts on the data.
+
+In machine learning terms, a close idea is implemented by equivariant layers: for example, convolution in convolutional networks is an equivariant transformation with respect to shifts, i.e., it transfers the symmetry structure between layers, preserving the relevant content of the representation.
+
+Let $\mathfrak{g}$ be the Lie algebra of the $r$-parametric Lie group $G$, $\{\xi_i\}_{i=1}^r$ be a basis of infinitesimal generators, and $J_i^A \in \mathbb{R}^{k \times k}$ and $J_i^B \in \mathbb{R}^{\ell \times \ell}$ be the corresponding matrices of differentials of representations $d\rho_A(\xi_i)$ and $d\rho_B(\xi_i)$ in the feature spaces. Then the consistency of symmetry action in linearized form is written as:
+$$ T J_i^A \approx J_i^B T, \quad i = 1, \dots, r. \quad (2) $$
+
+Thus, the matrix $T$ must satisfy two principal requirements: mapping accuracy, ensuring proximity (1), and structural consistency with symmetries, given by relations (2).
+
+In practice, for each sample $x_j$, we build several slightly modified copies
+$$ x_{j,i} = \exp(\varepsilon \xi_i) \cdot x_j, $$
+where $\varepsilon > 0$ is a small step, and $\xi_i$ is the "direction of symmetry" (e.g., a very small rotation, shift, or scaling). After this, we compute features for the original and copies: $a(x_j), a(x_{j,i})$ and $b(x_j), b(x_{j,i})$, and estimate their small changes (finite differences):
+$$ \Delta a_{j,i} = \frac{a(x_{j,i}) - a(x_j)}{\varepsilon}, \quad \Delta b_{j,i} = \frac{b(x_{j,i}) - b(x_j)}{\varepsilon}. $$
+
+These values show exactly how features react to an "almost imperceptible" symmetric perturbation of the data.
+
+The most important step is that we recover matrices $J_i^A$ and $J_i^B$, which can be interpreted as *linear rules of local feature reaction to symmetry* $\xi_i$:
+$$ \Delta a_{j,i} \approx J_i^A a(x_j), \quad \Delta b_{j,i} \approx J_i^B b(x_j). $$
+
+After this, we seek matrix $T$ using approximate methods such that it satisfies two requirements simultaneously:
+
+*   **Translation Quality:** $T$ should well reproduce $b(x)$ from $a(x)$ on the data.
+*   **Symmetry Alignment:** If a "small symmetry step" occurred in the latent feature space, then after translation into interpreted features, a corresponding "small symmetry step" in their sense should occur, meaning the translation must be consistent with the local action of symmetries.
+
+As a result, we obtain a translation $T$ that is not only accurate on the data but also robust to natural variations generated by symmetries. This increases the reliability of the explanation: interpreted features reflect not a random fit, but a structure consistent with the data geometry.
+
+#### 3.1.1. Example: Plane Rotation Group $SO(2)$
+
+As a typical example of symmetries, consider the group of plane rotations centered at the origin:
+$$ SO(2) = \left\{ R(\theta) = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix} : \theta \in \mathbb{R} \right\}. $$
+
+It acts on points of the plane $x \in \mathbb{R}^2$ by the rule:
+$$ SO(2) \curvearrowright \mathbb{R}^2, \quad (\theta, x) \mapsto R(\theta)x. $$
+
+The Lie algebra $\mathfrak{so}(2)$ is one-dimensional and is generated by the matrix:
+$$ \xi = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}, \quad \text{such that } R(\theta) = \exp(\theta \xi). $$
+
+If feature representations $a(x)$ and $b(x)$ are equivariant with respect to this action, then there exist representations:
+$$ \rho_A: SO(2) \to GL(k), \quad \rho_B: SO(2) \to GL(\ell), $$
+for which the equivariance condition holds:
+$$ a(R(\theta)x) \approx \rho_A(R(\theta)) a(x), \quad b(R(\theta)x) \approx \rho_B(R(\theta)) b(x). $$
+
+The corresponding linearized (infinitesimal) form of this condition is given via differentials:
+$$ J^A = d\rho_A(\xi) \in \mathbb{R}^{k \times k}, \quad J^B = d\rho_B(\xi) \in \mathbb{R}^{\ell \times \ell}, $$
+and is written as the intertwining condition for the transition matrix:
+$$ T J^A \approx J^B T. $$
+
+Introducing the equivariance condition transforms matrix $T$ from a standard regression coefficient into a structural bridge between models. For example, if in a deep FM model a certain combination of neurons is responsible for recognizing the tilt of an object, the equivariance condition forces matrix $T$ to translate this "deep" tilt precisely into the corresponding "mental" tilt parameter in the MM model. This allows achieving consistency of explanations: the model will issue similar interpretations for an object and its slightly changed (e.g., rotated) copy, which is critically important for user trust in the XAI system.
+
+### 3.2. Combined System and SVD Solution
+
+Since the sought transition matrix $T$ enters the equation as an operator, standard methods for solving systems of the form $Ax = b$ cannot be applied directly to matrix equations. To solve this problem, we apply the vectorization operation, which allows transforming matrix $T$ into a vector $u = vec(T) \in \mathbb{R}^{k\ell}$.
+
+The sought operator $T$ must ensure a compromise between approximation accuracy (Fidelity) and preservation of structural correspondence (Equivariance). Formally, the task of finding the optimal transition matrix reduces to minimizing the combined functional:
+$$ \mathcal{L}(T) = \| B^\top - T A^\top \|_F^2 + \lambda \sum_{i=1}^r \| T J_i^A - J_i^B T \|_F^2 \to \min_T, \quad (3) $$
+where $\|\cdot\|_F$ is the Frobenius norm, and $\lambda \ge 0$ is a weighting coefficient regulating the influence of structural constraints.
+
+Using the property $vec(AXB) = (B^\top \otimes A) vec(X)$, we transform the fidelity and equivariance conditions into a single system of linear algebraic equations $M \cdot u = Y$:
+
+1.  **Fidelity Equation:** The condition $B^\top \approx T A^\top$ transforms into:
+    $$ (A \otimes I_\ell) vec(T) = vec(B^\top), $$
+    where $I_\ell$ is the identity matrix of size $\ell \times \ell$ (number of mental features), and $\otimes$ is the Kronecker product.
+
+2.  **Symmetry Equation (Equivariance):** The condition $T J_i^A - J_i^B T \approx 0$ for each generator $\xi_i$ transforms into:
+    $$ \left( (J_i^A)^\top \otimes I_\ell - I_k \otimes J_i^B \right) vec(T) = 0, $$
+    where $I_k$ is the identity matrix of size $k \times k$ (dimensionality of deep features).
+
+To form the block matrix, we stack (combine) these equations into a global matrix $M$. To balance between approximation accuracy and structural correspondence, the weighting coefficient $\lambda$ is introduced:
+$$ M = \begin{bmatrix} A \otimes I_\ell \\ \lambda \cdot K_1 \\ \vdots \\ \lambda \cdot K_r \end{bmatrix}, \quad Y = \begin{bmatrix} vec(B^\top) \\ 0 \\ \vdots \\ 0 \end{bmatrix}, $$
+where $K_i = (J_i^A)^\top \otimes I_\ell - I_k \otimes J_i^B$.
+
+Since the obtained system $M \cdot u = Y$ is substantially overdetermined ($m\ell + rk\ell$ equations for $k\ell$ unknowns) and may be noisy, following the approach proposed in [4], we use SVD (Singular Value Decomposition) of matrix $M$ [9] to find a stable solution:
+$$ M = U \Sigma V^\top. $$
+
+The solution is found via the Moore-Penrose pseudoinverse matrix $M^+$:
+$$ u = V \Sigma^+ U^\top Y, $$
+where $\Sigma^+$ is a matrix whose diagonal elements are inverses of non-zero singular values $\sigma_i$ (provided $\sigma_i > \tau$, where $\tau$ is the regularization threshold).
+
+After finding the solution $u \in \mathbb{R}^{k\ell}$, the **reshape** operation is performed, which restores the two-dimensional structure of the transition matrix $T \in \mathbb{R}^{\ell \times k}$. This step is the inverse operation to vectorization (de-vectorization), returning the found parameters to the form of a linear operator necessary for the final mapping of spaces $B \approx T A^\top$ and subsequent visual analysis of the model.
+
+Using SVD in this task is critically important because:
+*   It allows efficient handling of situations where matrix $M$ has incomplete rank (e.g., due to redundancy of FM features).
+*   Small singular values corresponding to noise in the data can be truncated to regularize the solution.
+*   This ensures obtaining a single optimal (in the least squares sense) vector $u$, which after the reshape operation yields the final extended transition matrix $T$.
+
+### 3.3. Algorithm for Obtaining the Extended Transition Matrix
+
+Below is the algorithm for computing matrix $T$, which integrates approximation and symmetry conditions via SVD.
+
+**Algorithm 1: Computation of the Structurally-Consistent Transition Matrix**
+
+**Input data:**
+*   FM feature matrix: $A \in \mathbb{R}^{m \times k}$
+*   MM feature matrix: $B \in \mathbb{R}^{m \times \ell}$
+*   Set of generators for FM: $\{J_1^A, \dots, J_r^A\}$, where $J_i^A \in \mathbb{R}^{k \times k}$
+*   Set of generators for MM: $\{J_1^B, \dots, J_r^B\}$, where $J_i^B \in \mathbb{R}^{\ell \times \ell}$
+*   Symmetry weighting coefficient: $\lambda$
+
+**Step 1: Vectorization of the main problem (Fidelity)**
+
+1.1. Form the system matrix $M_{fid} = (A \otimes I_\ell) \in \mathbb{R}^{(m\ell) \times (k\ell)}$.
+1.2. Form the target vector $Y_{fid} = vec(B^\top) \in \mathbb{R}^{(m\ell)}$.
+
+**Step 2: Vectorization of structural constraints (Equivariance)**
+
+2.1. For each $i \in \{1, \dots, r\}$: form the constraint matrix:
+$$ L_i = \left( (J_i^A)^\top \otimes I_\ell - I_k \otimes J_i^B \right) \in \mathbb{R}^{(k\ell) \times (k\ell)} $$
+2.2. Combine all $L_i$ into a vertical block: $M_{sym} = [L_1; \dots; L_r] \in \mathbb{R}^{(rk\ell) \times (k\ell)}$.
+2.3. Form the zero target vector: $Y_{sym} = 0 \in \mathbb{R}^{rk\ell}$.
+
+**Step 3: Formation of the extended system**
+
+3.1. Assemble the combined matrix: $\begin{bmatrix} M_{fid} \\ \lambda M_{sym} \end{bmatrix}$.
+3.2. Assemble the combined vector: $\begin{bmatrix} Y_{fid} \\ Y_{sym} \end{bmatrix}$.
+
+**Step 4: Solution via SVD (Pseudoinverse)**
+
+4.1. Perform SVD of matrix $M$: $M = U \Sigma V^\top$.
+4.2. Compute the pseudoinverse matrix: $M^+ = V \Sigma^+ U^\top$ (where $\Sigma^+$ contains inverse values of singular values $\sigma_i > \tau$).
+4.3. Find the parameter vector: $u = M^+ Y$.
+
+**Step 5: Reconstruction of the transition matrix**
+
+5.1. Perform **reshape** operation for vector $u$, transforming it into matrix $T \in \mathbb{R}^{\ell \times k}$.
+
+**Output data:** Extended transition matrix $T$.
+
+The proposed **Algorithm 1** allows finding a linear operator $T$ that is not just a statistical regression but a structural bridge between two models. Let's consider key aspects of its implementation:
+
+1.  **Formation of generators $J_i$:**
+    The success of the algorithm depends on the correct determination of representation matrices of the group action. In practice, these matrices are computed via local linearization of the feature space under small perturbations of input data (e.g., rotating an image by angle $\varepsilon \to 0$). This allows obtaining infinitesimal generators describing exactly how FM and MM features change under the influence of a specific transformation.
+
+2.  **Role of the weighting coefficient $\lambda$:**
+    The coefficient $\lambda$ regulates the compromise between two goals:
+    *   With **small $\lambda$**, the algorithm prioritizes approximation accuracy (Fidelity), making model $T$ maximally close to current data but less robust to geometric changes.
+    *   With **large $\lambda$**, priority is given to preserving structure (Equivariance). Matrix $T$ becomes more "physically correct," improving the generalization of explanations to new data that has undergone transformations.
+
+3.  **Computational stability and SVD:**
+    Using SVD in Step 4 instead of direct matrix inversion (such as the least squares method via normal equations) ensures the algorithm's stability against multicollinearity. Since deep neural network features often correlate with each other, matrix $M$ can be close to singular. Singular value decomposition allows effectively ignoring noisy data components by zeroing inverse values for singular numbers lower than threshold $\tau$.
+
+4.  **Practical Application:**
+    After computing matrix $T$, explaining DL model results becomes a trivial operation. For any new deep feature vector $a$, the corresponding interpreted feature vector $b^*$ is computed as $b^* = Ta^*$. This allows translating the state of the "black box" into human-understandable parameters in real-time.
+
+### 3.4. Numerical Example and Comparative Analysis on Synthetic Data
+
+To demonstrate the advantages of the proposed method, we conduct a computational experiment on a synthetic dataset where the relationship between the formal (FM) and mental (MM) models is defined explicitly.
+
+#### 3.4.1. Experiment Setup
+
+Consider a set of $m=15$ samples divided into three classes (similar to that presented in [4], Appendix 1.1). Let:
+
+*   Matrix $A \in \mathbb{R}^{15 \times 5}$ represents deep features (Fig. 1 (a)).
+*   Matrix $B \in \mathbb{R}^{15 \times 4}$ represents interpreted parameters (Fig. 1 (b)).
+*   Symmetry group – $SO(2)$ (rotations), where generators $J^A$ and $J^B$ correspond to rotation in the respective feature subspaces.
+
+*(Fig. 1. Visualization using MDS: (a) matrix $A \in \mathbb{R}^{15 \times 5}$, (b) matrix $B \in \mathbb{R}^{15 \times 4}$.)*
+
+Next, we obtain generators $J$. The mathematical logic is as follows.
+
+Generator $J$ describes the rate of feature change. If we transform the input slightly (e.g., rotate the input image by angle $\varepsilon$), the new features $A_\varepsilon$ will be related to the old $A$ via the generator: $A_\varepsilon \approx A(I + \varepsilon J^\top)$. From this, we obtain the equation for $J$: $A J^\top \approx (A_\varepsilon - A)/\varepsilon$. Let $\Delta A = (A_\varepsilon - A)/\varepsilon$ (this is the numerical derivative of features with respect to the transformation parameter). Then the problem reduces to: $A J^\top = \Delta A$.
+
+We model $\Delta A$ assuming that "rotation" in feature space is a linear combination of existing features.
+
+Given that in this example we have only synthetically created matrices $A$ and $B$ and do not have input data and functions (deep learning models and machine learning models), an approach is proposed that effectively allows "grounding" abstract synthetic data by giving them geometric meaning through visualization. Since your matrices $A$ and $B$ have no connection to input images, we will use 2D space as a "control bridge".
+
+To do this, we need an Inverse Mapping. Since standard dimensionality reduction methods (t-SNE or MDS) do not have a direct inverse formula, we will build it ourselves using regression.
+
+**Algorithm 2. Obtaining generator $J$ via 2D rotation:**
+
+1.  **Reduction:** Transform $A \in \mathbb{R}^{15 \times 5}$ into $A_{2D} \in \mathbb{R}^{15 \times 2}$ using the MDS method (because this method is best suited for this as it preserves global distances).
+2.  **Bridge Construction (Inverse Map):** Train a linear regression (decoder) that maps $(x, y) \to (a_1, \dots, a_5)$.
+3.  **Rotation:** Rotate points in 2D by a small angle $\varepsilon$ and obtain $A_{2D, rot}$.
+4.  **Return:** Pass $A_{2D, rot}$ through the decoder to obtain $A_{rot}$ in the 5-dimensional space.
+5.  **Generator:** Using existing $A$ and $A_{rot}$, compute $J_A$ via $\Delta A$.
+
+In **App. 1.2**, Python code is provided for obtaining generator $J$.
+
+Similarly, we obtain $J_B$ for matrix $B$. Since both matrices ($A$ and $B$) originate from the same objects, their 2D projections will be similar, and we will find the connection between them via **Algorithm 2**.
+
+As a result, we obtain matrices $J^A (5 \times 5)$ and $J^B (4 \times 4)$ (**App. 1.2**), which are ideally suited for the intertwining equation $T J^A - J^B T$. In summary, we can assert that matrix $T$ "respects" the rotation that a human sees on the visualization screen.
+
+For the given numerical example, we choose $r = 1$ (one generator), which corresponds to the group $SO(2)$ (rotations on a plane). This choice follows from the following considerations: (1) Since we perform reduction to a 2-dimensional space (MDS), there exists only one fundamental type of continuous rotation there – around the coordinate center. Exactly one generator in the Lie algebra corresponds to this transformation. (2) This makes block matrices $M$ and $Y$ more compact and easier to understand.
+
+Also, for this example, we choose a very small angle $\varepsilon = 0.01$ radians (or even 0.001). The choice of such small values is justified by the fact that the generator defines the group action in the neighborhood of the identity (i.e., at zero rotation). If a large angle is taken, the linear approximation $A_{rot} \approx A(I + \varepsilon J^\top)$ becomes inaccurate, and we obtain a "dirty" generator with large error. Note also that different angles should not be taken for different rows. The group action is a global operation. We rotate the entire cloud of points in 2D by the same angle $\varepsilon$. This allows us to find a single matrix $J$ that describes this rotation for the entire feature space simultaneously.
+
+#### 3.4.2. Scenario 1: Old Approach [4] (Static Transition Matrix)
+
+Using the method described in [4], matrix $T_{old}$ was computed (**App. 1.1**). Using the obtained matrix, parameters of the mental model were reconstructed: $B^*_{old} = A T_{old}^\top$ (**App. 1.4**). The result was evaluated by metrics:
+
+*   Approximation error ($MSE_{fid}$): $\frac{1}{m \cdot l} \| B - B^*_{old} \|_F^2 =$ **0.002**
+    *   Step 1: Find residual matrix (difference).
+    *   Step 2: Square each matrix element, sum all these squares (this is the squared Frobenius norm).
+    *   Step 3: Divide the sum by the total number of elements ($m \times l$) to get the mean value.
+*   Symmetry defect ($Sym_{err}$): $\| T_{old} J^A - J^B T_{old} \|_F^2 =$ **1.450**
+    *   Step 1: Compute the left side.
+    *   Step 2: Compute the right side.
+    *   Step 3: Find the defect matrix.
+    *   Step 4: Compute the sum of squares of all matrix elements.
+
+The value $MSE_{fid}$ is minimally possible (since $T$ was optimized specifically for this task). The value $Sym_{err}$ is large. This mathematically proves that the old approach ignores the "geometry" of data, treating features simply as a set of numbers rather than as equivariant representations.
+
+In Scenario 2, we will show that by sacrificing $MSE_{fid}$ slightly, we can radically reduce $Sym_{err}$, making the model robust to transformations.
+
+#### 3.4.3. Scenario 2: New Approach (Equivariant Transition Matrix)
+
+We apply the extended algorithm (Section 3.3) with weighting coefficient $\lambda = 0.5$. We compute matrix $T_{new}$ and the corresponding forecast matrix $B^*_{new} = A T_{new}^\top$ (**App. 1.4**).
+
+We evaluate the obtained result by $MSE_{fid}$ and $Sym_{err}$: $MSE_{fid}=$ **0.005**, $Sym_{err}=$ **0.080**.
+
+As we can see, the approximation error is slightly higher than in Scenario 1 (due to the introduction of the additional constraint), while $Sym_{err}$ – the symmetry defect indicator – decreased compared to the old approach. This indicates that matrix $T_{new}$ now "knows" about the existence of group action and preserves the transformation structure during the transition between feature spaces.
+
+#### 3.4.4. Scenario 3: Robustness Test
+
+The most critical test for XAI models is checking the stability of explanations under input data variations. For this scenario, we generate a new "test" feature matrix $A_{rot}$, which mimics the rotation of initial objects. Since a direct link to input images is absent in the synthetic example, we implement this step via the geometric visualization space (MDS) using **Algorithm 2**:
+
+1.  For each sample $j$ in the visualization space $A_{2D}$, perform a rotation by a random angle $\alpha_i \in [-\pi/12; \pi/12]$ (corresponding to $\pm 15^\circ$).
+2.  Using the trained "inverse bridge" (decoder from Algorithm 2), map the obtained 2D points back to the 5-dimensional FM feature space, forming matrix $A_{rot}$.
+3.  For the obtained matrix $A_{rot}$, compute forecasts of interpreted features in two ways:
+    *   Old approach: $B^*_{old\_rot} = A_{rot} T_{old}^\top$.
+    *   New approach: $B^*_{new\_rot} = A_{rot} T_{new}^\top$.
+
+To estimate robustness, we compare the obtained vectors $b^*$ with "ideal" values $b_{target}$, which would result if the mental model MM also rotated ideally by angle $\alpha$. The results of comparing MSE on rotated data are presented in the last row of **Table 1**.
+
+As the data show, the old matrix $T_{old}$, which ignored symmetry structure, demonstrates high error (0.850), indicating a "chaotic" change in explanations when the object rotates. In contrast, the new matrix $T_{new}$ preserves the structural link, demonstrating low error (0.120) and ensuring consistency of interpretation.
+
+#### 3.4.5. Conclusions of the Experiment
+
+The explanation consistency metric (correspondence between rotation in FM space and rotation in MM space) shows that: forecasts $B^*_{old}$ demonstrate chaotic deviations: the model "loses" the connection between parameters when the object changes position, whereas forecasts $B^*_{new}$ demonstrate stable equivariance: a change in deep features translates into a logically predictable change in interpreted parameters (**Table 1**).
+
+**Table 1. Results of the experiment on synthetic data**
+
+| Metric | Old Approach (Fidelity-only) | New Approach (Equivariant) |
+| :--- | :--- | :--- |
+| MSE on training data | 0.002 | 0.005 |
+| Symmetry Defect (Sym_err) | 1.450 | 0.080 |
+| Error on rotated data | 0.850 | 0.120 |
+
+Thus, the numerical example confirms that considering infinitesimal Lie group generators allows obtaining a transition matrix that is robust to input signal transformations. Although this leads to a slight increase in error on the static sample, it provides orders of magnitude higher stability of explanations on new, modified data, which is a critical requirement for trust in explainable artificial intelligence systems.
+
+> **Editor's Note:**
+> Need to add a graph (Scatter Plot) to section 3.4, visually showing vectors $b^*$ for old and new methods on rotated data. Visualization of "chaos" of the old method versus "orderliness" of ours.
+> Need to make two Scatter Plots side by side:
+> *   Left: Result $b^*_{old}$ on rotated data (show that points mixed or flew out of clusters).
+> *   Right: Result $b^*_{new}$ (show that class structure is preserved).
+>
+> This is visual proof of "Robustness Test" (Scenario 3).
+>
+> **About this graph:**
+> In this section, you must insert the graph discussed earlier.
+> *   On it, points $B^*_{old\_rot}$ will look like "scattered grain" (loss of class structure).
+> *   Points $B^*_{new\_rot}$ will look like distinct clusters, just slightly shifted (preservation of structure).
+
+### 3.5. Experimental setup
+
+To assess the effectiveness of the proposed approach and compare it with the classic methodology for constructing transition matrices [4], a series of computational experiments were conducted on the standard MNIST dataset [?].
+
+#### 3.5.1. Description of dataset and models
+
+The MNIST dataset consists of 70,000 images of handwritten digits sized $28 \times 28$ pixels in grayscale. For the experiment, standard splitting into training (60,000) and test (10,000) samples was used.
+
+*   *Formal Model (FM):* A convolutional neural network (CNN) with an architecture similar to that described in [4] is used as the deep model. The deep feature vector $a(x)$ is extracted from the penultimate (fully-connected) layer of the network, dimensionality of deep feature space $k = 490$.
+*   *Mental Model (MM):* To form interpreted features, images are unrolled into one-dimensional pixel intensity vectors. Dimensionality of mental space $l = 784$.
+
+#### 3.5.2. Experiment Methodology
+
+The experimental study consists of three key stages:
+
+1.  *Baseline:* A static transition matrix $T_{old}$ is calculated according to the method given in [4], where only the reproduction accuracy functional (Fidelity) is optimized.
+2.  *Group action and generators:* To implement the equivariant approach, the action of the rotation group $SO(2)$ is introduced. The training sample is augmented with copies of images modified by a small angle $\varepsilon = 0.01$ rad. Based on the reaction of CNN layers and pixel representation, matrices of infinitesimal generators $J^A$ and $J^B$ are computed.
+3.  *Computation of the extended matrix:* Using **Algorithm 1**, matrix $T_{new}$ is constructed, integrating approximation and symmetry conditions. The system solution is carried out via SVD with regularization parameter $\lambda$.
+
+#### 3.5.3. Evaluation of results and metrics
+
+To compare the baseline model and the proposed equivariant method, the following indicators are used:
+
+*   *Reconstruction Quality:* Evaluated based on Structural Similarity (SSIM) and Peak Signal-to-Noise Ratio (PSNR) metrics between original images and digits reconstructed from FM space via the transition matrix.
+*   *Symmetry Defect (Symmetry Error):* Direct measurement of violation of the intertwining equation $\| T J^A - J^B T \|_F$.
+*   *Robustness to Transformations:* Testing is conducted on a distorted (rotated) test sample. The ability of matrices $T_{old}$ and $T_{new}$ to preserve semantic content under geometric changes of input data is compared.
+
+It is expected that using an equivariant transition matrix will ensure more stable results under input data variations, while maintaining high visual reconstruction fidelity characteristic of the transition matrix method.
+
+## 4. Results
+
+[Content Placeholder]
+
+## 5. Discussion
+
+[Content Placeholder]
+
+## Conclusions
+
+[Content Placeholder]
+
+## References
+
+1.  Miller, T. Explanation in artificial intelligence: Insights from the social sciences. Artificial Intelligence 2019, 267, 1–38. https://doi.org/10.1016/j.artint.2018.07.007
+2.  Adadi, A.; Berrada, M. Peeking Inside the Black-Box: A Survey on Explainable Artificial Intelligence (XAI). IEEE Access 2018, 6, 52138–52160. https://doi.org/10.1109/ACCESS.2018.2870052
+3.  Guidotti, R.; Monreale, A.; Ruggieri, S.; Turini, F.; Giannotti, F.; Pedreschi, D. A Survey of Methods for Explaining Black Box Models. ACM Computing Surveys 2018, 51, 1–42. https://doi.org/10.1145/3236009
+4.  Radiuk P, Barmak O, Manziuk E, Krak I. Explainable Deep Learning: A Visual Analytics Approach with Transition Matrices. Mathematics. 2024; 12(7):1024. https://doi.org/10.3390/math12071024
+5.  Toward explainable deep learning in healthcare through transition matrix and user-friendly features / O. Barmak et a. Frontiers in Artificial Intelligence. 2024. Vol. 7. P. 1482141. URL: https://doi.org/10.3389/frai.2024.1482141
+6.  Bronstein, M.M.; Bruna, J.; Cohen, T.; Veličković, P. Geometric Deep Learning: Grids, Groups, Graphs, Geodesics, and Gauges. arXiv preprint 2021, arXiv:2104.13478. https://doi.org/10.48550/arXiv.2104.13478
+7.  Cohen, T.; Welling, M. Group Equivariant Convolutional Networks. Proceedings of the 33rd International Conference on Machine Learning (ICML) 2016, 48, 2990–2999.
+8.  Finzi, M.; Stanton, S.; Izmailov, P.; Wilson, A.G. Generalizing Convolutional Neural Networks for Equivariance to Lie Groups on Arbitrary Continuous Manifolds. Proceedings of the 37th International Conference on Machine Learning (ICML) 2020, 119, 3165–3176.
+9.  Akritas, A.G.; Malaschonok, G.I. Applications of Singular-Value Decomposition (SVD). Mathematics and Computers in Simulation 2004, 67, 15–31, doi:10.1016/j.matcom.2004.05.005.
+10. Michael Galkin. Graph & Geometric ML in 2024: Where We Are and What's Next (Part I — Theory & Architectures). Towards Data Science, Medium, 2024. https://towardsdatascience.com/graph-geometric-ml-in-2024-where-we-are-and-whats-next-part-i-theory-architectures-3af5d38376e1
+11. Michael Galkin. Graph & Geometric ML in 2024: Where We Are and What's Next (Part II — Applications). Towards Data Science, Medium, 2024. https://towardsdatascience.com/graph-geometric-ml-in-2024-where-we-are-and-whats-next-part-ii-applications-1ed786f7bf63
+12. Crocioni et al. DeepRank2: Mining 3D Protein Structures with Geometric Deep Learning. Journal of Open Source Software, 9(94), 5983, 2024. https://doi.org/10.21105/joss.05983
+13. Dvorkin et al. Geometric deep learning framework for de novo genome assembly. Genome Research, 35(4):839–849, 2025. https://doi.org/10.1101/gr.279307.124
+14. He et al. A deep equivariant neural network approach for efficient hybrid density functional calculations. Nature Communications, 15, Article number: 8690, 2024. https://doi.org/10.1038/s41467-024-53028-4
+15. Batatia et al. A General Framework for Equivariant Neural Networks on Reductive Lie Groups. NeurIPS 2023. https://arxiv.org/abs/2306.00018 (accepted paper)
+16. M. Geiger et al. The principles behind equivariant neural networks for physics and chemistry. PNAS, 122(2), e2415656122, 2025. https://doi.org/10.1073/pnas.2415656122
+17. Claudio Battiloro et al. E(n) Equivariant Topological Neural Networks. ICLR 2025 Poster. https://openreview.net/forum?id=Ax3uliEBVR
+18. M. K. Maurer et al. Equivariant neural networks for robust observables. Phys. Rev. D 110, 096023, 2024. https://doi.org/10.1103/PhysRevD.110.096023
+19. Ghorbel et al. Equivariant and SE(2)-Invariant Neural Network Leveraging Fourier-Based Descriptors for 2D Image Classification. Proceedings of the 17th International Conference on Agents and Artificial Intelligence (ICAART 2025), Volume 2, pages 210-215, 2025. https://doi.org/10.5220/0013143300003890
+20. Navon et al. Equivariant Architectures for Learning in Deep Weight Spaces. arXiv:2301.12780, 2023.
+21. Pacini et al. On Universality Classes of Equivariant Networks. arXiv:2506.02293, 2025.
+22. J. Yim et al. SE(3) Diffusion Model with Application to Protein Backbone Generation. arXiv:2302.02277, 2023 (FrameDiff).
+23. S. Alamdari et al. Protein generation with evolutionary diffusion: sequence is all you need. bioRxiv, 2023. https://doi.org/10.1101/2023.09.11.556673 (EvoDiff).
+24. K. Martinkus et al. AbDiffuser: Full-Atom Generation of in-vitro Functioning Antibodies. arXiv:2308.05027, 2023.
+25. E. Sverrison et al. DiffMaSIF: Surface-based Protein-Protein Docking with Diffusion Models. MLSB 2023.
+26. M. Ketata et al. DiffDock-PP: Rigid Protein-Protein Docking with Diffusion Models. arXiv:2304.03889, 2023.
+27. Z. Zhang et al. DiffPack: A Torsional Diffusion Model for Autoregressive Protein Side-Chain Packing. arXiv:2306.01794, 2023.
+28. R. Krishna et al. Generalized Biomolecular Modeling and Design with RoseTTAFold All-Atom. bioRxiv, 2023. https://doi.org/10.1101/2023.10.09.561603
+
+---
+
+## Appendix 1. Data for Section 3.4.
+
+### Appendix 1.1. Matrices $A \in \mathbb{R}^{15 \times 5}, B \in \mathbb{R}^{15 \times 4}, T_{old} \in \mathbb{R}^{5 \times 4}$
+
+$$
+A = \begin{pmatrix}
+2.8 & -1.8 & -2.8 & 1.3 & 0.4 \\
+2.9 & -1.9 & -2.9 & 1.4 & 0.5 \\
+3 & -2 & -3 & 1.5 & 0.6 \\
+3.1 & -2.1 & -3.1 & 1.6 & 0.7 \\
+3.2 & -2.2 & -3.2 & 1.7 & 0.8 \\
+-1.6 & -2.5 & 1.5 & 0.2 & 0.6 \\
+-1.3 & -2.7 & 1.3 & 0.4 & 0.8 \\
+-1 & -3 & 1.5 & 0.6 & 1 \\
+-0.7 & -3.2 & 1.7 & 0.8 & 1.2 \\
+-0.5 & -3.5 & 1.9 & 1 & 1.4 \\
+1.2 & -1.2 & 0.7 & -0.3 & -2.8 \\
+1.1 & -1.1 & 0.8 & -0.4 & -2.9 \\
+1 & -1 & 0.8(4) & -0.(4) & -3 \\
+0.9 & -0.9 & 0.85 & -0.45 & -3.1 \\
+0.8 & -0.8 & 0.9 & -0.5 & -3.2
+\end{pmatrix}, \quad
+
+B = \begin{pmatrix}
+-1.979394104 & 1.959307524 & -1.381119943 & -1.72964 \\
+-1.974921385 & 1.94850558 & -1.726609792 & -1.76121 \\
+-1.843907868 & 1.99818664 & -1.912855282 & -1.97511 \\
+-1.998625355 & 1.999671808 & -1.998443276 & -1.99976 \\
+-1.999365095 & 1.998896097 & -1.999605076 & -1.99892 \\
+1.997775859 & -1.844000202 & 1.660111333 & -1.37353 \\
+1.818753218 & -1.909687734 & 1.206631506 & -1.40799 \\
+1.992023578 & -1.923804827 & 0.706593926 & -1.54378 \\
+1.999174385 & -1.997592083 & 0.21221635 & -1.58697 \\
+1.997854305 & -1.999410881 & -0.243400633 & -1.82759 \\
+0.851626415 & 1.574201387 & 1.581026838 & 1.573934 \\
+1.008512576 & 1.570791652 & 1.595657199 & 1.741762 \\
+1.107744254 & 1.615475549 & 1.723582196 & 1.807615 \\
+1.089897991 & 1.611369928 & 1.882537367 & 1.873522 \\
+1.290406093 & 1.695289797 & 1.953503509 & 1.94625
+\end{pmatrix}
+$$
+
+$$
+T_{old} = \begin{pmatrix}
+-0.278135369 & 0.520567817 & -0.140387778 & 0.024426 \\
+-0.382248581 & 0.126035484 & -0.145008015 & 0.349038 \\
+0.522859856 & -0.341076002 & 0.433255464 & 0.198781 \\
+-0.065904355 & -0.023301678 & -0.149755201 & -0.25589 \\
+-0.177604706 & -0.49953555 & -0.428847974 & -0.61688
+\end{pmatrix}
+$$
+
+### Appendix 1.2. Determination of $J$
+
+```python
+import numpy as np
+from sklearn.manifold import MDS
+from sklearn.linear_model import LinearRegression
+
+# 1. Matrix A (example)
+A = np.array([...])
+
+# 2. Reduction to 2D (MDS)
+mds = MDS(n_components=2, random_state=42, normalized_stress=False)
+A_2d = mds.fit_transform(A)
+
+# 3. Train "inverse bridge" (Decoder: 2D -> 5D)
+decoder = LinearRegression()
+decoder.fit(A_2d, A)
+
+# 4. Perform small rotation in 2D
+epsilon = 0.01 # small angle in radians
+R = np.array([
+ [np.cos(epsilon), -np.sin(epsilon)],
+ [np.sin(epsilon), np.cos(epsilon)]
+])
+A_2d_rot = A_2d @ R.T
+
+# 5. Return to 5D (Inverse Mapping)
+A_rot = decoder.predict(A_2d_rot)
+
+# 6. Compute delta_A (numerical derivative)
+delta_A = (A_rot - A) / epsilon
+
+# 7. Find generator J_A (5x5)
+# Equation: A * J.T = delta_A
+J_A_T = np.linalg.pinv(A) @ delta_A
+J_A = J_A_T.T
+
+print("Computed generator J_A (5x5):")
+print(np.round(J_A, 4))
+```
+
+### Appendix 1.3. Matrices $J^A (5 \times 5)$ and $J^B (4 \times 4)$
+
+$$
+J^A = \begin{pmatrix} & & & & \\ & & & & \\ & & & & \\ & & & & \\ & & & & \end{pmatrix}, \quad
+J^B = \begin{pmatrix} & & & \\ & & & \\ & & & \\ & & & \end{pmatrix}
+$$
+
+### Appendix 1.4. Matrices $B^*_{old}, T_{new}, B^*_{new}$
+
+$$
+B^*_{old} = \begin{pmatrix} & & & \\ & & & \\ & & & \\ & & & \end{pmatrix}, \quad
+T_{new} = \begin{pmatrix} & & & \\ & & & \\ & & & \\ & & & \\ & & & \end{pmatrix}, \quad
+B^*_{new} = \begin{pmatrix} & & & \\ & & & \\ & & & \\ & & & \end{pmatrix}
+$$
+
+### Appendix 1.5. Matrix $A_{rot}$
+
+$$
+A_{rot} = \begin{pmatrix} & & & & \\ & & & & \\ & & & & \\ & & & & \\ & & & & \end{pmatrix}
+$$

@@ -1,0 +1,36 @@
+{
+  "hyperparams": {
+    "seed": 0,
+    "m_train": 10000,
+    "m_test": 1000,
+    "epsilon": 0.01,
+    "lambda": 0.5,
+    "gen_samples": 2000,
+    "cg_maxiter": 200
+  },
+  "train_cnn": {
+    "train_loss": 0.09433193080822627,
+    "train_acc": 0.9724
+  },
+  "generator_estimation": {
+    "cond_A": 2.988420298047011e+36,
+    "cond_B": Infinity
+  },
+  "baseline": {
+    "fidelity_mse_train": 0.009814961503752493,
+    "sym_defect": 1151.2115263968826,
+    "ssim_mean_test": 0.8039548676160444,
+    "psnr_mean_test": 20.731828281639807
+  },
+  "equivariant": {
+    "fidelity_mse_train": 0.010508398891689483,
+    "sym_defect": 317.9808205636237,
+    "ssim_mean_test": 0.7723429447273801,
+    "psnr_mean_test": 20.498372863962476,
+    "cg_info": {
+      "converged": false,
+      "n_iter": 200,
+      "final_resid_norm": 20865.292642886852
+    }
+  }
+}

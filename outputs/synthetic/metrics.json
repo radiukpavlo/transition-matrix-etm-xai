@@ -1,0 +1,28 @@
+{
+  "dims": {
+    "m": 15,
+    "k": 5,
+    "l": 4
+  },
+  "hyperparams": {
+    "epsilon": 0.01,
+    "lambda": 0.5
+  },
+  "baseline_ls": {
+    "fidelity_mse": 0.006167002674207954
+  },
+  "old": {
+    "fidelity_mse": 0.1761327331381,
+    "sym_defect": 172.44415449945134,
+    "sym_defect_sq": 29736.986421030644
+  },
+  "new": {
+    "fidelity_mse": 0.026901217576057,
+    "sym_defect": 0.42697151450185705,
+    "sym_defect_sq": 0.18230467419600951
+  },
+  "generator_estimation": {
+    "cond_A": 85.30500885141288,
+    "cond_B": 58.57460671645855
+  }
+}

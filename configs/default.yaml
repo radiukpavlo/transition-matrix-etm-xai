@@ -1,0 +1,31 @@
+# Default configuration for scripts/run_all.py
+
+synthetic:
+  lambda: 0.5
+  epsilon: 0.01
+  ridge: 1.0e-8
+
+mnist:
+  # Baseline PDF uses a random subsample of 10,000 train and evaluates on 1,000 test
+  train_subsample: 10000
+  test_subsample: 1000
+
+  # CNN training
+  epochs: 3
+  batch_size: 128
+  lr: 1.0e-3
+
+  # Generator estimation
+  eps_gen: 0.01
+  gen_samples: 2000
+  ridge_gen: 1.0e-4
+
+  # Equivariant solve
+  lambda: 0.1
+  cg_rtol: 1.0e-5
+  cg_atol: 1.0e-8
+  cg_maxiter: 200
+  gamma_ridge: 1.0e-6
+
+  # Robustness test rotation range (degrees)
+  robust_deg: 15

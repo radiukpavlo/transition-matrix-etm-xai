@@ -1,0 +1,16 @@
+# Core scientific stack
+numpy
+scipy
+scikit-learn
+matplotlib
+pandas
+tqdm
+
+# Deep learning (CPU)
+torch
+
+# Image metrics / transforms
+scikit-image
+
+# Optional (download convenience)
+requests
