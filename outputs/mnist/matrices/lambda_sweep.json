@@ -1,0 +1,70 @@
+{
+  "rows": [
+    {
+      "lambda": 0.0,
+      "symmetry_error": 105.85053154985815,
+      "symmetry_error_sq": 11204.335029387516,
+      "solver": {
+        "note": "\u03bb=0 uses T_old baseline"
+      }
+    },
+    {
+      "lambda": 0.1,
+      "symmetry_error": 34.2403591058461,
+      "symmetry_error_sq": 1172.4021916972981,
+      "solver": {
+        "lambda": 0.1,
+        "iter_lim": 100,
+        "atol": 1e-06,
+        "btol": 1e-06,
+        "lsqr_istop": 7,
+        "lsqr_itn": 100,
+        "r1norm": 516.199740326624,
+        "r2norm": 516.199740326624,
+        "anorm": 21021.38114799063,
+        "acond": 928.6643501981627,
+        "arnorm": 3266.2901280697765,
+        "xnorm": 6.726172381088294
+      }
+    },
+    {
+      "lambda": 0.5,
+      "symmetry_error": 30.22241735055963,
+      "symmetry_error_sq": 913.3945105114078,
+      "solver": {
+        "lambda": 0.5,
+        "iter_lim": 200,
+        "atol": 1e-06,
+        "btol": 1e-06,
+        "lsqr_istop": 7,
+        "lsqr_itn": 200,
+        "r1norm": 516.2441603975799,
+        "r2norm": 516.2441603975799,
+        "anorm": 30620.352075451636,
+        "acond": 2322.933446994885,
+        "arnorm": 974.6168857727088,
+        "xnorm": 6.852190721438736
+      }
+    },
+    {
+      "lambda": 1.0,
+      "symmetry_error": 27.81959536287841,
+      "symmetry_error_sq": 773.9298861542859,
+      "solver": {
+        "lambda": 1.0,
+        "iter_lim": 100,
+        "atol": 1e-06,
+        "btol": 1e-06,
+        "lsqr_istop": 7,
+        "lsqr_itn": 100,
+        "r1norm": 517.2173786037708,
+        "r2norm": 517.2173786037708,
+        "anorm": 21868.075465734066,
+        "acond": 880.8904446293919,
+        "arnorm": 3055.3356067088785,
+        "xnorm": 6.617304972515084
+      }
+    }
+  ],
+  "note": "\u03bb=0 row corresponds to baseline"
+}

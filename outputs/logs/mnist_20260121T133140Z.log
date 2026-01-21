@@ -1,0 +1,32 @@
+2026-01-21 15:31:40 | INFO | Starting MNIST pipeline
+2026-01-21 15:31:42 | INFO | {
+  "system": {
+    "python": "3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 10, GenuineIntel",
+    "machine": "AMD64",
+    "hostname": "MyLaptop",
+    "cwd": "D:\\GitHub\\transition-matrix-etm-xai-2",
+    "git": {
+      "commit": "37ea5cf69af0aff46f001fef1badd1802ff80b02",
+      "dirty": true,
+      "status": "M README.md\n?? configs/\n?? data/\n?? inputs/\n?? outputs/\n?? reports/\n?? requirements.txt\n?? run_all.py\n?? scripts/\n?? src/\n?? tests/"
+    },
+    "packages": {
+      "numpy": "2.2.6",
+      "scipy": "1.16.3",
+      "sklearn": "1.7.2",
+      "matplotlib": "3.10.6",
+      "torch": "2.9.1+cpu",
+      "torchvision": "0.24.1+cpu",
+      "skimage": "0.26.0"
+    }
+  }
+}
+2026-01-21 15:31:42 | INFO | Seeding info: {'seed': 42, 'deterministic_torch': True, 'torch': {'torch_version': '2.9.1+cpu', 'cuda_available': False, 'cuda_version': None, 'cudnn_version': None}}
+2026-01-21 15:31:42 | INFO | Training MNIST CNN (no existing weights found)
+2026-01-21 15:33:33 | INFO | Epoch 1: loss=0.202890, train_acc=0.9831, test_acc=0.9834, sec=68.5
+2026-01-21 15:35:32 | INFO | Epoch 2: loss=0.059552, train_acc=0.9916, test_acc=0.9892, sec=70.1
+2026-01-21 15:37:39 | INFO | Epoch 3: loss=0.040654, train_acc=0.9927, test_acc=0.9894, sec=83.0
+2026-01-21 15:39:40 | INFO | Epoch 4: loss=0.032679, train_acc=0.9948, test_acc=0.9912, sec=69.7
+2026-01-21 15:41:43 | INFO | Epoch 5: loss=0.027888, train_acc=0.9961, test_acc=0.9911, sec=78.6

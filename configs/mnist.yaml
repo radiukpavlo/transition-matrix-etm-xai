@@ -1,0 +1,45 @@
+seed: 42
+device: cpu
+
+data:
+  batch_size: 256
+  num_workers: 2
+  pin_memory: true
+  normalize: true
+  normalize_mean: 0.1307
+  normalize_std: 0.3081
+
+model:
+  k: 490
+  num_classes: 10
+
+train:
+  epochs: 5
+  lr: 0.001
+  weight_decay: 0.0
+  device: cpu
+
+generators:
+  n_samples: 5000
+  batch_size: 128
+  tau: 1.0e-8
+  device: cpu
+  normalize_mean: 0.1307
+  normalize_std: 0.3081
+
+transition:
+  n_samples: 20000
+  tau: 1.0e-8
+  lambda_: 0.5
+  lsqr_iter_lim: 200
+  lsqr_atol: 1.0e-6
+  lsqr_btol: 1.0e-6
+
+eval:
+  device: cpu
+  n_eval_samples: 2000
+  n_viz_samples: 16
+  rotation_deg_max: 30
+  rotation_deg_step: 5
+
+lambda_sweep: [0.0, 0.1, 0.5, 1.0]

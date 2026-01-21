@@ -1,0 +1,35 @@
+2026-01-21 16:00:44 | INFO | Starting MNIST pipeline
+2026-01-21 16:00:46 | INFO | {
+  "system": {
+    "python": "3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 10, GenuineIntel",
+    "machine": "AMD64",
+    "hostname": "MyLaptop",
+    "cwd": "D:\\GitHub\\transition-matrix-etm-xai-2",
+    "git": {
+      "commit": "37ea5cf69af0aff46f001fef1badd1802ff80b02",
+      "dirty": true,
+      "status": "M README.md\n?? configs/\n?? data/\n?? inputs/\n?? outputs/\n?? reports/\n?? requirements.txt\n?? run_all.py\n?? scripts/\n?? src/\n?? tests/"
+    },
+    "packages": {
+      "numpy": "2.2.6",
+      "scipy": "1.16.3",
+      "sklearn": "1.7.2",
+      "matplotlib": "3.10.6",
+      "torch": "2.9.1+cpu",
+      "torchvision": "0.24.1+cpu",
+      "skimage": "0.26.0"
+    }
+  }
+}
+2026-01-21 16:00:46 | INFO | Seeding info: {'seed': 42, 'deterministic_torch': True, 'torch': {'torch_version': '2.9.1+cpu', 'cuda_available': False, 'cuda_version': None, 'cudnn_version': None}}
+2026-01-21 16:00:46 | INFO | Loading existing model weights: D:\GitHub\transition-matrix-etm-xai-2\outputs\mnist\models\mnist_cnn_k490.pt
+2026-01-21 16:00:57 | INFO | Generator estimation: processed 1280/5000 samples
+2026-01-21 16:00:58 | INFO | Generator estimation: processed 2560/5000 samples
+2026-01-21 16:01:00 | INFO | Generator estimation: processed 3840/5000 samples
+2026-01-21 16:01:01 | INFO | Collected A (5000, 490), dA (5000, 490), B (5000, 784), dB (5000, 784)
+2026-01-21 16:01:04 | INFO | Collecting A,B for transition estimation (n_samples=20000)
+2026-01-21 16:01:22 | INFO | Transition data shapes: A_sub=(20000, 490), B_sub=(20000, 784)
+2026-01-21 16:07:17 | INFO | MNIST eval subset: SSIM old=0.6687, new=0.6689; PSNR old=18.33, new=18.33; sym old=1.059e+02, new=3.022e+01
+2026-01-21 16:07:17 | INFO | MNIST pipeline complete. Manifest: outputs/mnist/runs/mnist_20260121T140044Z_manifest.json
