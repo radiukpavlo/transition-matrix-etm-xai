@@ -130,8 +130,9 @@ def run_synthetic(repo: Path, out_dir: Path, cfg: SyntheticConfig) -> Dict[str, 
     B = load_json_matrix(inputs / "B.json")
     W_old_provided = load_json_matrix(inputs / "T_old.json")  # manuscript provides k×l (often denoted T_old^T)
     # Fidelity-only baseline per Eq. (1): W_old_ls = argmin_W ||B - A W||_F^2.
-    # We compute via an SVD-based pseudoinverse (np.linalg.pinv uses SVD).
-    W_old_ls = np.linalg.pinv(A) @ B
+    # We compute via the same SVD-based pseudoinverse method as Algorithm 1.
+    A_pinv, _ = svd_pseudoinverse(A, tau=cfg.tau)
+    W_old_ls = A_pinv @ B
     # Use the computed least-squares baseline for Scenario 1 metrics, while retaining the manuscript matrix as an input artifact.
     W_old = W_old_ls
 

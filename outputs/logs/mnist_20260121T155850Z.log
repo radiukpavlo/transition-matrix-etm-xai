@@ -1,0 +1,35 @@
+2026-01-21 17:58:50 | INFO | Starting MNIST pipeline
+2026-01-21 17:58:52 | INFO | {
+  "system": {
+    "python": "3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 10, GenuineIntel",
+    "machine": "AMD64",
+    "hostname": "MyLaptop",
+    "cwd": "D:\\GitHub\\transition-matrix-etm-xai-2",
+    "git": {
+      "commit": "d0ebd4e2a8ef68febf011ccd0fd939e5c4dfba68",
+      "dirty": true,
+      "status": "?? outputs/logs/mnist_20260121T155850Z.log\n?? outputs/logs/run_all_20260121T155841Z.log\n?? outputs/synthetic/runs/synthetic_20260121T155850Z_manifest.json"
+    },
+    "packages": {
+      "numpy": "2.2.6",
+      "scipy": "1.16.3",
+      "sklearn": "1.7.2",
+      "matplotlib": "3.10.6",
+      "torch": "2.9.1+cpu",
+      "torchvision": "0.24.1+cpu",
+      "skimage": "0.26.0"
+    }
+  }
+}
+2026-01-21 17:58:52 | INFO | Seeding info: {'seed': 42, 'deterministic_torch': True, 'torch': {'torch_version': '2.9.1+cpu', 'cuda_available': False, 'cuda_version': None, 'cudnn_version': None}}
+2026-01-21 17:58:52 | INFO | Loading existing model weights: D:\GitHub\transition-matrix-etm-xai-2\outputs\mnist\models\mnist_cnn_k490.pt
+2026-01-21 17:59:03 | INFO | Generator estimation: processed 1280/5000 samples
+2026-01-21 17:59:04 | INFO | Generator estimation: processed 2560/5000 samples
+2026-01-21 17:59:05 | INFO | Generator estimation: processed 3840/5000 samples
+2026-01-21 17:59:06 | INFO | Collected A (5000, 490), dA (5000, 490), B (5000, 784), dB (5000, 784)
+2026-01-21 17:59:08 | INFO | Collecting A,B for transition estimation (n_samples=20000)
+2026-01-21 17:59:23 | INFO | Transition data shapes: A_sub=(20000, 490), B_sub=(20000, 784)
+2026-01-21 18:05:20 | INFO | MNIST eval subset: SSIM old=0.6687, new=0.6689; PSNR old=18.33, new=18.33; sym old=1.059e+02, new=3.022e+01
+2026-01-21 18:05:20 | INFO | MNIST pipeline complete. Manifest: outputs/mnist/runs/mnist_20260121T155850Z_manifest.json
