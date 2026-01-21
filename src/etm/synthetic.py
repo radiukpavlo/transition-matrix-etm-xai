@@ -311,37 +311,66 @@ def run_synthetic(repo: Path, out_dir: Path, cfg: SyntheticConfig) -> Dict[str, 
     plt.savefig(out_dir / "figures" / "09_tradeoff_sym_vs_lambda.png", dpi=160)
     plt.close()
 
-    # Robustness scatter (author-requested)
-    def stacked_mds(preds: List[np.ndarray]) -> np.ndarray:
-        X = np.vstack(preds)
-        return mds_2d(X, random_state=cfg.mds_random_state, normalized_stress=cfg.mds_normalized_stress)
-
-    old_2d = stacked_mds(B_old_rots)
-    new_2d = stacked_mds(B_new_rots)
+    # Robustness scatter (author-requested): Three visualization approaches
+    # Show that reconstruction ERRORS for T_old are "chaotic" while T_new errors are "ordered".
+    
+    # Collect error vectors for all rotated samples
+    errors_old = np.vstack([Bo - Bt for Bo, Bt in zip(B_old_rots, B_targets)])  # (N*angles, l)
+    errors_new = np.vstack([Bn - Bt for Bn, Bt in zip(B_new_rots, B_targets)])  # (N*angles, l)
+    all_errors = np.vstack([errors_old, errors_new])
     labels_rep = np.tile(labels, len(angles))
+    
+    from sklearn.decomposition import PCA
+    from sklearn.manifold import TSNE
+    
+    def plot_comparison(old_2d, new_2d, labels_rep, method_name: str, out_path: Path):
+        plt.figure(figsize=(12, 5))
+        plt.subplot(1, 2, 1)
+        for c in np.unique(labels_rep):
+            idx = labels_rep == c
+            plt.scatter(old_2d[idx, 0], old_2d[idx, 1], s=12, alpha=0.7, label=f"Class {c}")
+        plt.axhline(0, color='gray', linestyle='--', linewidth=0.5)
+        plt.axvline(0, color='gray', linestyle='--', linewidth=0.5)
+        plt.title(f"{method_name}: Помилки $T_{{old}}$ (очікується хаос)")
+        plt.xlabel(f"{method_name}-1")
+        plt.ylabel(f"{method_name}-2")
+        plt.legend()
 
-    plt.figure(figsize=(12, 5))
-    plt.subplot(1, 2, 1)
-    for c in np.unique(labels_rep):
-        idx = labels_rep == c
-        plt.scatter(old_2d[idx, 0], old_2d[idx, 1], s=12, label=f"Class {c}")
-    plt.title("Robustness: B*_old_rot (expected scattered)")
-    plt.xlabel("MDS-1")
-    plt.ylabel("MDS-2")
-    plt.legend()
+        plt.subplot(1, 2, 2)
+        for c in np.unique(labels_rep):
+            idx = labels_rep == c
+            plt.scatter(new_2d[idx, 0], new_2d[idx, 1], s=12, alpha=0.7, label=f"Class {c}")
+        plt.axhline(0, color='gray', linestyle='--', linewidth=0.5)
+        plt.axvline(0, color='gray', linestyle='--', linewidth=0.5)
+        plt.title(f"{method_name}: Помилки $T_{{new}}$ (очікується порядок)")
+        plt.xlabel(f"{method_name}-1")
+        plt.ylabel(f"{method_name}-2")
+        plt.legend()
 
-    plt.subplot(1, 2, 2)
-    for c in np.unique(labels_rep):
-        idx = labels_rep == c
-        plt.scatter(new_2d[idx, 0], new_2d[idx, 1], s=12, label=f"Class {c}")
-    plt.title("Robustness: B*_new_rot (expected clustered)")
-    plt.xlabel("MDS-1")
-    plt.ylabel("MDS-2")
-    plt.legend()
-
-    plt.tight_layout()
-    plt.savefig(out_dir / "figures" / "10_robustness_scatter_old_vs_new.png", dpi=160)
-    plt.close()
+        plt.tight_layout()
+        plt.savefig(out_path, dpi=160)
+        plt.close()
+    
+    # 1) PCA
+    pca = PCA(n_components=2, random_state=cfg.mds_random_state)
+    pca.fit(all_errors)
+    errors_old_pca = pca.transform(errors_old)
+    errors_new_pca = pca.transform(errors_new)
+    plot_comparison(errors_old_pca, errors_new_pca, labels_rep, "PCA", out_dir / "figures" / "10a_robustness_pca.png")
+    
+    # 2) MDS (shared embedding via concatenated data)
+    all_2d_mds = mds_2d(all_errors, random_state=cfg.mds_random_state, normalized_stress=cfg.mds_normalized_stress)
+    n_old = errors_old.shape[0]
+    errors_old_mds = all_2d_mds[:n_old]
+    errors_new_mds = all_2d_mds[n_old:]
+    plot_comparison(errors_old_mds, errors_new_mds, labels_rep, "MDS", out_dir / "figures" / "10b_robustness_mds.png")
+    
+    # 3) t-SNE
+    tsne = TSNE(n_components=2, random_state=cfg.mds_random_state, perplexity=min(30, all_errors.shape[0] // 4))
+    all_2d_tsne = tsne.fit_transform(all_errors)
+    errors_old_tsne = all_2d_tsne[:n_old]
+    errors_new_tsne = all_2d_tsne[n_old:]
+    plot_comparison(errors_old_tsne, errors_new_tsne, labels_rep, "t-SNE", out_dir / "figures" / "10c_robustness_tsne.png")
 
     summary = {
         "m": int(A.shape[0]),
