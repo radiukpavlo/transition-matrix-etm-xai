@@ -371,6 +371,14 @@ def run_synthetic(repo: Path, out_dir: Path, cfg: SyntheticConfig) -> Dict[str, 
     errors_old_tsne = all_2d_tsne[:n_old]
     errors_new_tsne = all_2d_tsne[n_old:]
     plot_comparison(errors_old_tsne, errors_new_tsne, labels_rep, "t-SNE", out_dir / "figures" / "10c_robustness_tsne.png")
+    
+    # 4) UMAP
+    import umap
+    umap_reducer = umap.UMAP(n_components=2, random_state=cfg.mds_random_state, n_neighbors=min(15, all_errors.shape[0] // 4))
+    all_2d_umap = umap_reducer.fit_transform(all_errors)
+    errors_old_umap = all_2d_umap[:n_old]
+    errors_new_umap = all_2d_umap[n_old:]
+    plot_comparison(errors_old_umap, errors_new_umap, labels_rep, "UMAP", out_dir / "figures" / "10d_robustness_umap.png")
 
     summary = {
         "m": int(A.shape[0]),
