@@ -278,6 +278,15 @@ def evaluate_and_plot(
     recon_new_stacked = np.vstack(recon_new_all)  # (N*angles, 784)
     all_embeddings = np.vstack([recon_old_stacked, recon_new_stacked])
     all_labels = np.array(all_labels)
+
+    # Save embeddings for external plotting
+    np.savez(
+        out_root / "matrices" / "mnist_robustness_embeddings.npz",
+        B_star_old=recon_old_stacked,
+        B_star_new=recon_new_stacked,
+        labels=all_labels,
+        angles=scatter_angles
+    )
     
     def plot_mnist_embedding(old_2d, new_2d, labels, method_name: str, out_path: Path):
         plt.figure(figsize=(14, 5))

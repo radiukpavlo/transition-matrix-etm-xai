@@ -29,6 +29,7 @@ class TrainConfig:
     lr: float = 1e-3
     weight_decay: float = 0.0
     device: str = "cpu"
+    n_train_samples: Optional[int] = None
 
 
 def evaluate_accuracy(model: nn.Module, loader, device: torch.device) -> float:
@@ -66,6 +67,7 @@ def train_cnn(
         model.train()
         t0 = time.time()
         losses = []
+        samples_seen = 0
         for x, y in tqdm(train_loader, desc=f"Epoch {epoch}/{cfg_train.epochs}", leave=False):
             x = x.to(device)
             y = y.to(device)
@@ -75,6 +77,10 @@ def train_cnn(
             loss.backward()
             opt.step()
             losses.append(float(loss.item()))
+            
+            samples_seen += x.size(0)
+            if cfg_train.n_train_samples and samples_seen >= cfg_train.n_train_samples:
+                break
 
         sec = time.time() - t0
         train_acc = evaluate_accuracy(model, train_loader, device)
@@ -94,6 +100,20 @@ def train_cnn(
     weights_path = out_root / "models" / "mnist_cnn_k490.pt"
     torch.save({"model_state": model.state_dict(), "cfg": cfg_model.__dict__}, weights_path)
     save_json(out_root / "models" / "training_history.json", history)
+
+    # Save history to CSV
+    import csv
+    with open(out_root / "models" / "training_history.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["epoch", "loss", "train_acc", "test_acc", "seconds"])
+        for i in range(len(history["epoch"])):
+            writer.writerow([
+                history["epoch"][i],
+                history["loss"][i],
+                history["train_acc"][i],
+                history["test_acc"][i],
+                history["seconds"][i]
+            ])
 
     import matplotlib.pyplot as plt
 

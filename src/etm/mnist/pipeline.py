@@ -4,12 +4,9 @@ This pipeline is designed for a standard Python environment.
 Per the user request for this sandbox, we do NOT execute MNIST computations here,
 but the repository contains a complete, runnable MNIST pipeline.
 
-Stages:
-1) Load MNIST from data/mnist/ (no downloads).
-2) Train CNN FM (k=490) or load existing weights.
-3) Estimate generators J^A and J^B using autograd JVP at θ=0.
-4) Estimate transition matrices T_old and T_new, plus a λ sweep.
-5) Evaluate SSIM/PSNR, symmetry error, robustness curves, and generate figures.
+Refactored Stages:
+1) Train/Extract: Train CNN (or load), estimate generators, extract A/B samples.
+2) Experiments: Load A/B and generators, compute T_old/T_new, sweep lambda, evaluate.
 
 All outputs are written under outputs/mnist/ and outputs/logs/.
 """
@@ -60,16 +57,17 @@ class MNISTPipelineConfig:
             self.lambda_sweep = [0.0, 0.1, 0.5, 1.0]
 
 
-def run_mnist(repo_root: Path, out_root: Path, cfg: MNISTPipelineConfig) -> Dict[str, object]:
+def run_stage1_train_extract(repo_root: Path, out_root: Path, cfg: MNISTPipelineConfig) -> Dict[str, object]:
     ensure_dir(out_root)
     ensure_dir(repo_root / "outputs" / "logs")
     ensure_dir(out_root / "runs")
+    ensure_dir(out_root / "matrices")
 
-    run_id = f"mnist_{utc_timestamp()}"
+    run_id = f"mnist_stage1_{utc_timestamp()}"
     log_path = repo_root / "outputs" / "logs" / f"{run_id}.log"
     logger = configure_logger(log_path)
 
-    logger.info("Starting MNIST pipeline")
+    logger.info("Starting MNIST Stage 1: Train & Extract")
     logger.info(json.dumps({"system": system_info()}, indent=2))
 
     seed_info = set_global_seed(cfg.seed, deterministic_torch=True)
@@ -99,6 +97,9 @@ def run_mnist(repo_root: Path, out_root: Path, cfg: MNISTPipelineConfig) -> Dict
     # Train or load weights
     weights_path = out_root / "models" / "mnist_cnn_k490.pt"
     ensure_dir(weights_path.parent)
+    
+    # Check if we should retrain based on user intent? 
+    # For now, if weights exist, we load them unless explicit overwrite logic is added (not requested).
     if weights_path.exists():
         logger.info(f"Loading existing model weights: {weights_path}")
         ckpt = torch.load(weights_path, map_location="cpu")
@@ -115,9 +116,7 @@ def run_mnist(repo_root: Path, out_root: Path, cfg: MNISTPipelineConfig) -> Dict
     cfg.generators.normalize_std = cfg.data.normalize_std
     cfg.generators.device = cfg.device
     gen_info = estimate_generators(repo_root, out_root, model, train_raw_loader, cfg.generators, logger)
-
-    J_A = load_json_matrix(out_root / "matrices" / "J_A.json")
-    J_B = load_json_matrix(out_root / "matrices" / "J_B.json")
+    save_json(out_root / "matrices" / "gen_info.json", gen_info)
 
     # Transition matrices: collect (A,B) subset from raw loader
     logger.info(f"Collecting A,B for transition estimation (n_samples={cfg.transition.n_samples})")
@@ -133,6 +132,7 @@ def run_mnist(repo_root: Path, out_root: Path, cfg: MNISTPipelineConfig) -> Dict
     model = model.to(device)
     model.eval()
 
+    # Reuse train_raw_loader logic from original
     for x01, _y in train_raw_loader:
         if seen >= cfg.transition.n_samples:
             break
@@ -148,7 +148,47 @@ def run_mnist(repo_root: Path, out_root: Path, cfg: MNISTPipelineConfig) -> Dict
 
     A_sub = np.vstack(A_list)
     B_sub = np.vstack(B_list)
-    logger.info(f"Transition data shapes: A_sub={A_sub.shape}, B_sub={B_sub.shape}")
+    logger.info(f"Extracted transition data: A_sub={A_sub.shape}, B_sub={B_sub.shape}")
+    
+    np.save(out_root / "matrices" / "A_sub.npy", A_sub)
+    np.save(out_root / "matrices" / "B_sub.npy", B_sub)
+    logger.info(f"Saved A_sub.npy and B_sub.npy to {out_root / 'matrices'}")
+
+    logger.info("Stage 1 complete.")
+    return {"run_id": run_id, "gen_info": gen_info, "samples_extracted": seen}
+
+
+def run_stage2_experiments(repo_root: Path, out_root: Path, cfg: MNISTPipelineConfig) -> Dict[str, object]:
+    run_id = f"mnist_stage2_{utc_timestamp()}"
+    log_path = repo_root / "outputs" / "logs" / f"{run_id}.log"
+    logger = configure_logger(log_path)
+
+    logger.info("Starting MNIST Stage 2: Experiments")
+    
+    seed_info = set_global_seed(cfg.seed, deterministic_torch=True)
+    device = torch.device(cfg.device)
+
+    # Check dependencies
+    matrices_dir = out_root / "matrices"
+    if not (matrices_dir / "J_A.json").exists():
+        raise FileNotFoundError("J_A.json not found. Run Stage 1 first.")
+    if not (matrices_dir / "A_sub.npy").exists():
+        raise FileNotFoundError("A_sub.npy not found. Run Stage 1 first.")
+
+    # Load Matrices
+    J_A = load_json_matrix(matrices_dir / "J_A.json")
+    J_B = load_json_matrix(matrices_dir / "J_B.json")
+    A_sub = np.load(matrices_dir / "A_sub.npy")
+    B_sub = np.load(matrices_dir / "B_sub.npy")
+    
+    # Load generation info if available
+    gen_info = {}
+    if (matrices_dir / "gen_info.json").exists():
+        with open(matrices_dir / "gen_info.json", "r") as f:
+            gen_info = json.load(f)
+
+    logger.info(f"Loaded matrices: A={A_sub.shape}, B={B_sub.shape}")
+    logger.info(f"Solving Transition Matrices (lam={cfg.transition.lambda_})...")
 
     # Baseline and equivariant solutions
     W_old, info_old = solve_T_old(A_sub, B_sub, tau=cfg.transition.tau)
@@ -166,7 +206,7 @@ def run_mnist(repo_root: Path, out_root: Path, cfg: MNISTPipelineConfig) -> Dict
 
     save_transition_matrices(out_root, W_old, W_new, info_old, info_new)
 
-    # λ sweep (required symmetry-error vs λ figure)
+    # λ sweep
     sweep = []
     for lam in (cfg.lambda_sweep or []):
         if lam == cfg.transition.lambda_:
@@ -197,20 +237,26 @@ def run_mnist(repo_root: Path, out_root: Path, cfg: MNISTPipelineConfig) -> Dict
 
     save_json(out_root / "matrices" / "lambda_sweep.json", {"rows": sweep, "note": "λ=0 row corresponds to baseline"})
 
-    # Plot symmetry error vs λ
-    import matplotlib.pyplot as plt
+    # Evaluate
+    # Need model and data for evaluation
+    # Load Model
+    model = MNISTCNN(cfg.model)
+    weights_path = out_root / "models" / "mnist_cnn_k490.pt"
+    if weights_path.exists():
+        ckpt = torch.load(weights_path, map_location="cpu")
+        model.load_state_dict(ckpt["model_state"])
+        model.to(device)
+    else:
+        logger.warning(f"Model weights not found at {weights_path}. Evaluation will be random!")
 
-    lambdas = [r["lambda"] for r in sweep]
-    syms = [r["symmetry_error"] for r in sweep]
-    ensure_dir(out_root / "figures")
-    plt.figure(figsize=(6, 4))
-    plt.plot(lambdas, syms, marker="o")
-    plt.xlabel("λ")
-    plt.ylabel("||T J_A - J_B T||_F")
-    plt.title("Symmetry error vs λ")
-    plt.tight_layout()
-    plt.savefig(out_root / "figures" / "07_symmetry_error_vs_lambda.png", dpi=160)
-    plt.close()
+    # Load Data (Test Set Only needed for Eval generally, but check evaluate_and_plot)
+    # evaluate_and_plot uses test_raw_loader
+    train_raw_loader, test_raw_loader = get_raw_dataloaders(
+        repo_root,
+        batch_size=cfg.generators.batch_size,
+        num_workers=cfg.data.num_workers,
+        device=device,
+    )
 
     # Evaluation & figures
     cfg.eval.device = cfg.device
@@ -223,16 +269,15 @@ def run_mnist(repo_root: Path, out_root: Path, cfg: MNISTPipelineConfig) -> Dict
         J_A,
         J_B,
         cfg.eval,
-        normalize_mean=mean,
-        normalize_std=std,
+        normalize_mean=cfg.data.normalize_mean,
+        normalize_std=cfg.data.normalize_std,
         logger=logger,
     )
-
+    
     manifest = {
         "run_id": run_id,
         "seed": cfg.seed,
         "device": cfg.device,
-        "n_transition_samples": int(seen),
         "configs": {
             "data": cfg.data.__dict__,
             "model": cfg.model.__dict__,
@@ -244,9 +289,14 @@ def run_mnist(repo_root: Path, out_root: Path, cfg: MNISTPipelineConfig) -> Dict
         },
         "generator_info": gen_info,
         "metrics": metrics,
-        "log_path": str(log_path.relative_to(repo_root)),
+        "log_path": str(log_path.relative_to(repo_root)) if log_path.is_relative_to(repo_root) else str(log_path),
     }
 
     save_json(out_root / "runs" / f"{run_id}_manifest.json", manifest)
-    logger.info(f"MNIST pipeline complete. Manifest: outputs/mnist/runs/{run_id}_manifest.json")
+    logger.info(f"MNIST Stage 2 complete. Manifest: outputs/mnist/runs/{run_id}_manifest.json")
     return manifest
+
+def run_mnist(repo_root: Path, out_root: Path, cfg: MNISTPipelineConfig) -> Dict[str, object]:
+    """Legacy wrapper to run both stages sequentially."""
+    run_stage1_train_extract(repo_root, out_root, cfg)
+    return run_stage2_experiments(repo_root, out_root, cfg)

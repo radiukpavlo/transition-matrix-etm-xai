@@ -34,14 +34,16 @@ from etm.utils import configure_logger, ensure_dir, repo_root, save_json, set_gl
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--synthetic", action="store_true", help="Run synthetic pipeline")
-    ap.add_argument("--mnist", action="store_true", help="Run MNIST pipeline")
+    ap.add_argument("--mnist", action="store_true", help="Run MNIST pipeline (both stages)")
+    ap.add_argument("--mnist-stage1", action="store_true", help="Run MNIST Stage 1 (Train & Extract)")
+    ap.add_argument("--mnist-stage2", action="store_true", help="Run MNIST Stage 2 (Experiments)")
     ap.add_argument("--all", action="store_true", help="Run both pipelines")
     ap.add_argument("--synthetic-config", type=str, default="configs/synthetic.yaml")
     ap.add_argument("--mnist-config", type=str, default="configs/mnist.yaml")
     args = ap.parse_args()
 
-    if not (args.synthetic or args.mnist or args.all):
-        ap.error("Select at least one of --synthetic, --mnist, or --all")
+    if not (args.synthetic or args.mnist or args.mnist_stage1 or args.mnist_stage2 or args.all):
+        ap.error("Select at least one of --synthetic, --mnist, --mnist-stage1, --mnist-stage2, or --all")
 
     root = repo_root()
     ensure_dir(root / "outputs" / "logs")
@@ -58,7 +60,7 @@ def main() -> None:
 
     # Load MNIST config lazily (only if needed)
     mn_cfg = None
-    if args.mnist or args.all:
+    if args.mnist or args.mnist_stage1 or args.mnist_stage2 or args.all:
         from etm.mnist.pipeline import MNISTPipelineConfig  # noqa: E402
 
         mn_cfg = MNISTPipelineConfig()
@@ -66,7 +68,7 @@ def main() -> None:
             mn_dict = yaml.safe_load(Path(args.mnist_config).read_text()) or {}
             mn_cfg = dataclass_from_dict(MNISTPipelineConfig, mn_dict)
 
-    manifest = {"run_id": run_id, "synthetic": None, "mnist": None}
+    manifest = {"run_id": run_id, "synthetic": None, "mnist": {}}
 
     if args.synthetic or args.all:
         set_global_seed(42)
@@ -76,14 +78,28 @@ def main() -> None:
         summary = run_synthetic(root, syn_out, syn_cfg)
         manifest["synthetic"] = summary
 
-    if args.mnist or args.all:
+    if args.mnist or args.mnist_stage1 or args.mnist_stage2 or args.all:
         logger.info("Running MNIST pipeline")
-        from etm.mnist.pipeline import run_mnist  # noqa: E402
+        from etm.mnist.pipeline import run_stage1_train_extract, run_stage2_experiments  # noqa: E402
 
         mn_out = root / "outputs" / "mnist"
         ensure_dir(mn_out)
-        out = run_mnist(root, mn_out, mn_cfg)  # type: ignore[arg-type]
-        manifest["mnist"] = out
+        
+        # Determine strict stages
+        # If --mnist or --all, run both.
+        # Else run selected.
+        run_s1 = args.mnist or args.all or args.mnist_stage1
+        run_s2 = args.mnist or args.all or args.mnist_stage2
+
+        if run_s1:
+            logger.info("Executing MNIST Stage 1...")
+            out1 = run_stage1_train_extract(root, mn_out, mn_cfg)  # type: ignore
+            manifest["mnist"]["stage1"] = out1
+        
+        if run_s2:
+            logger.info("Executing MNIST Stage 2...")
+            out2 = run_stage2_experiments(root, mn_out, mn_cfg)  # type: ignore
+            manifest["mnist"]["stage2"] = out2
 
     save_json(root / "outputs" / "logs" / f"{run_id}_manifest.json", manifest)
     logger.info("All requested pipelines complete")
