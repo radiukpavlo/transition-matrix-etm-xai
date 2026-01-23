@@ -62,13 +62,15 @@ def train_cnn(
     opt = Adam(model.parameters(), lr=cfg_train.lr, weight_decay=cfg_train.weight_decay)
 
     history = {"epoch": [], "loss": [], "train_acc": [], "test_acc": [], "seconds": []}
+    
+    logger.info(f"Starting training for {cfg_train.epochs} epochs (device={device})")
 
     for epoch in range(1, cfg_train.epochs + 1):
         model.train()
         t0 = time.time()
         losses = []
         samples_seen = 0
-        for x, y in tqdm(train_loader, desc=f"Epoch {epoch}/{cfg_train.epochs}", leave=False):
+        for x, y in tqdm(train_loader, desc=f"Epoch {epoch}/{cfg_train.epochs}", leave=True):
             x = x.to(device)
             y = y.to(device)
             opt.zero_grad(set_to_none=True)

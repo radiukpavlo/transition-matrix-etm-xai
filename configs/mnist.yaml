@@ -18,9 +18,10 @@ train:
   lr: 0.001
   weight_decay: 0.0
   device: cpu
+  n_train_samples: null
 
 generators:
-  n_samples: 5000
+  n_samples: 60000
   batch_size: 128
   tau: 1.0e-8
   device: cpu
@@ -28,7 +29,7 @@ generators:
   normalize_std: 0.3081
 
 transition:
-  n_samples: 20000
+  n_samples: 60000
   tau: 1.0e-8
   lambda_: 0.5
   lsqr_iter_lim: 200
@@ -37,9 +38,9 @@ transition:
 
 eval:
   device: cpu
-  n_eval_samples: 2000
-  n_viz_samples: 16
-  rotation_deg_max: 30
-  rotation_deg_step: 5
+  n_eval_samples: 10000
+  n_viz_samples: 32
+  rotation_deg_max: 20
+  rotation_deg_step: 2
 
-lambda_sweep: [0.0, 0.1, 0.5, 1.0]
+lambda_sweep: [0.0, 0.0001, 0.001, 0.01, 0.05, 0.1, 0.5, 1.0, 10.0, 100.0]
