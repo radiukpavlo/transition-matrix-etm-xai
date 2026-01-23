@@ -311,27 +311,25 @@ def run_synthetic(repo: Path, out_dir: Path, cfg: SyntheticConfig) -> Dict[str, 
     plt.savefig(out_dir / "figures" / "09_tradeoff_sym_vs_lambda.png", dpi=160)
     plt.close()
 
-    # Robustness scatter (author-requested): Three visualization approaches
-    # Show that reconstruction ERRORS for T_old are "chaotic" while T_new errors are "ordered".
+    # Robustness scatter (author-requested): Visualize predicted embeddings B*
+    # Show that T_old produces "chaotic" embeddings while T_new preserves cluster structure.
     
-    # Collect error vectors for all rotated samples
-    errors_old = np.vstack([Bo - Bt for Bo, Bt in zip(B_old_rots, B_targets)])  # (N*angles, l)
-    errors_new = np.vstack([Bn - Bt for Bn, Bt in zip(B_new_rots, B_targets)])  # (N*angles, l)
-    all_errors = np.vstack([errors_old, errors_new])
+    # Stack all predicted embeddings for rotated data
+    B_old_stacked = np.vstack(B_old_rots)  # (N*angles, l)
+    B_new_stacked = np.vstack(B_new_rots)  # (N*angles, l)
+    all_embeddings = np.vstack([B_old_stacked, B_new_stacked])
     labels_rep = np.tile(labels, len(angles))
     
     from sklearn.decomposition import PCA
     from sklearn.manifold import TSNE
     
-    def plot_comparison(old_2d, new_2d, labels_rep, method_name: str, out_path: Path):
+    def plot_embedding_comparison(old_2d, new_2d, labels_rep, method_name: str, out_path: Path):
         plt.figure(figsize=(12, 5))
         plt.subplot(1, 2, 1)
         for c in np.unique(labels_rep):
             idx = labels_rep == c
             plt.scatter(old_2d[idx, 0], old_2d[idx, 1], s=12, alpha=0.7, label=f"Class {c}")
-        plt.axhline(0, color='gray', linestyle='--', linewidth=0.5)
-        plt.axvline(0, color='gray', linestyle='--', linewidth=0.5)
-        plt.title(f"{method_name}: Помилки $T_{{old}}$ (очікується хаос)")
+        plt.title(f"{method_name}: $B^*_{{old}}$ (очікується хаос)")
         plt.xlabel(f"{method_name}-1")
         plt.ylabel(f"{method_name}-2")
         plt.legend()
@@ -340,9 +338,7 @@ def run_synthetic(repo: Path, out_dir: Path, cfg: SyntheticConfig) -> Dict[str, 
         for c in np.unique(labels_rep):
             idx = labels_rep == c
             plt.scatter(new_2d[idx, 0], new_2d[idx, 1], s=12, alpha=0.7, label=f"Class {c}")
-        plt.axhline(0, color='gray', linestyle='--', linewidth=0.5)
-        plt.axvline(0, color='gray', linestyle='--', linewidth=0.5)
-        plt.title(f"{method_name}: Помилки $T_{{new}}$ (очікується порядок)")
+        plt.title(f"{method_name}: $B^*_{{new}}$ (очікується порядок)")
         plt.xlabel(f"{method_name}-1")
         plt.ylabel(f"{method_name}-2")
         plt.legend()
@@ -351,34 +347,35 @@ def run_synthetic(repo: Path, out_dir: Path, cfg: SyntheticConfig) -> Dict[str, 
         plt.savefig(out_path, dpi=160)
         plt.close()
     
+    n_old = B_old_stacked.shape[0]
+    
     # 1) PCA
     pca = PCA(n_components=2, random_state=cfg.mds_random_state)
-    pca.fit(all_errors)
-    errors_old_pca = pca.transform(errors_old)
-    errors_new_pca = pca.transform(errors_new)
-    plot_comparison(errors_old_pca, errors_new_pca, labels_rep, "PCA", out_dir / "figures" / "10a_robustness_pca.png")
+    pca.fit(all_embeddings)
+    old_pca = pca.transform(B_old_stacked)
+    new_pca = pca.transform(B_new_stacked)
+    plot_embedding_comparison(old_pca, new_pca, labels_rep, "PCA", out_dir / "figures" / "10a_robustness_pca.png")
     
     # 2) MDS (shared embedding via concatenated data)
-    all_2d_mds = mds_2d(all_errors, random_state=cfg.mds_random_state, normalized_stress=cfg.mds_normalized_stress)
-    n_old = errors_old.shape[0]
-    errors_old_mds = all_2d_mds[:n_old]
-    errors_new_mds = all_2d_mds[n_old:]
-    plot_comparison(errors_old_mds, errors_new_mds, labels_rep, "MDS", out_dir / "figures" / "10b_robustness_mds.png")
+    all_2d_mds = mds_2d(all_embeddings, random_state=cfg.mds_random_state, normalized_stress=cfg.mds_normalized_stress)
+    old_mds = all_2d_mds[:n_old]
+    new_mds = all_2d_mds[n_old:]
+    plot_embedding_comparison(old_mds, new_mds, labels_rep, "MDS", out_dir / "figures" / "10b_robustness_mds.png")
     
     # 3) t-SNE
-    tsne = TSNE(n_components=2, random_state=cfg.mds_random_state, perplexity=min(30, all_errors.shape[0] // 4))
-    all_2d_tsne = tsne.fit_transform(all_errors)
-    errors_old_tsne = all_2d_tsne[:n_old]
-    errors_new_tsne = all_2d_tsne[n_old:]
-    plot_comparison(errors_old_tsne, errors_new_tsne, labels_rep, "t-SNE", out_dir / "figures" / "10c_robustness_tsne.png")
+    tsne = TSNE(n_components=2, random_state=cfg.mds_random_state, perplexity=min(30, all_embeddings.shape[0] // 4))
+    all_2d_tsne = tsne.fit_transform(all_embeddings)
+    old_tsne = all_2d_tsne[:n_old]
+    new_tsne = all_2d_tsne[n_old:]
+    plot_embedding_comparison(old_tsne, new_tsne, labels_rep, "t-SNE", out_dir / "figures" / "10c_robustness_tsne.png")
     
     # 4) UMAP
     import umap
-    umap_reducer = umap.UMAP(n_components=2, random_state=cfg.mds_random_state, n_neighbors=min(15, all_errors.shape[0] // 4))
-    all_2d_umap = umap_reducer.fit_transform(all_errors)
-    errors_old_umap = all_2d_umap[:n_old]
-    errors_new_umap = all_2d_umap[n_old:]
-    plot_comparison(errors_old_umap, errors_new_umap, labels_rep, "UMAP", out_dir / "figures" / "10d_robustness_umap.png")
+    umap_reducer = umap.UMAP(n_components=2, random_state=cfg.mds_random_state, n_neighbors=min(15, all_embeddings.shape[0] // 4))
+    all_2d_umap = umap_reducer.fit_transform(all_embeddings)
+    old_umap = all_2d_umap[:n_old]
+    new_umap = all_2d_umap[n_old:]
+    plot_embedding_comparison(old_umap, new_umap, labels_rep, "UMAP", out_dir / "figures" / "10d_robustness_umap.png")
 
     summary = {
         "m": int(A.shape[0]),

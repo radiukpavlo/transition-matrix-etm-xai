@@ -236,58 +236,63 @@ def evaluate_and_plot(
     plt.savefig(out_root / "figures" / "10_qualitative_rotated_grid.png", dpi=160)
     plt.close()
 
-    # --- ROBUSTNESS SCATTER PLOTS (PCA, MDS, t-SNE) ---
-    # Collect reconstruction error vectors for rotated inputs at multiple angles
+    # --- ROBUSTNESS SCATTER PLOTS (PCA, MDS, t-SNE, UMAP) ---
+    # Visualize predicted embeddings B* colored by digit label to show cluster structure
     from sklearn.decomposition import PCA
     from sklearn.manifold import MDS, TSNE
     
     scatter_angles = np.array([-25.0, -15.0, -5.0, 5.0, 15.0, 25.0])  # degrees
     n_scatter = min(128, images01.shape[0])
-    images_scatter = images01[:n_scatter].to(device)
     
-    errors_old_all = []
-    errors_new_all = []
-    angle_labels = []
+    # Collect labels for scatter subset from loader
+    labels_list: List[int] = []
+    images_scatter_list: List[torch.Tensor] = []
+    scatter_seen = 0
+    for x, y in test_loader_raw:
+        if scatter_seen >= n_scatter:
+            break
+        take = min(x.shape[0], n_scatter - scatter_seen)
+        images_scatter_list.append(x[:take])
+        labels_list.extend(y[:take].tolist())
+        scatter_seen += take
+    
+    images_scatter = torch.cat(images_scatter_list, dim=0).to(device)
+    base_labels = np.array(labels_list)
+    
+    recon_old_all = []
+    recon_new_all = []
+    all_labels = []
     
     for deg in scatter_angles:
         theta = torch.tensor(float(deg) * math.pi / 180.0, device=device)
         x_rot = rotate_batch(images_scatter, theta).detach().cpu()
         
-        orig_s, recon_old_s = reconstruct_images(model, W_old, x_rot, normalize_mean, normalize_std, device)
-        _orig_s, recon_new_s = reconstruct_images(model, W_new, x_rot, normalize_mean, normalize_std, device)
+        _orig_s, recon_old_s = reconstruct_images(model, W_old, x_rot, normalize_mean, normalize_std, device)
+        _orig_s2, recon_new_s = reconstruct_images(model, W_new, x_rot, normalize_mean, normalize_std, device)
         
-        # Flatten and compute error vectors
-        orig_flat = orig_s.reshape(n_scatter, -1)
-        error_old = recon_old_s.reshape(n_scatter, -1) - orig_flat
-        error_new = recon_new_s.reshape(n_scatter, -1) - orig_flat
-        
-        errors_old_all.append(error_old)
-        errors_new_all.append(error_new)
-        angle_labels.extend([deg] * n_scatter)
+        recon_old_all.append(recon_old_s.reshape(n_scatter, -1))
+        recon_new_all.append(recon_new_s.reshape(n_scatter, -1))
+        all_labels.extend(base_labels.tolist())
     
-    errors_old_stacked = np.vstack(errors_old_all)  # (N*angles, 784)
-    errors_new_stacked = np.vstack(errors_new_all)  # (N*angles, 784)
-    all_errors_mnist = np.vstack([errors_old_stacked, errors_new_stacked])
-    angle_labels = np.array(angle_labels)
+    recon_old_stacked = np.vstack(recon_old_all)  # (N*angles, 784)
+    recon_new_stacked = np.vstack(recon_new_all)  # (N*angles, 784)
+    all_embeddings = np.vstack([recon_old_stacked, recon_new_stacked])
+    all_labels = np.array(all_labels)
     
-    def plot_mnist_scatter(old_2d, new_2d, angle_labels, method_name: str, out_path: Path):
+    def plot_mnist_embedding(old_2d, new_2d, labels, method_name: str, out_path: Path):
         plt.figure(figsize=(14, 5))
         
         plt.subplot(1, 2, 1)
-        scatter = plt.scatter(old_2d[:, 0], old_2d[:, 1], c=angle_labels, cmap='coolwarm', s=8, alpha=0.6)
-        plt.colorbar(scatter, label='Rotation Angle (deg)')
-        plt.axhline(0, color='gray', linestyle='--', linewidth=0.5)
-        plt.axvline(0, color='gray', linestyle='--', linewidth=0.5)
-        plt.title(f"{method_name}: Помилки $T_{{old}}$ (MNIST)")
+        scatter = plt.scatter(old_2d[:, 0], old_2d[:, 1], c=labels, cmap='tab10', s=8, alpha=0.6)
+        plt.colorbar(scatter, label='Digit')
+        plt.title(f"{method_name}: $B^*_{{old}}$ (MNIST)")
         plt.xlabel(f"{method_name}-1")
         plt.ylabel(f"{method_name}-2")
 
         plt.subplot(1, 2, 2)
-        scatter = plt.scatter(new_2d[:, 0], new_2d[:, 1], c=angle_labels, cmap='coolwarm', s=8, alpha=0.6)
-        plt.colorbar(scatter, label='Rotation Angle (deg)')
-        plt.axhline(0, color='gray', linestyle='--', linewidth=0.5)
-        plt.axvline(0, color='gray', linestyle='--', linewidth=0.5)
-        plt.title(f"{method_name}: Помилки $T_{{new}}$ (MNIST)")
+        scatter = plt.scatter(new_2d[:, 0], new_2d[:, 1], c=labels, cmap='tab10', s=8, alpha=0.6)
+        plt.colorbar(scatter, label='Digit')
+        plt.title(f"{method_name}: $B^*_{{new}}$ (MNIST)")
         plt.xlabel(f"{method_name}-1")
         plt.ylabel(f"{method_name}-2")
 
@@ -295,36 +300,36 @@ def evaluate_and_plot(
         plt.savefig(out_path, dpi=160)
         plt.close()
     
-    n_old = errors_old_stacked.shape[0]
+    n_old = recon_old_stacked.shape[0]
     
     # 1) PCA
     pca = PCA(n_components=2, random_state=42)
-    pca.fit(all_errors_mnist)
-    errors_old_pca = pca.transform(errors_old_stacked)
-    errors_new_pca = pca.transform(errors_new_stacked)
-    plot_mnist_scatter(errors_old_pca, errors_new_pca, angle_labels, "PCA", out_root / "figures" / "09a_mnist_scatter_pca.png")
+    pca.fit(all_embeddings)
+    old_pca = pca.transform(recon_old_stacked)
+    new_pca = pca.transform(recon_new_stacked)
+    plot_mnist_embedding(old_pca, new_pca, all_labels, "PCA", out_root / "figures" / "09a_mnist_scatter_pca.png")
     
     # 2) MDS
     mds = MDS(n_components=2, random_state=42, normalized_stress='auto', max_iter=300, n_init=1)
-    all_2d_mds = mds.fit_transform(all_errors_mnist)
-    errors_old_mds = all_2d_mds[:n_old]
-    errors_new_mds = all_2d_mds[n_old:]
-    plot_mnist_scatter(errors_old_mds, errors_new_mds, angle_labels, "MDS", out_root / "figures" / "09b_mnist_scatter_mds.png")
+    all_2d_mds = mds.fit_transform(all_embeddings)
+    old_mds = all_2d_mds[:n_old]
+    new_mds = all_2d_mds[n_old:]
+    plot_mnist_embedding(old_mds, new_mds, all_labels, "MDS", out_root / "figures" / "09b_mnist_scatter_mds.png")
     
     # 3) t-SNE
-    tsne = TSNE(n_components=2, random_state=42, perplexity=min(30, all_errors_mnist.shape[0] // 4))
-    all_2d_tsne = tsne.fit_transform(all_errors_mnist)
-    errors_old_tsne = all_2d_tsne[:n_old]
-    errors_new_tsne = all_2d_tsne[n_old:]
-    plot_mnist_scatter(errors_old_tsne, errors_new_tsne, angle_labels, "t-SNE", out_root / "figures" / "09c_mnist_scatter_tsne.png")
+    tsne = TSNE(n_components=2, random_state=42, perplexity=min(30, all_embeddings.shape[0] // 4))
+    all_2d_tsne = tsne.fit_transform(all_embeddings)
+    old_tsne = all_2d_tsne[:n_old]
+    new_tsne = all_2d_tsne[n_old:]
+    plot_mnist_embedding(old_tsne, new_tsne, all_labels, "t-SNE", out_root / "figures" / "09c_mnist_scatter_tsne.png")
     
     # 4) UMAP
     import umap
-    umap_reducer = umap.UMAP(n_components=2, random_state=42, n_neighbors=min(15, all_errors_mnist.shape[0] // 4))
-    all_2d_umap = umap_reducer.fit_transform(all_errors_mnist)
-    errors_old_umap = all_2d_umap[:n_old]
-    errors_new_umap = all_2d_umap[n_old:]
-    plot_mnist_scatter(errors_old_umap, errors_new_umap, angle_labels, "UMAP", out_root / "figures" / "09d_mnist_scatter_umap.png")
+    umap_reducer = umap.UMAP(n_components=2, random_state=42, n_neighbors=min(15, all_embeddings.shape[0] // 4))
+    all_2d_umap = umap_reducer.fit_transform(all_embeddings)
+    old_umap = all_2d_umap[:n_old]
+    new_umap = all_2d_umap[n_old:]
+    plot_mnist_embedding(old_umap, new_umap, all_labels, "UMAP", out_root / "figures" / "09d_mnist_scatter_umap.png")
 
     metrics = {
         "n_eval_samples": int(orig.shape[0]),
