@@ -186,7 +186,75 @@ $$ \min_T \|B - AT^\top\|_F^2 + \lambda \|TJ^A - J^BT\|_F^2 $$
 
 ## Інструкція з Відтворення
 
+Для запуску експериментів використовуйте наступні команди. Всі скрипти знаходяться в корені репозиторію.
+
+### 0. Встановлення залежностей
+
 ```bash
 pip install -r requirements.txt
-python run_all.py --synthetic --mnist
+```
+
+### 1. Синтетичні Експерименти (Experiment 1)
+
+Базовий запуск відтворює результати з манускрипту (кути $\pm 30^\circ$, крок $5^\circ$):
+
+```bash
+python run_all.py --synthetic
+```
+
+Це створить усі матриці та базові фігури в `outputs/synthetic/`.
+
+**Extended Stress Test (High Rotation Angles):**
+Для запуску розширеного стрес-тесту (кути $\pm 120^\circ$) та генерації нових візуалізацій (Displacement Vectors, Error vs Angle):
+
+```bash
+python src/scripts/run_extended_synthetic.py
+```
+
+*Примітка: Цей скрипт використовує налаштування з `configs/synthetic.yaml`. Ви можете змінити діапазон кутів, змінивши параметр `robustness_range_degrees` у цьому файлі.*
+
+### 2. Експерименти MNIST (Experiment 2)
+
+Повний цикл (тренування CNN, екстракція, навчання ETM, оцінка):
+
+```bash
+python run_all.py --mnist
+```
+
+Якщо ви хочете виконати окремі етапи:
+
+* **Етап 1 (Тренування та Екстракція):** Тільки тренування моделі та добування матриць $A, B$.
+
+    ```bash
+    python run_all.py --mnist-stage1
+    ```
+
+* **Етап 2 (Експерименти):** Використання добутих матриць для розрахунку $T_{old}, T_{new}$ та генерації звітів.
+
+    ```bash
+    python run_all.py --mnist-stage2
+    ```
+
+### 3. Генерація Фігур
+
+Більшість фігур генеруються автоматично під час виконання пайплайнів. Якщо ви хочете перегенерувати тільки фігури з наявних результатів:
+
+**Синтетичні дані:**
+
+```bash
+python src/scripts/generate_figures_synthetic.py
+```
+
+**MNIST:**
+
+```bash
+python src/scripts/generate_figures_mnist.py
+```
+
+### 4. Запуск Всього Одразу
+
+Для послідовного запуску всіх стандартних експериментів:
+
+```bash
+python run_all.py --all
 ```
