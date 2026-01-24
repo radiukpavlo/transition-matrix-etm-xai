@@ -111,7 +111,7 @@ def plot_histogram(a: np.ndarray, b: np.ndarray, la: str, lb: str, title: str, p
 def evaluate_and_plot(
     out_root: Path,
     model,
-    test_loader_raw,
+    loader,
     W_old: np.ndarray,
     W_new: np.ndarray,
     J_A: np.ndarray,
@@ -120,6 +120,7 @@ def evaluate_and_plot(
     normalize_mean: float,
     normalize_std: float,
     logger,
+    subset_name: str,
 ) -> Dict[str, object]:
     ensure_dir(out_root / "figures")
     ensure_dir(out_root / "matrices")
@@ -130,7 +131,7 @@ def evaluate_and_plot(
 
     images_list: List[torch.Tensor] = []
     seen = 0
-    for x, _y in test_loader_raw:
+    for x, _y in loader:
         if seen >= cfg.n_eval_samples:
             break
         take = min(x.shape[0], cfg.n_eval_samples - seen)
@@ -146,11 +147,12 @@ def evaluate_and_plot(
     ssim_new, psnr_new = image_metrics(orig, recon_new)
 
     n_viz = min(cfg.n_viz_samples, orig.shape[0])
-    plot_recon_grid(orig[:n_viz], recon_old[:n_viz], "Original | Reconstructed (T_old)", out_root / "figures" / "03_recon_grid_old.png")
-    plot_recon_grid(orig[:n_viz], recon_new[:n_viz], "Original | Reconstructed (T_new)", out_root / "figures" / "04_recon_grid_new.png")
+    n_viz = min(cfg.n_viz_samples, orig.shape[0])
+    plot_recon_grid(orig[:n_viz], recon_old[:n_viz], f"Original | Reconstructed (T_old) [{subset_name}]", out_root / "figures" / f"03_recon_grid_old_{subset_name}.png")
+    plot_recon_grid(orig[:n_viz], recon_new[:n_viz], f"Original | Reconstructed (T_new) [{subset_name}]", out_root / "figures" / f"04_recon_grid_new_{subset_name}.png")
 
-    plot_histogram(ssim_old, ssim_new, "T_old", "T_new", "SSIM distribution (test subset)", out_root / "figures" / "05_ssim_hist.png")
-    plot_histogram(psnr_old, psnr_new, "T_old", "T_new", "PSNR distribution (test subset)", out_root / "figures" / "06_psnr_hist.png")
+    plot_histogram(ssim_old, ssim_new, "T_old", "T_new", f"SSIM distribution ({subset_name})", out_root / "figures" / f"05_ssim_hist_{subset_name}.png")
+    plot_histogram(psnr_old, psnr_new, "T_old", "T_new", f"PSNR distribution ({subset_name})", out_root / "figures" / f"06_psnr_hist_{subset_name}.png")
 
     sym_old = symmetry_error(W_old.T, J_A, J_B, squared=False)
     sym_new = symmetry_error(W_new.T, J_A, J_B, squared=False)
@@ -161,7 +163,7 @@ def evaluate_and_plot(
     plt.ylabel("||T J_A - J_B T||_F")
     plt.title("Symmetry error (single λ)")
     plt.tight_layout()
-    plt.savefig(out_root / "figures" / "07b_symmetry_error_bar.png", dpi=160)
+    plt.savefig(out_root / "figures" / f"07b_symmetry_error_bar_{subset_name}.png", dpi=160)
     plt.close()
 
     angles = np.arange(-cfg.rotation_deg_max, cfg.rotation_deg_max + 1e-9, cfg.rotation_deg_step)
@@ -192,7 +194,7 @@ def evaluate_and_plot(
     plt.title("Robustness: SSIM vs rotation")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(out_root / "figures" / "08_robustness_ssim_vs_angle.png", dpi=160)
+    plt.savefig(out_root / "figures" / f"08_robustness_ssim_vs_angle_{subset_name}.png", dpi=160)
     plt.close()
 
     plt.figure(figsize=(6, 4))
@@ -203,7 +205,7 @@ def evaluate_and_plot(
     plt.title("Robustness: PSNR vs rotation")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(out_root / "figures" / "09_robustness_psnr_vs_angle.png", dpi=160)
+    plt.savefig(out_root / "figures" / f"09_robustness_psnr_vs_angle_{subset_name}.png", dpi=160)
     plt.close()
 
     # Qualitative rotated grid at 15°
@@ -233,7 +235,7 @@ def evaluate_and_plot(
             plt.title("Recon T_new")
 
     plt.tight_layout()
-    plt.savefig(out_root / "figures" / "10_qualitative_rotated_grid.png", dpi=160)
+    plt.savefig(out_root / "figures" / f"10_qualitative_rotated_grid_{subset_name}.png", dpi=160)
     plt.close()
 
     # --- ROBUSTNESS SCATTER PLOTS (PCA, MDS, t-SNE, UMAP) ---
@@ -248,7 +250,7 @@ def evaluate_and_plot(
     labels_list: List[int] = []
     images_scatter_list: List[torch.Tensor] = []
     scatter_seen = 0
-    for x, y in test_loader_raw:
+    for x, y in loader:
         if scatter_seen >= n_scatter:
             break
         take = min(x.shape[0], n_scatter - scatter_seen)
@@ -280,13 +282,17 @@ def evaluate_and_plot(
     all_labels = np.array(all_labels)
 
     # Save embeddings for external plotting
-    np.savez(
-        out_root / "matrices" / "mnist_robustness_embeddings.npz",
-        B_star_old=recon_old_stacked,
-        B_star_new=recon_new_stacked,
-        labels=all_labels,
-        angles=scatter_angles
-    )
+    # Save embeddings for external plotting
+    # np.savez(
+    #    out_root / "matrices" / f"mnist_robustness_embeddings_{subset_name}.npz", ...
+    # ) MOVED TO END
+    
+
+
+
+
+
+
     
     def plot_mnist_embedding(old_2d, new_2d, labels, method_name: str, out_path: Path):
         plt.figure(figsize=(14, 5))
@@ -301,7 +307,7 @@ def evaluate_and_plot(
         plt.subplot(1, 2, 2)
         scatter = plt.scatter(new_2d[:, 0], new_2d[:, 1], c=labels, cmap='tab10', s=8, alpha=0.6)
         plt.colorbar(scatter, label='Digit')
-        plt.title(f"{method_name}: $B^*_{{new}}$ (MNIST)")
+        plt.title(f"{method_name}: $B^*_{{new}}$ ({subset_name})")
         plt.xlabel(f"{method_name}-1")
         plt.ylabel(f"{method_name}-2")
 
@@ -316,21 +322,21 @@ def evaluate_and_plot(
     pca.fit(all_embeddings)
     old_pca = pca.transform(recon_old_stacked)
     new_pca = pca.transform(recon_new_stacked)
-    plot_mnist_embedding(old_pca, new_pca, all_labels, "PCA", out_root / "figures" / "09a_mnist_scatter_pca.png")
+    plot_mnist_embedding(old_pca, new_pca, all_labels, "PCA", out_root / "figures" / f"09a_mnist_scatter_pca_{subset_name}.png")
     
     # 2) MDS
     mds = MDS(n_components=2, random_state=42, normalized_stress='auto', max_iter=300, n_init=1)
     all_2d_mds = mds.fit_transform(all_embeddings)
     old_mds = all_2d_mds[:n_old]
     new_mds = all_2d_mds[n_old:]
-    plot_mnist_embedding(old_mds, new_mds, all_labels, "MDS", out_root / "figures" / "09b_mnist_scatter_mds.png")
+    plot_mnist_embedding(old_mds, new_mds, all_labels, "MDS", out_root / "figures" / f"09b_mnist_scatter_mds_{subset_name}.png")
     
     # 3) t-SNE
     tsne = TSNE(n_components=2, random_state=42, perplexity=min(30, all_embeddings.shape[0] // 4))
     all_2d_tsne = tsne.fit_transform(all_embeddings)
     old_tsne = all_2d_tsne[:n_old]
     new_tsne = all_2d_tsne[n_old:]
-    plot_mnist_embedding(old_tsne, new_tsne, all_labels, "t-SNE", out_root / "figures" / "09c_mnist_scatter_tsne.png")
+    plot_mnist_embedding(old_tsne, new_tsne, all_labels, "t-SNE", out_root / "figures" / f"09c_mnist_scatter_tsne_{subset_name}.png")
     
     # 4) UMAP
     import umap
@@ -338,7 +344,7 @@ def evaluate_and_plot(
     all_2d_umap = umap_reducer.fit_transform(all_embeddings)
     old_umap = all_2d_umap[:n_old]
     new_umap = all_2d_umap[n_old:]
-    plot_mnist_embedding(old_umap, new_umap, all_labels, "UMAP", out_root / "figures" / "09d_mnist_scatter_umap.png")
+    plot_mnist_embedding(old_umap, new_umap, all_labels, "UMAP", out_root / "figures" / f"09d_mnist_scatter_umap_{subset_name}.png")
 
     metrics = {
         "n_eval_samples": int(orig.shape[0]),
@@ -364,10 +370,26 @@ def evaluate_and_plot(
         },
     }
 
-    save_json(out_root / "matrices" / "mnist_metrics.json", metrics)
+    save_json(out_root / "matrices" / f"mnist_metrics_{subset_name}.json", metrics)
+
+    # Save additional matrices
+    np.savez(
+        out_root / "matrices" / f"mnist_B_star_{subset_name}.npz",
+        B_star_old=recon_old,
+        B_star_new=recon_new,
+        B_orig=orig
+    )
+
+    np.savez(
+        out_root / "matrices" / f"mnist_robustness_embeddings_{subset_name}.npz",
+        B_star_old=recon_old_stacked,
+        B_star_new=recon_new_stacked,
+        labels=all_labels,
+        angles=scatter_angles
+    )
 
     logger.info(
-        "MNIST eval subset: "
+        f"MNIST eval subset ({subset_name}): "
         f"SSIM old={metrics['ssim']['old_mean']:.4f}, new={metrics['ssim']['new_mean']:.4f}; "
         f"PSNR old={metrics['psnr']['old_mean']:.2f}, new={metrics['psnr']['new_mean']:.2f}; "
         f"sym old={sym_old:.3e}, new={sym_new:.3e}"

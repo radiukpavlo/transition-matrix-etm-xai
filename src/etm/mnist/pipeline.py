@@ -260,7 +260,25 @@ def run_stage2_experiments(repo_root: Path, out_root: Path, cfg: MNISTPipelineCo
 
     # Evaluation & figures
     cfg.eval.device = cfg.device
-    metrics = evaluate_and_plot(
+    
+    logger.info("Evaluating on TRAIN subset...")
+    metrics_train = evaluate_and_plot(
+        out_root,
+        model,
+        train_raw_loader,
+        W_old,
+        W_new,
+        J_A,
+        J_B,
+        cfg.eval,
+        normalize_mean=cfg.data.normalize_mean,
+        normalize_std=cfg.data.normalize_std,
+        logger=logger,
+        subset_name="train",
+    )
+
+    logger.info("Evaluating on TEST subset...")
+    metrics_test = evaluate_and_plot(
         out_root,
         model,
         test_raw_loader,
@@ -272,7 +290,13 @@ def run_stage2_experiments(repo_root: Path, out_root: Path, cfg: MNISTPipelineCo
         normalize_mean=cfg.data.normalize_mean,
         normalize_std=cfg.data.normalize_std,
         logger=logger,
+        subset_name="test",
     )
+    
+    metrics = {
+        "train": metrics_train,
+        "test": metrics_test,
+    }
     
     manifest = {
         "run_id": run_id,
