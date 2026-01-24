@@ -245,6 +245,12 @@ python run_all.py --mnist
 python src/scripts/generate_figures_synthetic.py
 ```
 
+**Extended Visualization (Rotated vs Static):**
+
+```bash
+python src/scripts/generate_figures_synthetic_extended.py
+```
+
 **MNIST:**
 
 ```bash
