@@ -35,16 +35,31 @@ def _load_config():
         return yaml.safe_load(f)
 
 # --- PLOTTING STYLE ---
+# --- STYLE CONFIGURATION (Matching generate_figures_synthetic_extended.py) ---
 import matplotlib as mpl
-mpl.rcParams.update({
-    "font.size": 12,
-    "font.weight": "bold",
-    "axes.labelsize": 12,
-    "axes.labelweight": "bold",
-    "axes.titlesize": 14,
-    "axes.titleweight": "bold",
-    # ... any other matching styles from generate_figures_synthetic
-})
+BASE_FONT_SIZE = mpl.rcParams.get("font.size", 10) + 2
+TITLE_FONT_SIZE = BASE_FONT_SIZE + 2
+LEGEND_FONT_SIZE = max(BASE_FONT_SIZE - 2, 10)
+DARK_EDGE_COLOR = "#1f2937"
+DARK_TEXT_COLOR = "#0f172a"
+MAJOR_GRID_STYLE = {"color": "#c7ccd6", "linewidth": 0.9, "alpha": 0.7}
+
+mpl.rcParams.update(
+    {
+        "font.size": BASE_FONT_SIZE,
+        "font.weight": "bold",
+        "axes.labelsize": BASE_FONT_SIZE,
+        "axes.labelweight": "bold",
+        "axes.titlesize": TITLE_FONT_SIZE,
+        "axes.titleweight": "bold",
+        "legend.fontsize": LEGEND_FONT_SIZE,
+        "legend.framealpha": 0.92,
+        "axes.edgecolor": DARK_EDGE_COLOR,
+        "axes.labelcolor": DARK_TEXT_COLOR,
+        "axes.titlecolor": DARK_TEXT_COLOR,
+        "savefig.dpi": 300,
+    }
+)
 
 
 def run_extended_experiments():
@@ -144,17 +159,24 @@ def run_extended_experiments():
                 "B_pred_new": B_pred_new
             }
 
+    # Vivid Colors
+    # Old/New line plots
+    COLOR_OLD = "#FF1493" # DeepPink
+    COLOR_NEW = "#1E90FF" # DodgerBlue
+    
     # --- 2. VIZ: ERROR vs ANGLE ---
     plt.figure(figsize=(10, 6))
-    plt.plot(angles_deg, results_old, 'r-o', label="Old Method ($T_{old}$)", linewidth=2)
-    plt.plot(angles_deg, results_new, 'b-o', label="New Method ($T_{new}$)", linewidth=2)
+    plt.plot(angles_deg, results_old, marker='o', color=COLOR_OLD, label="Old Method ($T_{old}$)", linewidth=2.5)
+    plt.plot(angles_deg, results_new, marker='o', color=COLOR_NEW, label="New Method ($T_{new}$)", linewidth=2.5)
     plt.xlabel("Rotation Angle (degrees)")
     plt.ylabel("MSE (Fidelity)")
     plt.title(f"Robustness to Rotation (Stress Test)\nRange: [{start_deg}, {end_deg}]")
     plt.legend()
-    plt.grid(True, alpha=0.3)
+    plt.grid(True, **MAJOR_GRID_STYLE)
     out_path = figures_dir / "12_error_vs_angle.png"
-    plt.savefig(out_path, dpi=300, bbox_inches='tight')
+    # Save standard formats
+    for ext in ("png", "pdf", "svg"):
+         plt.savefig(figures_dir / f"12_error_vs_angle.{ext}", dpi=300, bbox_inches='tight')
     plt.close()
     print(f"Saved {out_path}")
 
@@ -203,29 +225,38 @@ def run_extended_experiments():
     xlim = (x_min - pad, x_max + pad)
     ylim = (y_min - pad, y_max + pad)
 
+    COLOR_IDEAL = "#00C957" # EmeraldGreen
+    COLOR_PRED = "#FF4500"  # OrangeRed (distinct from Pink/Blue)
+
     def plot_arrows(ax, start, end, title):
         # start = target (Ideal), end = predicted
-        ax.scatter(start[:,0], start[:,1], c='green', label='Ideal ($B_{target}$)', s=50, alpha=0.6)
-        ax.scatter(end[:,0], end[:,1], c='red', label='Predicted', s=50, alpha=0.6, marker='x')
+        # Ideal: Large Green Circles
+        ax.scatter(start[:,0], start[:,1], c=COLOR_IDEAL, label='Ideal ($B_{target}$)', 
+                   s=120, alpha=0.9, edgecolor='black', zorder=5)
+        
+        # Predicted: Vivid Red/Orange Crosses
+        ax.scatter(end[:,0], end[:,1], c=COLOR_PRED, label='Predicted', 
+                   s=100, alpha=0.9, marker='x', linewidth=2.5, zorder=4)
         
         # Arrows
         for i in range(len(start)):
             ax.arrow(start[i,0], start[i,1], 
                      end[i,0] - start[i,0], end[i,1] - start[i,1],
-                     head_width=pad*0.15, length_includes_head=True, 
-                     color='gray', alpha=0.5)
+                     head_width=pad*0.1, length_includes_head=True, 
+                     color='gray', alpha=0.6, width=pad*0.01)
         
         ax.set_title(title)
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
         ax.legend()
-        ax.grid(True, alpha=0.3)
+        ax.grid(True, **MAJOR_GRID_STYLE)
 
     plot_arrows(axes[0], xy_target, xy_old, f"Old Method (Angle={demo_data['angle_deg']:.0f}°)")
     plot_arrows(axes[1], xy_target, xy_new, f"New Method (Angle={demo_data['angle_deg']:.0f}°)")
 
     out_path_vec = figures_dir / "11_displacement_vectors.png"
-    plt.savefig(out_path_vec, dpi=300, bbox_inches='tight')
+    for ext in ("png", "pdf", "svg"):
+         fig.savefig(figures_dir / f"11_displacement_vectors.{ext}", dpi=300, bbox_inches='tight')
     plt.close()
     print(f"Saved {out_path_vec}")
 
