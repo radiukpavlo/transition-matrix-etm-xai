@@ -115,20 +115,20 @@ $$ \min_T \|B - AT^\top\|_F^2 + \lambda \|TJ^A - J^BT\|_F^2 $$
 | :---: | :---: |
 | ![Loss](outputs/mnist/figures/01_train_loss.png) | ![Accuracy](outputs/mnist/figures/02_train_accuracy.png) |
 
-### Якість Реконструкції
+### Якість Реконструкції (Тестовий набір)
 
 Ми перевіряємо, чи здатна лінійна матриця відновити вхідне зображення (через псевдообернення декодера).
 
 | $T_{old}$ (SVD) | $T_{new}$ (Equivariant) |
 | :---: | :---: |
-| ![Recon Old](outputs/mnist/figures/03_recon_grid_old.png) | ![Recon New](outputs/mnist/figures/04_recon_grid_new.png) |
+| ![Recon Old](outputs/mnist/figures/03_recon_grid_old_test.png) | ![Recon New](outputs/mnist/figures/04_recon_grid_new_test.png) |
 | *Якість візуально ідентична. Додавання еквіваріантності не погіршує сприйняття.* | *Зображення чіткі, цифри розпізнавані.* |
 
 **Гістрограми метрик якості (SSIM/PSNR):**
 
 | SSIM (Structural Similarity) | PSNR (Peak Signal-to-Noise Ratio) |
 | :---: | :---: |
-| ![SSIM Hist](outputs/mnist/figures/05_ssim_hist.png) | ![PSNR Hist](outputs/mnist/figures/06_psnr_hist.png) |
+| ![SSIM Hist](outputs/mnist/figures/05_ssim_hist_test.png) | ![PSNR Hist](outputs/mnist/figures/06_psnr_hist_test.png) |
 | *Розподіли майже накладаються один на одного. Втрати якості немає.* | *Високі значення PSNR свідчать про гарну реконструкцію.* |
 
 ### Аналіз Симетрії
@@ -137,41 +137,41 @@ $$ \min_T \|B - AT^\top\|_F^2 + \lambda \|TJ^A - J^BT\|_F^2 $$
 
 | Залежність від $\lambda$ | Порівняння (Bar Plot) |
 | :---: | :---: |
-| ![Sym vs Lambda](outputs/mnist/figures/07_symmetry_error_vs_lambda.png) | ![Sym Bar](outputs/mnist/figures/07b_symmetry_error_bar.png) |
+| ![Sym vs Lambda](outputs/mnist/figures/07_symmetry_error_vs_lambda.png) | ![Sym Bar](outputs/mnist/figures/07b_symmetry_error_bar_test.png) |
 | *Зі збільшенням $\lambda$ помилка комутації падає.* | *Наш метод (помаранчевий) має в рази меншу помилку симетрії, ніж Baseline (синій).* |
 
 ### Стійкість до Обертань
 
-Ми обертаємо вхідні зображення на кут $\alpha$ і міряємо якість реконструкції.
+Ми обертаємо вхідні зображення на кут $\alpha$ і міряємо якість реконструкції на тестових даних.
 
 | SSIM vs Angle | PSNR vs Angle |
 | :---: | :---: |
-| ![SSIM Curve](outputs/mnist/figures/08_robustness_ssim_vs_angle.png) | ![PSNR Curve](outputs/mnist/figures/09_robustness_psnr_vs_angle.png) |
+| ![SSIM Curve](outputs/mnist/figures/08_robustness_ssim_vs_angle_test.png) | ![PSNR Curve](outputs/mnist/figures/09_robustness_psnr_vs_angle_test.png) |
 | *Криві майже ідентичні. Це контрінтуїтивний, але валий результат: ми досягли еквіваріантності (структурної стійкості) без погіршення числової стійкості реконструкції.* | |
 
-### Геометрія Латентного Простору
+### Геометрія Латентного Простору (Тестовий набір)
 
 Як виглядає простір кодів для обернутих цифр?
 
 **1. PCA:**
-![MNIST PCA](outputs/mnist/figures/09a_mnist_scatter_pca.png)
+![MNIST PCA](outputs/mnist/figures/09a_mnist_scatter_pca_test.png)
 *Найпростіша проекція. Вже тут видно кращу згрупованість.*
 
 **2. MDS:**
-![MNIST MDS](outputs/mnist/figures/09b_mnist_scatter_mds.png)
+![MNIST MDS](outputs/mnist/figures/09b_mnist_scatter_mds_test.png)
 
 **3. t-SNE:**
-![MNIST t-SNE](outputs/mnist/figures/09c_mnist_scatter_tsne.png)
+![MNIST t-SNE](outputs/mnist/figures/09c_mnist_scatter_tsne_test.png)
 *Критично важливий графік. Для $T_{new}$ ми бачимо чіткі, ізольовані кластери цифр. Для $T_{old}$ границі розмиті.*
 
 **4. UMAP:**
-![MNIST UMAP](outputs/mnist/figures/09d_mnist_scatter_umap.png)
+![MNIST UMAP](outputs/mnist/figures/09d_mnist_scatter_umap_test.png)
 *UMAP ще краще підкреслює збереження глобальної топології.*
 
 ### Якісний Аналіз Обертань
 
 Приклад того, як виглядають цифри при повороті.
-![Rotated Grid](outputs/mnist/figures/10_qualitative_rotated_grid.png)
+![Rotated Grid](outputs/mnist/figures/10_qualitative_rotated_grid_test.png)
 *Демонстрація вхідних даних, на яких тестувалася стійкість.*
 
 ---
@@ -180,7 +180,7 @@ $$ \min_T \|B - AT^\top\|_F^2 + \lambda \|TJ^A - J^BT\|_F^2 $$
 
 1. **Повна репродукція:** Ми успішно відтворили та перевершили результати для синтетичних даних та MNIST.
 2. **Візуальне підтвердження:** Всі проекції (PCA/MDS/t-SNE/UMAP) одностайно свідчать про вищу структурну впорядкованість латентного простору ETM.
-3. **Безкоштовний обід?** Майже так. Ми отримали суттєве покращення інтерпретованості та геометричної стійкості (еквіваріантності) при нульовій або мізерній втраті точності реконструкції (fidelity).
+3. **Висновок** Ми отримали суттєве покращення інтерпретованості та геометричної стійкості (еквіваріантності) при нульовій або мізерній втраті точності реконструкції (fidelity).
 
 ---
 
