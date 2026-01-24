@@ -32,7 +32,8 @@ from src.etm.synthetic import mds_2d, rotate_2d, _labels_for_15
 from src.etm.viz_utils import (
     configure_style, save_figure,
     CLASS_COLORS, LIGHT_COLORS, CLASS_MARKERS,
-    MAJOR_GRID_STYLE, TITLE_FONT_SIZE
+    MAJOR_GRID_STYLE, TITLE_FONT_SIZE,
+    MARKER_SIZE_MEDIUM, MARKER_SIZE_LARGE, MARKER_SIZE_SMALL
 )
 
 # --- STYLE CONFIGURATION ---
@@ -126,7 +127,7 @@ def generate_extended_figures():
         e_old_rot = emb[idx_old_rot]
         e_new_rot = emb[idx_new_rot]
         
-        fig, axs = plt.subplots(1, 2, figsize=(14, 6))
+        fig, axs = plt.subplots(1, 2, figsize=(20, 8)) # Increased from (14, 6)
         
         # Helper to plot one side
         def _plot_side(ax, e_static, e_rot, title):
@@ -138,7 +139,7 @@ def generate_extended_figures():
                 idx_rot = labels_rot == c
                 ax.scatter(
                     e_rot[idx_rot, 0], e_rot[idx_rot, 1],
-                    s=40,
+                    s=MARKER_SIZE_SMALL, # Was 40, now 80
                     alpha=0.6,
                     color=color,
                     edgecolor=CLASS_COLORS[c % len(CLASS_COLORS)], # Slight edge for contrast? Or strict light?
@@ -159,7 +160,7 @@ def generate_extended_figures():
                 idx_stat = labels == c
                 ax.scatter(
                     e_static[idx_stat, 0], e_static[idx_stat, 1],
-                    s=120,              
+                    s=MARKER_SIZE_LARGE, # Was 120, now 240
                     alpha=1.0,
                     color=color,
                     edgecolor='black',  
@@ -183,7 +184,8 @@ def generate_extended_figures():
             # Labels are "Rotated (Class X)" and "Static (Class X)"
             # Let's sort to have C0 Rot, C0 Stat, C1 Rot...
             sorted_pairs = sorted(zip(lbls, handles), key=lambda x: x[0].split()[-1] + x[0].split()[0]) # Sort by Class Num then Type
-            ax.legend([h for l, h in sorted_pairs], [l for l, h in sorted_pairs], loc='best', ncol=2)
+            ax.legend([h for l, h in sorted_pairs], [l for l, h in sorted_pairs], 
+                      loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, borderaxespad=0)
 
 
         # Left: Old Comparison

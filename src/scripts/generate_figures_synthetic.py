@@ -23,7 +23,7 @@ from src.etm.utils import load_json_matrix  # noqa: E402
 from src.etm.viz_utils import (
     configure_style, save_figure,
     CLASS_COLORS, LIGHT_COLORS, CLASS_MARKERS,
-    MAJOR_GRID_STYLE
+    MAJOR_GRID_STYLE, MARKER_SIZE_MEDIUM, MARKER_SIZE_LARGE, LINE_MARKER_SIZE
 )
 
 # --- STYLE CONFIGURATION (Matching generate_figures_synthetic_extended.py) ---
@@ -38,7 +38,7 @@ def load_json(path: Path) -> Any:
 
 
 def _plot_heatmap(M: np.ndarray, title: str, out_dir: Path, stem: str) -> None:
-    fig, ax = plt.subplots(figsize=(6, 5))
+    fig, ax = plt.subplots(figsize=(8, 6.5)) # Increased from (6, 5)
     im = ax.imshow(M, aspect="auto")
     plt.colorbar(im, ax=ax)
     ax.set_title(title)
@@ -54,8 +54,8 @@ def _plot_tradeoff(
     out_dir: Path,
     stem: str,
 ) -> None:
-    fig, ax = plt.subplots(figsize=(6, 4))
-    ax.plot(x, y, marker="o", linewidth=2)
+    fig, ax = plt.subplots(figsize=(8, 6)) # Increased from (6, 4)
+    ax.plot(x, y, marker="o", linewidth=3, markersize=LINE_MARKER_SIZE)
     ax.grid(True, **MAJOR_GRID_STYLE)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
@@ -76,7 +76,7 @@ def _plot_embedding_comparison(
     Note: These are implicitly 'Rotated' embeddings in the original context (B*_old vs B*_new).
     So we use LIGHT_COLORS.
     """
-    fig, axs = plt.subplots(1, 2, figsize=(14, 6))
+    fig, axs = plt.subplots(1, 2, figsize=(20, 8)) # Increased size for fonts/legends
     
     # Left: B*_old - Chaos
     for c in np.unique(labels):
@@ -86,7 +86,7 @@ def _plot_embedding_comparison(
         axs[0].scatter(
             old_2d[idx, 0],
             old_2d[idx, 1],
-            s=60, # Slightly larger
+            s=MARKER_SIZE_MEDIUM, # Slightly larger
             alpha=0.7,
             color=LIGHT_COLORS[c % len(LIGHT_COLORS)],
             edgecolor=CLASS_COLORS[c % len(CLASS_COLORS)],
@@ -97,7 +97,7 @@ def _plot_embedding_comparison(
     axs[0].set_title(f"{method_name}: $B^*_{{old}}$ (Chaos)")
     axs[0].set_xlabel(f"{method_name}-1")
     axs[0].set_ylabel(f"{method_name}-2")
-    axs[0].legend(loc="best")
+    axs[0].legend(loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=3, borderaxespad=0)
     axs[0].grid(True, **MAJOR_GRID_STYLE)
     
     # Right: B*_new - Order
@@ -106,7 +106,7 @@ def _plot_embedding_comparison(
         axs[1].scatter(
             new_2d[idx, 0],
             new_2d[idx, 1],
-            s=60,
+            s=MARKER_SIZE_MEDIUM,
             alpha=0.7,
             color=LIGHT_COLORS[c % len(LIGHT_COLORS)],
             edgecolor=CLASS_COLORS[c % len(CLASS_COLORS)],
@@ -117,7 +117,7 @@ def _plot_embedding_comparison(
     axs[1].set_title(f"{method_name}: $B^*_{{new}}$ (Order)")
     axs[1].set_xlabel(f"{method_name}-1")
     axs[1].set_ylabel(f"{method_name}-2")
-    axs[1].legend(loc="best")
+    axs[1].legend(loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=3, borderaxespad=0)
     axs[1].grid(True, **MAJOR_GRID_STYLE)
 
     save_figure(fig, out_dir, stem)

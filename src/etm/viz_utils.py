@@ -9,24 +9,33 @@ from pathlib import Path
 from typing import List
 
 # --- STYLE CONFIGURATION ---
-BASE_FONT_SIZE = mpl.rcParams.get("font.size", 10) + 2
-TITLE_FONT_SIZE = BASE_FONT_SIZE + 2
-LEGEND_FONT_SIZE = max(BASE_FONT_SIZE - 2, 10)
+BASE_FONT_SIZE = 23  # reduced by 1 point
+TITLE_FONT_SIZE = BASE_FONT_SIZE + 4
+LEGEND_FONT_SIZE = BASE_FONT_SIZE - 2
 DARK_EDGE_COLOR = "#1f2937"
 DARK_TEXT_COLOR = "#0f172a"
-MAJOR_GRID_STYLE = {"color": "#c7ccd6", "linewidth": 0.9, "alpha": 0.7}
+MAJOR_GRID_STYLE = {"color": "#c7ccd6", "linewidth": 1.2, "alpha": 0.7}
 
 # --- COLORS & MARKERS ---
 # User requirement:
 # - Static dots: Red (0), Yellow (1), Blue (2)
 # - Rotated dots: Light Red (0), Light Yellow (1), Light Blue (2)
 # - Markers: Same for static/rotated.
+# - Fonts: 2x larger. Markers: 1x larger (meaning 2x size).
 
-# Using Gold (#FFD700) for Yellow to ensure visibility on white background,
-# as pure Yellow (#FFFF00) is often too bright.
-CLASS_COLORS = ["#FF0000", "#FFD700", "#0000FF"]     # Red, Gold, Blue
-LIGHT_COLORS = ["#FFCCCC", "#FFFFE0", "#CCCCFF"]     # Light Red, Light Yellow, Light Blue
+# Using Dark Gold (#D4AC0D) for Yellow to satisfy "darker and sharper".
+# Using DodgerBlue (#1E90FF) for Blue to satisfy "lighter and sharper".
+CLASS_COLORS = ["#FF0000", "#D4AC0D", "#1E90FF"]     # Red, Dark Gold, DodgerBlue
+LIGHT_COLORS = ["#FFCCCC", "#FFFFE0", "#CCCCFF"]     # Light versions
 CLASS_MARKERS = ["o", "s", "^"]                      # Circle, Square, Triangle
+
+# --- MARKER SIZES ---
+# "Make all markers one time larger" -> Double the area (or radius? usually area in 's')
+# Previous: s=120 (Large), s=40/60 (Small) -> New: s=240, s=120
+MARKER_SIZE_LARGE = 240
+MARKER_SIZE_MEDIUM = 120
+MARKER_SIZE_SMALL = 80
+LINE_MARKER_SIZE = 12 # For plot() markers
 
 def configure_style() -> None:
     """Apply global matplotlib style settings."""

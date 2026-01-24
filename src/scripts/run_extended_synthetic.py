@@ -28,7 +28,8 @@ from src.etm.synthetic import mds_2d, rotate_2d, mse_fid
 from src.etm.viz_utils import (
     configure_style, save_figure,
     CLASS_COLORS, LIGHT_COLORS, CLASS_MARKERS,
-    MAJOR_GRID_STYLE, TITLE_FONT_SIZE
+    MAJOR_GRID_STYLE, TITLE_FONT_SIZE,
+    MARKER_SIZE_LARGE, MARKER_SIZE_MEDIUM, LINE_MARKER_SIZE
 )
 
 # --- CONFIG ---
@@ -146,13 +147,14 @@ def run_extended_experiments():
     COLOR_NEW = "#1E90FF" # DodgerBlue
     
     # --- 2. VIZ: ERROR vs ANGLE ---
-    plt.figure(figsize=(10, 6))
-    plt.plot(angles_deg, results_old, marker='o', color=COLOR_OLD, label="Old Method ($T_{old}$)", linewidth=2.5)
-    plt.plot(angles_deg, results_new, marker='o', color=COLOR_NEW, label="New Method ($T_{new}$)", linewidth=2.5)
+    plt.figure(figsize=(12, 8)) # Increased from (10, 6)
+    plt.plot(angles_deg, results_old, marker='o', color=COLOR_OLD, label="Old Method ($T_{old}$)", linewidth=4, markersize=LINE_MARKER_SIZE)
+    plt.plot(angles_deg, results_new, marker='o', color=COLOR_NEW, label="New Method ($T_{new}$)", linewidth=4, markersize=LINE_MARKER_SIZE)
     plt.xlabel("Rotation Angle (degrees)")
     plt.ylabel("MSE (Fidelity)")
     plt.title(f"Robustness to Rotation (Stress Test)\nRange: [{start_deg}, {end_deg}]")
-    plt.legend()
+    plt.title(f"Robustness to Rotation (Stress Test)\nRange: [{start_deg}, {end_deg}]")
+    plt.legend(bbox_to_anchor=(0.5, -0.15), loc='upper center', ncol=2, borderaxespad=0)
     plt.grid(True, **MAJOR_GRID_STYLE)
     save_figure(plt.gcf(), out_dir, "12_error_vs_angle")
     print(f"Saved 12_error_vs_angle")
@@ -193,7 +195,7 @@ def run_extended_experiments():
     
     # Plotting
     # Two subplots: Old vs New
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    fig, axes = plt.subplots(1, 2, figsize=(22, 10)) # Increased from (14, 6)
     
     # Shared limits
     all_xy = np.vstack([xy_target, xy_old, xy_new])
@@ -220,7 +222,7 @@ def run_extended_experiments():
                 start[idx, 0], start[idx, 1],
                 color=CLASS_COLORS[c],
                 marker=CLASS_MARKERS[c],
-                s=120,
+                s=MARKER_SIZE_LARGE, # Was 120 -> 240
                 alpha=1.0,
                 edgecolor='black',
                 linewidth=1.2,
@@ -234,7 +236,7 @@ def run_extended_experiments():
                 end[idx, 0], end[idx, 1],
                 color=LIGHT_COLORS[c],
                 marker=CLASS_MARKERS[c],
-                s=100,
+                s=200, # Was 100 -> 200
                 alpha=0.9,
                 edgecolor=CLASS_COLORS[c], # Thin edge of main color
                 linewidth=0.8,
@@ -259,7 +261,8 @@ def run_extended_experiments():
         # Type is first word. Class is last word.
         # "Ideal (Class 0)", "Predicted (Class 0)"
         sorted_pairs = sorted(zip(lbls, handles), key=lambda x: x[0].split()[-1] + x[0].split()[0])
-        ax.legend([h for l, h in sorted_pairs], [l for l, h in sorted_pairs], loc='best', ncol=2, fontsize='small')
+        ax.legend([h for l, h in sorted_pairs], [l for l, h in sorted_pairs], 
+                  loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, borderaxespad=0, fontsize='small')
 
         ax.grid(True, **MAJOR_GRID_STYLE)
 

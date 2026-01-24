@@ -3,5 +3,5 @@ lambdas: [0.0, 0.1, 0.25, 0.5, 1.0, 2.0]
 tau: 1.0e-10
 mds_random_state: 42
 mds_normalized_stress: false
-robustness_range_degrees: [-120, 120]
-robustness_step_degrees: 15
+robustness_range_degrees: [-90, 90]
+robustness_step_degrees: 10
