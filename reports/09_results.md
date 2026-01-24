@@ -1,48 +1,48 @@
-# Comprehensive Experimental Results and Analysis
+# Комплексні результати експериментів та аналіз
 
-This report presents the consolidated results of the **Transition Matrix ETM-XAI** project, reproducing the methodology for both Synthetic and MNIST datasets. It details the quantitative metrics, visualizes the effects of the equivariant transition matrix, and provides a critical scientific analysis of the findings.
+У цьому звіті представлені консолідовані результати проекту **Transition Matrix ETM-XAI**, що відтворює методологію як для синтетичних наборів даних, так і для MNIST. Звіт деталізує кількісні метрики, візуалізує ефекти еквіваріантної матриці переходу та надає критичний науковий аналіз отриманих результатів.
 
-## 1. Synthetic Data Experiments
+## 1. Експерименти з синтетичними даними
 
-The synthetic experiments validate the core theoretical framework using low-dimensional data ($m=15, k=5, l=4$) with a known underlying symmetry (rotation).
+Синтетичні експерименти підтверджують основну теоретичну базу, використовуючи низькорозмірні дані ($m=15, k=5, l=4$) з відомою внутрішньою симетрією (обертання).
 
-### 1.1 Methodology Visualization
+### 1.1 Візуалізація методології
 
-**Input Data Manifolds**:
-Dimensionality reduction (MDS) of the input matrices $A$ (Source) and $B$ (Target).
+**Вхідні многовиди даних**:
+Зменшення розмірності (MDS) вхідних матриць $A$ (Джерело) та $B$ (Ціль).
 
-| MDS of A (Latent) | MDS of B (Observation) |
+| MDS матриці A (Латентний простір) | MDS матриці B (Простір спостережень) |
 | :---: | :---: |
 | ![MDS A](../outputs/synthetic/figures/01_mds_A.png) | ![MDS B](../outputs/synthetic/figures/02_mds_B.png) |
 
-### 1.2 Quantitative Results
+### 1.2 Кількісні результати
 
-#### Matrix Fidelity vs. Symmetry Trade-off
+#### Компроміс між точністю відтворення та симетрією
 
-We performed a sweep over $\lambda$ to observe the trade-off between reconstruction fidelity (MSE) and symmetry preservation (Commutation Error).
+Ми виконали перебір параметра $\lambda$, щоб спостерігати компроміс між точністю реконструкції (MSE) та збереженням симетрії (похибка комутації).
 
-| $\lambda$ | MSE (Fidelity) | Symmetry Error ($\|TJ^A - J^BT\|_F^2$) |
+| $\lambda$ | MSE (Reconstruction) | Похибка симетрії ($\|TJ^A - J^BT\|_F^2$) |
 | :--- | :--- | :--- |
-| **0.0 (Baseline)** | **0.00367** | **13077.17** |
+| **0.0 (Базовий)** | **0.00367** | **13077.17** |
 | 0.1 | 0.00521 | 0.129 |
 | 0.25 | 0.00524 | 0.046 |
-| **0.50 (Selected)** | **0.00524** | **0.042** |
+| **0.50 (Обраний)** | **0.00524** | **0.042** |
 | 1.0 | 0.00525 | 0.042 |
 | 2.0 | 0.00532 | 0.040 |
 
-**Visualizing the Trade-off**:
+**Візуалізація компромісу**:
 
 | Fidelity (MSE) vs $\lambda$ | Symmetry Error vs $\lambda$ |
 | :---: | :---: |
 | ![MSE vs Lambda](../outputs/synthetic/figures/08_tradeoff_mse_vs_lambda.png) | ![Sym vs Lambda](../outputs/synthetic/figures/09_tradeoff_sym_vs_lambda.png) |
 
-**Observation**: Introducing the equivariant constraint ($\lambda > 0$) drastically reduces the symmetry error (from ~13,000 to ~0.04) with only a marginal increase in reconstruction error (MSE increases from 0.0037 to 0.0052).
+**Спостереження**: Введення еквіваріантного обмеження ($\lambda > 0$) радикально зменшує похибку симетрії (з ~13,000 до ~0.04) при лише незначному збільшенні помилки реконструкції (MSE зростає з 0.0037 до 0.0052).
 
-#### Robustness Modification (Scenario 3)
+#### Аналіз стійкості (Сценарій 3)
 
-The robustness is measured by applying rotations to the latent space and checking if the predicted observation rotates accordingly.
+Стійкість (robustness) вимірюється шляхом застосування обертань до латентного простору та перевірки того, чи обертається передбачене спостереження відповідним чином.
 
-| Rotation Angle (deg) | MSE ($T_{old}$) | MSE ($T_{new}$) | Improvement |
+| Кут обертання (град) | MSE ($T_{old}$) | MSE ($T_{new}$) | Покращення |
 | :--- | :--- | :--- | :--- |
 | -30° | 0.00377 | **0.00375** | +0.6% |
 | -15° | 0.00338 | **0.00336** | +0.5% |
@@ -50,94 +50,94 @@ The robustness is measured by applying rotations to the latent space and checkin
 | +15° | 0.00341 | **0.00340** | +0.3% |
 | +30° | 0.00382 | **0.00381** | +0.3% |
 
-### 1.3 Visual Analysis
+### 1.3 Візуальний аналіз
 
-#### Matrix Heatmaps
+#### Теплові карти матриць
 
-The structure of the transition matrices and generators reveals the impact of the equivariant constraint.
+Структура матриць переходу та генераторів демонструє вплив еквіваріантного обмеження.
 
-| $T_{old}$ (Baseline) | $T_{new}$ (Equivariant) |
+| $T_{old}$ (Базовий) | $T_{new}$ (Еквіваріантний) |
 | :---: | :---: |
 | ![T_old](../outputs/synthetic/figures/03_heatmap_T_old.png) | ![T_new](../outputs/synthetic/figures/04_heatmap_T_new.png) |
-| *Noisy, unstructured weights* | *Cleaner structure, likely sparse or block-diagonal* |
+| *Зашумлені, неструктуровані ваги* | *Чіткіша структура, ймовірно розріджена або блочно-діагональна* |
 
-| $J^A$ (Latent Generator) | $J^B$ (Target Generator) | Provided Baseline ($T_{old}^{prov}$) |
+| $J^A$ (Генератор джерела) | $J^B$ (Генератор цілі) | Наданий Базовий ($T_{old}^{prov}$) |
 | :---: | :---: | :---: |
 | ![JA](../outputs/synthetic/figures/05_heatmap_JA.png) | ![JB](../outputs/synthetic/figures/06_heatmap_JB.png) | ![T_old_prov](../outputs/synthetic/figures/03b_heatmap_T_old_provided.png) |
 
-#### Singular Values of the Crown System
+#### Сингулярні значення системи Кронекера
 
-The singular values of the stacked matrix $M$ involved in the equivariant solution.
+Сингулярні значення стекової матриці $M$, задіяної в еквіваріантному розв'язку.
 ![Singular Values](../outputs/synthetic/figures/07_singular_values_M.png)
 
-#### Manifold Preservation (Robustness Visualizations)
+#### Збереження многовиду (Візуалізація стійкості)
 
-We visualized the predicted embeddings $B^* = A(\alpha) T^T$ under rotation using various dimensionality reduction techniques. Comparing chaos (Old) vs order (New).
+Ми візуалізували передбачені вкладення $B^* = A(\alpha) T^T$ при обертанні, використовуючи різні методи зменшення розмірності. Порівняння хаосу (Old) проти порядку (New).
 
-**1. PCA Projection**:
+**1. Проекція PCA**:
 ![PCA Robustness](../outputs/synthetic/figures/10a_robustness_pca.png)
 
-**2. MDS Projection**:
+**2. Проекція MDS**:
 ![MDS Robustness](../outputs/synthetic/figures/10b_robustness_mds.png)
 
-**3. t-SNE Projection**:
+**3. Проекція t-SNE**:
 ![t-SNE Robustness](../outputs/synthetic/figures/10c_robustness_tsne.png)
 
-**4. UMAP Projection**:
+**4. Проекція UMAP**:
 ![UMAP Robustness](../outputs/synthetic/figures/10d_robustness_umap.png)
 
 ---
 
-## 2. MNIST Experiments
+## 2. Експерименти з MNIST
 
-The MNIST experiments scale the methodology to high-dimensional image data ($l=784$), using a CNN for feature extraction ($k=490$).
+Експерименти з MNIST масштабують методологію на багатовимірні зображення ($l=784$), використовуючи згорткову нейронну мережу (CNN) для виділення ознак ($k=490$).
 
-### 2.1 Training Metrics (Stage 1)
+### 2.1 Метрики навчання (Етап 1)
 
-CNN Model training progress.
+Прогрес навчання моделі CNN.
 
-| Train Loss | Train Accuracy |
+| Втрати навчання (Train Loss) | Точність навчання (Train Accuracy) |
 | :---: | :---: |
 | ![Loss](../outputs/mnist/figures/01_train_loss.png) | ![Acc](../outputs/mnist/figures/02_train_accuracy.png) |
 
-### 2.2 Quantitative Results
+### 2.2 Кількісні результати
 
-#### Symmetry Error Reduction
+#### Зменшення похибки симетрії
 
-Running LSQR with $\lambda=0.5$ (vs baseline $\lambda=0$):
+Запуск LSQR з $\lambda=0.5$ (проти базового $\lambda=0$):
 
-* **Baseline Symmetry Error**: 141.18
-* **Equivariant Symmetry Error**: 38.65
-* **Reduction**: **~72.6%**
+* **Базова похибка симетрії**: 141.18
+* **Еквіваріантна похибка симетрії**: 38.65
+* **Зменшення**: **~72.6%**
 
-| Symmetry Error vs $\lambda$ | Error Bar Comparison |
+| Похибка симетрії vs $\lambda$ | Порівняння похибок (Error Bar) |
 | :---: | :---: |
 | ![Sym vs Lambda](../outputs/mnist/figures/07_symmetry_error_vs_lambda.png) | ![Sym Bar](../outputs/mnist/figures/07b_symmetry_error_bar_test.png) |
 
-#### Reconstruction Quality (Test Set)
+#### Якість реконструкції (Тестовий набір)
 
-Average metrics on 10,000 test images:
+Середні метрики на 10,000 тестових зображень:
 
-| Metric | $T_{old}$ (Baseline) | $T_{new}$ (Equivariant) | Delta |
+| Метрика | $T_{old}$ (Базовий) | $T_{new}$ (Еквіваріантний) | Delta |
 | :--- | :--- | :--- | :--- |
 | **SSIM** | 0.6978 | 0.6976 | -0.03% |
 | **PSNR** | 18.49 dB | 18.48 dB | -0.05% |
 
-**Metric Distributions**:
+**Розподіл метрик**:
 
-| SSIM Histogram | PSNR Histogram |
+| Гістограма SSIM | Гістограма PSNR |
 | :---: | :---: |
 | ![SSIM Hist](../outputs/mnist/figures/05_ssim_hist_test.png) | ![PSNR Hist](../outputs/mnist/figures/06_psnr_hist_test.png) |
 
-#### Robustness Analysis (Rotation Sweep)
+#### Аналіз стійкості (Rotation Sweep)
 
-We rotated input images by angles $\alpha \in [-20^\circ, 20^\circ]$ and evaluated the SSIM of the predicted reconstruction $A(\alpha)T^T$ against the true rotated image.
+Ми обертали вхідні зображення на кути $\alpha \in [-20^\circ, 20^\circ]$ і оцінювали SSIM передбаченої реконструкції $A(\alpha)T^T$ проти справжнього обернутого зображення.
 
-| SSIM vs Angle | PSNR vs Angle |
+| SSIM vs Кут | PSNR vs Кут |
 | :---: | :---: |
 | ![SSIM vs Angle](../outputs/mnist/figures/08_robustness_ssim_vs_angle_test.png) | ![PSNR vs Angle](../outputs/mnist/figures/09_robustness_psnr_vs_angle_test.png) |
 
-| Angle (deg) | SSIM ($T_{old}$) | SSIM ($T_{new}$) |
+| Кут (град) | SSIM ($T_{old}$) | SSIM ($T_{new}$) |
 | :--- | :--- | :--- |
 | -20° | 0.658 | 0.658 |
 | -10° | 0.719 | 0.719 |
@@ -145,28 +145,28 @@ We rotated input images by angles $\alpha \in [-20^\circ, 20^\circ]$ and evaluat
 | +10° | 0.704 | 0.704 |
 | +20° | 0.657 | 0.657 |
 
-**Analysis**: The MNIST results show that $T_{new}$ and $T_{old}$ perform almost identically under rotation, suggesting linear bottlenecks in high-dimensional non-linear manifolds.
+**Аналіз**: Результати на MNIST показують, що $T_{new}$ та $T_{old}$ працюють майже ідентично при обертанні, що свідчить про наявність лінійних обмежень у багатовимірних нелінійних многовидах.
 
-### 2.3 Visualizations
+### 2.3 Візуалізації
 
-#### Reconstruction Grid
+#### Сітка реконструкції
 
-Qualitative comparison of original images vs. reconstructions ($T_{old}$ vs $T_{new}$).
+Якісне порівняння оригінальних зображень та їх реконструкцій ($T_{old}$ проти $T_{new}$).
 
-**Baseline ($T_{old}$)**:
+**Базовий ($T_{old}$)**:
 ![Recon Old](../outputs/mnist/figures/03_recon_grid_old_test.png)
 
-**Equivariant ($T_{new}$)**:
+**Еквіваріантний ($T_{new}$)**:
 ![Recon New](../outputs/mnist/figures/04_recon_grid_new_test.png)
 
-#### Qualitative Rotated Grid
+#### Якісна сітка обертання
 
-Visualizing the effect of rotating the latent space and decoding via $T_{new}$. This grid shows 8 samples (rows) rotated from -30 to +30 degrees (columns).
+Візуалізація ефекту обертання латентного простору та декодування через $T_{new}$. Ця сітка показує 8 зразків (рядки), обернутих від -30 до +30 градусів (стовпці).
 ![Rotated Grid](../outputs/mnist/figures/10_qualitative_rotated_grid_test.png)
 
-#### Manifold Embeddings (Test Set)
+#### Вкладення многовиду (Тестовий набір)
 
-Scatter plots of the latent space projected via different methods.
+Діаграми розсіювання латентного простору, спроектовані різними методами.
 
 | PCA | MDS |
 | :---: | :---: |
@@ -178,23 +178,23 @@ Scatter plots of the latent space projected via different methods.
 
 ---
 
-## 3. Critical Analysis & Discussion
+## 3. Критичний аналіз та обговорення
 
-### 3.1 Pros (Strengths)
+### 3.1 Переваги (Сильні сторони)
 
-1. **Theoretical Validation**: The synthetic experiments conclusively prove the mathematical validity of the approach. minimizing the Lie-algebra-based symmetry error drastically reduces non-commuting terms without harming fidelity.
-2. **Scalability**: The implementation successfully adapted Algorithm 1 (explicit Kronecker) to high dimensions using LSQR (implicit operator). This allows the method to run on regular hardware for MNIST-scale problems.
-3. **Generator Logic**: The finite-difference estimation for generators ($J^A, J^B$) proved robust and effective, serving as a valid proxy for analytical Lie derivatives.
-4. **Structure Preservation**: The visualizations (PCA/MDS) in the synthetic case clearly show that $T_{new}$ preserves the manifold's topological structure better than $T_{old}$ under transformation.
+1. **Теоретичне підтвердження**: Синтетичні експерименти переконливо доводять математичну обґрунтованість підходу. Мінімізація похибки симетрії на основі алгебри Лі радикально зменшує некомутуючі терми без шкоди для точності відтворення.
+2. **Масштабованість**: Реалізація успішно адаптувала Алгоритм 1 (явний добуток Кронекера) до великих розмірностей за допомогою LSQR (неявний оператор). Це дозволяє методу працювати на звичайному обладнанні для задач масштабу MNIST.
+3. **Логіка генераторів**: Оцінка генераторів ($J^A, J^B$) за допомогою скінченних різниць виявилася надійною та ефективною, слугуючи валідним проксі для аналітичних похідних Лі.
+4. **Збереження структури**: Візуалізації (PCA/MDS) у синтетичному випадку чітко показують, що $T_{new}$ зберігає топологічну структуру многовиду краще, ніж $T_{old}$, при трансформаціях.
 
-### 3.2 Cons (Limitations)
+### 3.2 Недоліки (Обмеження)
 
-1. **Limited Robustness Gain on MNIST**: While the synthetic case showed clear structural benefits, the MNIST quantitative metrics (SSIM/PSNR under rotation) did not show a implementation significant advantage for $T_{new}$. This implies that:
-    * The linear assumption $B \approx A T^T$ is a strong bottleneck for complex image manifolds.
-    * The "local" tangent approximation ($J$) does not extrapolate well to large angles ($\pm 20^\circ$) in the highly non-linear CNN feature space.
-2. **Hyperparameter Sensitivity**: The choice of $\epsilon$ for finite differences and $\lambda$ for the trade-off is non-trivial. The results are sensitive to these correct scalings.
-3. **Computational Cost**: Calculating generators requires expensive finite difference passes (3x forward passes per sample) and the LSQR solver is significantly slower than a direct closed-form solution (like $T_{old}$).
+1. **Обмежений приріст стійкості на MNIST**: Хоча синтетичний випадок показав чіткі структурні переваги, кількісні метрики MNIST (SSIM/PSNR при обертанні) не продемонстрували значної переваги для $T_{new}$. Це означає, що:
+    * Лінійне припущення $B \approx A T^T$ є вузьким місцем для складних многовидів зображень.
+    * "Локальна" апроксимація дотичної ($J$) погано екстраполюється на великі кути ($\pm 20^\circ$) у високонелінійному просторі ознак CNN.
+2. **Чутливість до гіперпараметрів**: Вибір $\epsilon$ для скінченних різниць та $\lambda$ для компромісу є нетривіальним. Результати чутливі до правильного масштабування цих параметрів.
+3. **Обчислювальні витрати**: Розрахунок генераторів вимагає дорогих проходів скінченних різниць (3 прямих проходи на зразок), а розв'язувач LSQR значно повільніший за прямий розв'язок у замкненій формі (як для $T_{old}$).
 
-### 3.3 Conclusion
+### 3.3 Висновок
 
-The project successfully reproduced the proposed Transition Matrix framework. We confirmed that Equivariant Transition Matrices ($T_{new}$) are mathematically superior in preserving symmetry properties while maintaining reconstruction fidelity. Strategies to improve the practical robustness on high-dimensional data could include non-linear decoding schemes or iterative manifold traversal integration instead of single-step linear extrapolation.
+Проект успішно відтворив запропонований фреймворк Матриць Переходу. Ми підтвердили, що Еквіваріантні Матриці Переходу ($T_{new}$) є математично кращими у збереженні властивостей симетрії при збереженні точності реконструкції. Стратегії покращення практичної стійкості на багатовимірних даних можуть включати нелінійні схеми декодування або ітеративну інтеграцію обходу многовиду замість однокрокової лінійної екстраполяції.
