@@ -29,40 +29,16 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.etm.utils import load_json_matrix
 from src.etm.synthetic import mds_2d, rotate_2d, _labels_for_15
-
-# --- STYLE CONFIGURATION ---
-BASE_FONT_SIZE = mpl.rcParams.get("font.size", 10) + 2
-TITLE_FONT_SIZE = BASE_FONT_SIZE + 2
-LEGEND_FONT_SIZE = max(BASE_FONT_SIZE - 2, 10)
-DARK_EDGE_COLOR = "#1f2937"
-DARK_TEXT_COLOR = "#0f172a"
-MAJOR_GRID_STYLE = {"color": "#c7ccd6", "linewidth": 0.9, "alpha": 0.7}
-
-mpl.rcParams.update(
-    {
-        "font.size": BASE_FONT_SIZE,
-        "font.weight": "bold",
-        "axes.labelsize": BASE_FONT_SIZE,
-        "axes.labelweight": "bold",
-        "axes.titlesize": TITLE_FONT_SIZE,
-        "axes.titleweight": "bold",
-        "legend.fontsize": LEGEND_FONT_SIZE,
-        "legend.framealpha": 0.92,
-        "axes.edgecolor": DARK_EDGE_COLOR,
-        "axes.labelcolor": DARK_TEXT_COLOR,
-        "axes.titlecolor": DARK_TEXT_COLOR,
-        "savefig.dpi": 300,
-    }
+from src.etm.viz_utils import (
+    configure_style, save_figure,
+    CLASS_COLORS, LIGHT_COLORS, CLASS_MARKERS,
+    MAJOR_GRID_STYLE, TITLE_FONT_SIZE
 )
 
-def _save_figure(fig: plt.Figure, out_dir: Path, stem: str) -> None:
-    """Save figure in PDF, SVG, and PNG formats."""
-    figures_dir = out_dir / "figures"
-    figures_dir.mkdir(parents=True, exist_ok=True)
-    
-    for ext in ("pdf", "svg", "png"):
-        fig.savefig(figures_dir / f"{stem}.{ext}", format=ext, bbox_inches="tight")
-    plt.close(fig)
+# --- STYLE CONFIGURATION ---
+configure_style()
+
+
 
 def generate_extended_figures():
     out_dir = PROJECT_ROOT / "outputs" / "synthetic"
@@ -139,9 +115,8 @@ def generate_extended_figures():
     
     print(f"Total samples for reduction: {all_data.shape[0]}")
     
-    # Vivid Color Palette for Classes (0, 1, 2)
-    # 0: Vivid Red, 1: Vivid Lime/Green, 2: Vivid Blue
-    CLASS_COLORS = ["#FF1493", "#00C957", "#1E90FF"]  # DeepPink, EmeraldGreen, DodgerBlue
+    # --- STYLE CONSTANTS ---
+    # Imported from viz_utils
     
     # --- PLOTTING HELPER ---
     def plot_comparison(emb: np.ndarray, method_name: str, stem: str):
@@ -155,33 +130,43 @@ def generate_extended_figures():
         
         # Helper to plot one side
         def _plot_side(ax, e_static, e_rot, title):
+            # 1. Plot Rotated (Background)
             for c in np.unique(labels):
-                color = CLASS_COLORS[c % len(CLASS_COLORS)]
+                color = LIGHT_COLORS[c % len(LIGHT_COLORS)]
+                marker = CLASS_MARKERS[c % len(CLASS_MARKERS)]
                 
-                # Rotated points (Background/Context) - Larger and clearer
                 idx_rot = labels_rot == c
                 ax.scatter(
                     e_rot[idx_rot, 0], e_rot[idx_rot, 1],
-                    s=40,              # Increased from 10
-                    alpha=0.4,         # More visible
+                    s=40,
+                    alpha=0.6,
                     color=color,
+                    edgecolor=CLASS_COLORS[c % len(CLASS_COLORS)], # Slight edge for contrast? Or strict light?
+                    # User said: "light red ... represent rotated dots"
+                    # User didn't say no edge. I'll use thin edge of main color to help visibility vs white, 
+                    # OR just the light color. "Light Yellow" on white is invisible without edge.
+                    # I will add a thin edge matching the vivid color.
+                    linewidth=0.5,
                     label=f"Rotated (Class {c})",
-                    marker='x',
-                    linewidth=1.2
+                    marker=marker
                 )
+            
+            # 2. Plot Static (Foreground)
+            for c in np.unique(labels):
+                color = CLASS_COLORS[c % len(CLASS_COLORS)]
+                marker = CLASS_MARKERS[c % len(CLASS_MARKERS)]
                 
-                # Static points (Foreground/Focus) - Very large and distinct
                 idx_stat = labels == c
                 ax.scatter(
                     e_static[idx_stat, 0], e_static[idx_stat, 1],
-                    s=180,              # Increased from 80
+                    s=120,              
                     alpha=1.0,
                     color=color,
-                    edgecolor='black',  # High contrast edge
-                    linewidth=2.0,      # Thicker edge
+                    edgecolor='black',  
+                    linewidth=1.5,
                     label=f"Static (Class {c})",
-                    marker='o',
-                    zorder=10           # Ensure on top
+                    marker=marker,
+                    zorder=10           
                 )
             
             ax.set_title(title, fontsize=TITLE_FONT_SIZE)
@@ -189,16 +174,17 @@ def generate_extended_figures():
             ax.set_ylabel("Dim 2")
             ax.grid(True, **MAJOR_GRID_STYLE)
             
-            # Custom Legend to avoid duplication and clutter
-            # We only show one entry per class (Static) to keep it clean, 
-            # or separate Rotated/Static if needed. Ideally just Class separation colors.
-            # But the user might want to distinguish. Let's keep full legend but de-duplicate.
-            # Actually, grouping by class is better.
+            # Smart Legend
+            # We want to show: Class 0 (Red Circle), Class 1 (Gold Square), Class 2 (Blue Triangle)
+            # And maybe "Rotated" vs "Static"?
+            # With 3 classes * 2 states = 6 entries. It's fine.
             handles, lbls = ax.get_legend_handles_labels()
-            by_label = dict(zip(lbls, handles))
-            # Sort by label to keep Rotated/Static groups or Class groups
-            sorted_keys = sorted(by_label.keys()) 
-            ax.legend([by_label[k] for k in sorted_keys], sorted_keys, loc='best')
+            # Sort by class then type
+            # Labels are "Rotated (Class X)" and "Static (Class X)"
+            # Let's sort to have C0 Rot, C0 Stat, C1 Rot...
+            sorted_pairs = sorted(zip(lbls, handles), key=lambda x: x[0].split()[-1] + x[0].split()[0]) # Sort by Class Num then Type
+            ax.legend([h for l, h in sorted_pairs], [l for l, h in sorted_pairs], loc='best', ncol=2)
+
 
         # Left: Old Comparison
         _plot_side(axs[0], e_old_static, e_old_rot, f"{method_name}: $B^*_{{old}}$ (Rotated vs Static)")
@@ -206,7 +192,7 @@ def generate_extended_figures():
         # Right: New Comparison
         _plot_side(axs[1], e_new_static, e_new_rot, f"{method_name}: $B^*_{{new}}$ (Rotated vs Static)")
         
-        _save_figure(fig, out_dir, stem)
+        save_figure(fig, out_dir, stem)
         print(f"Saved {stem}")
 
     # A. PCA

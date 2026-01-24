@@ -25,6 +25,11 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.etm.utils import load_json_matrix
 from src.etm.synthetic import mds_2d, rotate_2d, mse_fid
+from src.etm.viz_utils import (
+    configure_style, save_figure,
+    CLASS_COLORS, LIGHT_COLORS, CLASS_MARKERS,
+    MAJOR_GRID_STYLE, TITLE_FONT_SIZE
+)
 
 # --- CONFIG ---
 # We'll read from configs/synthetic.yaml just for the angle range and step
@@ -35,31 +40,7 @@ def _load_config():
         return yaml.safe_load(f)
 
 # --- PLOTTING STYLE ---
-# --- STYLE CONFIGURATION (Matching generate_figures_synthetic_extended.py) ---
-import matplotlib as mpl
-BASE_FONT_SIZE = mpl.rcParams.get("font.size", 10) + 2
-TITLE_FONT_SIZE = BASE_FONT_SIZE + 2
-LEGEND_FONT_SIZE = max(BASE_FONT_SIZE - 2, 10)
-DARK_EDGE_COLOR = "#1f2937"
-DARK_TEXT_COLOR = "#0f172a"
-MAJOR_GRID_STYLE = {"color": "#c7ccd6", "linewidth": 0.9, "alpha": 0.7}
-
-mpl.rcParams.update(
-    {
-        "font.size": BASE_FONT_SIZE,
-        "font.weight": "bold",
-        "axes.labelsize": BASE_FONT_SIZE,
-        "axes.labelweight": "bold",
-        "axes.titlesize": TITLE_FONT_SIZE,
-        "axes.titleweight": "bold",
-        "legend.fontsize": LEGEND_FONT_SIZE,
-        "legend.framealpha": 0.92,
-        "axes.edgecolor": DARK_EDGE_COLOR,
-        "axes.labelcolor": DARK_TEXT_COLOR,
-        "axes.titlecolor": DARK_TEXT_COLOR,
-        "savefig.dpi": 300,
-    }
-)
+configure_style()
 
 
 def run_extended_experiments():
@@ -173,12 +154,9 @@ def run_extended_experiments():
     plt.title(f"Robustness to Rotation (Stress Test)\nRange: [{start_deg}, {end_deg}]")
     plt.legend()
     plt.grid(True, **MAJOR_GRID_STYLE)
-    out_path = figures_dir / "12_error_vs_angle.png"
-    # Save standard formats
-    for ext in ("png", "pdf", "svg"):
-         plt.savefig(figures_dir / f"12_error_vs_angle.{ext}", dpi=300, bbox_inches='tight')
-    plt.close()
-    print(f"Saved {out_path}")
+    save_figure(plt.gcf(), out_dir, "12_error_vs_angle")
+    print(f"Saved 12_error_vs_angle")
+
 
     # --- 3. VIZ: DISPLACEMENT VECTORS ---
     # Need to project B_target, B_pred_old, B_pred_new into 2D to plot arrows.
@@ -225,40 +203,72 @@ def run_extended_experiments():
     xlim = (x_min - pad, x_max + pad)
     ylim = (y_min - pad, y_max + pad)
 
-    COLOR_IDEAL = "#00C957" # EmeraldGreen
-    COLOR_PRED = "#FF4500"  # OrangeRed (distinct from Pink/Blue)
+    # Infer labels for demo data
+    # Assuming demo data preserves order of input B (15 samples: 5x0, 5x1, 5x2)
+    labels = np.array([0]*5 + [1]*5 + [2]*5)
 
     def plot_arrows(ax, start, end, title):
-        # start = target (Ideal), end = predicted
-        # Ideal: Large Green Circles
-        ax.scatter(start[:,0], start[:,1], c=COLOR_IDEAL, label='Ideal ($B_{target}$)', 
-                   s=120, alpha=0.9, edgecolor='black', zorder=5)
+        # start = Ideal (Static/Target style), end = Predicted (Rotated/Light style)
         
-        # Predicted: Vivid Red/Orange Crosses
-        ax.scatter(end[:,0], end[:,1], c=COLOR_PRED, label='Predicted', 
-                   s=100, alpha=0.9, marker='x', linewidth=2.5, zorder=4)
+        # Plot points per class
+        for c in np.unique(labels):
+            idx = labels == c
+            
+            # Ideal (Target) points -> Class Color + Class Marker (Solid)
+            # Use zorder=5 to stay above arrows
+            ax.scatter(
+                start[idx, 0], start[idx, 1],
+                color=CLASS_COLORS[c],
+                marker=CLASS_MARKERS[c],
+                s=120,
+                alpha=1.0,
+                edgecolor='black',
+                linewidth=1.2,
+                label=f"Ideal (Class {c})",
+                zorder=5
+            )
+            
+            # Predicted points -> Light Class Color + Class Marker (Solid but light)
+            # Use zorder=4 to stay above arrows (usually) or below ideal?
+            ax.scatter(
+                end[idx, 0], end[idx, 1],
+                color=LIGHT_COLORS[c],
+                marker=CLASS_MARKERS[c],
+                s=100,
+                alpha=0.9,
+                edgecolor=CLASS_COLORS[c], # Thin edge of main color
+                linewidth=0.8,
+                label=f"Predicted (Class {c})",
+                zorder=4
+            )
         
-        # Arrows
+        # Arrows - Black
         for i in range(len(start)):
             ax.arrow(start[i,0], start[i,1], 
                      end[i,0] - start[i,0], end[i,1] - start[i,1],
                      head_width=pad*0.1, length_includes_head=True, 
-                     color='gray', alpha=0.6, width=pad*0.01)
+                     color='black', alpha=0.6, width=pad*0.005, zorder=2)
         
-        ax.set_title(title)
+        ax.set_title(title, fontsize=TITLE_FONT_SIZE)
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
-        ax.legend()
+        
+        # Smart Legend
+        handles, lbls = ax.get_legend_handles_labels()
+        # Sort by Class then Type (Ideal/Pred)
+        # Type is first word. Class is last word.
+        # "Ideal (Class 0)", "Predicted (Class 0)"
+        sorted_pairs = sorted(zip(lbls, handles), key=lambda x: x[0].split()[-1] + x[0].split()[0])
+        ax.legend([h for l, h in sorted_pairs], [l for l, h in sorted_pairs], loc='best', ncol=2, fontsize='small')
+
         ax.grid(True, **MAJOR_GRID_STYLE)
 
     plot_arrows(axes[0], xy_target, xy_old, f"Old Method (Angle={demo_data['angle_deg']:.0f}°)")
     plot_arrows(axes[1], xy_target, xy_new, f"New Method (Angle={demo_data['angle_deg']:.0f}°)")
 
-    out_path_vec = figures_dir / "11_displacement_vectors.png"
-    for ext in ("png", "pdf", "svg"):
-         fig.savefig(figures_dir / f"11_displacement_vectors.{ext}", dpi=300, bbox_inches='tight')
-    plt.close()
-    print(f"Saved {out_path_vec}")
+    save_figure(fig, out_dir, "11_displacement_vectors")
+    print(f"Saved 11_displacement_vectors")
+
 
 if __name__ == "__main__":
     run_extended_experiments()

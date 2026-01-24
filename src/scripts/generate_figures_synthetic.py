@@ -20,66 +20,16 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import necessary utils
 from src.etm.utils import load_json_matrix  # noqa: E402
-
-# --- STYLE CONFIGURATION (Matching Example) ---
-BASE_FONT_SIZE = mpl.rcParams.get("font.size", 10) + 2
-TITLE_FONT_SIZE = BASE_FONT_SIZE + 2
-LEGEND_FONT_SIZE = max(BASE_FONT_SIZE - 2, 10)
-
-COLOR_CYCLE = mpl.colormaps["tab10"].colors
-MAJOR_GRID_STYLE = {"color": "#c7ccd6", "linewidth": 0.9, "alpha": 0.7}
-DARK_EDGE_COLOR = "#1f2937"
-DARK_TEXT_COLOR = "#0f172a"
-
-mpl.rcParams.update(
-    {
-        "font.size": BASE_FONT_SIZE,
-        "font.weight": "bold",
-        "axes.labelsize": BASE_FONT_SIZE,
-        "axes.labelweight": "bold",
-        "axes.titlesize": TITLE_FONT_SIZE,
-        "axes.titleweight": "bold",
-        "xtick.labelsize": BASE_FONT_SIZE,
-        "ytick.labelsize": BASE_FONT_SIZE,
-        "legend.fontsize": LEGEND_FONT_SIZE,
-        "legend.framealpha": 0.92,
-        "axes.edgecolor": DARK_EDGE_COLOR,
-        "axes.labelcolor": DARK_TEXT_COLOR,
-        "axes.titlecolor": DARK_TEXT_COLOR,
-        "axes.linewidth": 1.1,
-        "grid.color": MAJOR_GRID_STYLE["color"],
-        "grid.linewidth": MAJOR_GRID_STYLE["linewidth"],
-        "grid.alpha": MAJOR_GRID_STYLE["alpha"],
-        "savefig.dpi": 300,
-    }
+from src.etm.viz_utils import (
+    configure_style, save_figure,
+    CLASS_COLORS, LIGHT_COLORS, CLASS_MARKERS,
+    MAJOR_GRID_STYLE
 )
-mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=COLOR_CYCLE)
+
+# --- STYLE CONFIGURATION (Matching generate_figures_synthetic_extended.py) ---
+configure_style()
 
 
-def _enforce_bold_text(ax: mpl.axes.Axes) -> None:
-    """Ensure all text elements in the axes are bold."""
-    for label in ax.get_xticklabels() + ax.get_yticklabels():
-        label.set_fontweight("bold")
-    for text in ax.texts:
-        text.set_fontweight("bold")
-    legend = ax.get_legend()
-    if legend:
-        for text in legend.get_texts():
-            text.set_fontweight("bold")
-
-
-def _save_figure(fig: plt.Figure, out_dir: Path, stem: str) -> None:
-    """Save figure in PDF, SVG, and PNG formats."""
-    fig.tight_layout()
-    for ax in fig.axes:
-        _enforce_bold_text(ax)
-    
-    figures_dir = out_dir / "figures"
-    figures_dir.mkdir(parents=True, exist_ok=True)
-    
-    for ext in ("pdf", "svg", "png"):
-        fig.savefig(figures_dir / f"{stem}.{ext}", format=ext, bbox_inches="tight")
-    plt.close(fig)
 
 
 def load_json(path: Path) -> Any:
@@ -92,7 +42,7 @@ def _plot_heatmap(M: np.ndarray, title: str, out_dir: Path, stem: str) -> None:
     im = ax.imshow(M, aspect="auto")
     plt.colorbar(im, ax=ax)
     ax.set_title(title)
-    _save_figure(fig, out_dir, stem)
+    save_figure(fig, out_dir, stem)
 
 
 def _plot_tradeoff(
@@ -110,7 +60,7 @@ def _plot_tradeoff(
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_title(title)
-    _save_figure(fig, out_dir, stem)
+    save_figure(fig, out_dir, stem)
 
 
 def _plot_embedding_comparison(
@@ -121,46 +71,56 @@ def _plot_embedding_comparison(
     out_dir: Path,
     stem: str,
 ) -> None:
-    """Plot Old vs New embeddings side-by-side (chaos vs order)."""
+    """Plot Old vs New embeddings side-by-side (chaos vs order).
+    
+    Note: These are implicitly 'Rotated' embeddings in the original context (B*_old vs B*_new).
+    So we use LIGHT_COLORS.
+    """
     fig, axs = plt.subplots(1, 2, figsize=(14, 6))
     
-    # Left: B*_old - Chaos (scattered points, lost cluster structure)
+    # Left: B*_old - Chaos
     for c in np.unique(labels):
         idx = labels == c
+        # Use LIGHT colors because these are rotated/predicted points
+        # Use CLASS markers
         axs[0].scatter(
             old_2d[idx, 0],
             old_2d[idx, 1],
-            s=30,
+            s=60, # Slightly larger
             alpha=0.7,
+            color=LIGHT_COLORS[c % len(LIGHT_COLORS)],
+            edgecolor=CLASS_COLORS[c % len(CLASS_COLORS)],
+            linewidth=0.8,
             label=f"Class {c}",
-            edgecolor=DARK_EDGE_COLOR,
-            linewidth=0.5,
+            marker=CLASS_MARKERS[c % len(CLASS_MARKERS)]
         )
     axs[0].set_title(f"{method_name}: $B^*_{{old}}$ (Chaos)")
     axs[0].set_xlabel(f"{method_name}-1")
     axs[0].set_ylabel(f"{method_name}-2")
-    axs[0].legend(loc="upper right")
+    axs[0].legend(loc="best")
     axs[0].grid(True, **MAJOR_GRID_STYLE)
     
-    # Right: B*_new - Order (preserved cluster structure)
+    # Right: B*_new - Order
     for c in np.unique(labels):
         idx = labels == c
         axs[1].scatter(
             new_2d[idx, 0],
             new_2d[idx, 1],
-            s=30,
+            s=60,
             alpha=0.7,
+            color=LIGHT_COLORS[c % len(LIGHT_COLORS)],
+            edgecolor=CLASS_COLORS[c % len(CLASS_COLORS)],
+            linewidth=0.8,
             label=f"Class {c}",
-            edgecolor=DARK_EDGE_COLOR,
-            linewidth=0.5,
+            marker=CLASS_MARKERS[c % len(CLASS_MARKERS)]
         )
     axs[1].set_title(f"{method_name}: $B^*_{{new}}$ (Order)")
     axs[1].set_xlabel(f"{method_name}-1")
     axs[1].set_ylabel(f"{method_name}-2")
-    axs[1].legend(loc="upper right")
+    axs[1].legend(loc="best")
     axs[1].grid(True, **MAJOR_GRID_STYLE)
 
-    _save_figure(fig, out_dir, stem)
+    save_figure(fig, out_dir, stem)
 
 
 def run_synthetic_viz(out_dir: Path) -> None:
