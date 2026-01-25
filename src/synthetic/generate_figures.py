@@ -121,7 +121,6 @@ def _plot_embedding_comparison(
     axs[0].set_title(f"{method_name}: $B^*_{{old}}$ (Chaos)")
     axs[0].set_xlabel(f"{method_name}-1")
     axs[0].set_ylabel(f"{method_name}-2")
-    axs[0].legend(loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=3, borderaxespad=0)
     axs[0].grid(True, **MAJOR_GRID_STYLE)
     
     # Right: B*_new - Order
@@ -141,9 +140,16 @@ def _plot_embedding_comparison(
     axs[1].set_title(f"{method_name}: $B^*_{{new}}$ (Order)")
     axs[1].set_xlabel(f"{method_name}-1")
     axs[1].set_ylabel(f"{method_name}-2")
-    axs[1].legend(loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=3, borderaxespad=0)
     axs[1].grid(True, **MAJOR_GRID_STYLE)
 
+    # Global Legend (Unified)
+    # Get handles from the first plot (classes are consistent)
+    handles, labels_txt = axs[0].get_legend_handles_labels()
+    fig.legend(handles, labels_txt, loc="lower center", bbox_to_anchor=(0.5, -0.05), ncol=3, frameon=False)
+    
+    # Check layout
+    plt.subplots_adjust(bottom=0.20, wspace=0.2)
+    
     save_figure(fig, out_dir, stem)
 
 

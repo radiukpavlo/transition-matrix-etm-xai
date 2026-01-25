@@ -57,7 +57,7 @@ def plot_error_vs_angle(metrics: Dict[str, Any], out_dir: Path) -> None:
     COLOR_OLD = "#FF1493" # DeepPink
     COLOR_NEW = "#1E90FF" # DodgerBlue
 
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(12, 6))
     plt.plot(angles_deg, results_old, marker='o', color=COLOR_OLD, label="Old Method ($T_{old}$)", linewidth=4, markersize=LINE_MARKER_SIZE)
     plt.plot(angles_deg, results_new, marker='o', color=COLOR_NEW, label="New Method ($T_{new}$)", linewidth=4, markersize=LINE_MARKER_SIZE)
     plt.xlabel("Rotation Angle (degrees)")
@@ -99,7 +99,7 @@ def plot_displacement_vectors(demo_data: Dict[str, Any], out_dir: Path) -> None:
         for c in np.unique(labels):
             idx = labels == c
             
-            # Ideal (Target)
+            # Ideal (Target) - Static
             ax.scatter(
                 start[idx, 0], start[idx, 1],
                 color=CLASS_COLORS[c],
@@ -112,7 +112,7 @@ def plot_displacement_vectors(demo_data: Dict[str, Any], out_dir: Path) -> None:
                 zorder=5
             )
             
-            # Predicted
+            # Predicted - Rotated (Predictions from rotation)
             ax.scatter(
                 end[idx, 0], end[idx, 1],
                 color=LIGHT_COLORS[c],
@@ -135,17 +135,32 @@ def plot_displacement_vectors(demo_data: Dict[str, Any], out_dir: Path) -> None:
         ax.set_title(title, fontsize=TITLE_FONT_SIZE)
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
-        
-        # Legend
-        handles, lbls = ax.get_legend_handles_labels()
-        sorted_pairs = sorted(zip(lbls, handles), key=lambda x: x[0].split()[-1] + x[0].split()[0])
-        ax.legend([h for l, h in sorted_pairs], [l for l, h in sorted_pairs], 
-                  loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, borderaxespad=0, fontsize='small')
-
+        ax.set_xlabel("PCA-1")
+        ax.set_ylabel("PCA-2")
         ax.grid(True, **MAJOR_GRID_STYLE)
 
     plot_arrows(axes[0], xy_target, xy_old, f"Old Method (Angle={angle_deg:.0f}°)")
     plot_arrows(axes[1], xy_target, xy_new, f"New Method (Angle={angle_deg:.0f}°)")
+
+    # Global Legend
+    # Get handles from one ax
+    handles, lbls = axes[0].get_legend_handles_labels()
+    # Sort: Class 0 Pred, Class 0 Ideal, Class 1 Pred, ... 
+    # Ideal (Target) vs Predicted (Rotated). Predicted is "Rotated" concept here (LIGHT colors).
+    # "Ideal" starts with I, "Predicted" starts with P. 
+    # We want Class grouping.
+    sorted_pairs = sorted(zip(lbls, handles), key=lambda x: x[0].split()[-1] + x[0].split()[0])
+    
+    fig.legend(
+        [h for l, h in sorted_pairs], 
+        [l for l, h in sorted_pairs], 
+        loc='lower center', 
+        bbox_to_anchor=(0.5, -0.05),
+        ncol=3, # 3 classes * 2 types = 6 items
+        frameon=False,
+    )
+    
+    plt.subplots_adjust(bottom=0.20, wspace=0.2)
 
     save_figure(fig, out_dir, "11_displacement_vectors")
     print(f"Saved 11_displacement_vectors")
@@ -282,28 +297,39 @@ def generate_extended_figures():
                 )
             
             ax.set_title(title, fontsize=TITLE_FONT_SIZE)
-            ax.set_xlabel("Dim 1")
-            ax.set_ylabel("Dim 2")
+            ax.set_xlabel(f"{method_name}-1")
+            ax.set_ylabel(f"{method_name}-2")
             ax.grid(True, **MAJOR_GRID_STYLE)
             
-            # Smart Legend
-            # We want to show: Class 0 (Red Circle), Class 1 (Gold Square), Class 2 (Blue Triangle)
-            # And maybe "Rotated" vs "Static"?
-            # With 3 classes * 2 states = 6 entries. It's fine.
-            handles, lbls = ax.get_legend_handles_labels()
-            # Sort by class then type
-            # Labels are "Rotated (Class X)" and "Static (Class X)"
-            # Let's sort to have C0 Rot, C0 Stat, C1 Rot...
-            sorted_pairs = sorted(zip(lbls, handles), key=lambda x: x[0].split()[-1] + x[0].split()[0]) # Sort by Class Num then Type
-            ax.legend([h for l, h in sorted_pairs], [l for l, h in sorted_pairs], 
-                      loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, borderaxespad=0)
-
 
         # Left: Old Comparison
         _plot_side(axs[0], e_old_static, e_old_rot, f"{method_name}: $B^*_{{old}}$ (Rotated vs Static)")
         
         # Right: New Comparison
         _plot_side(axs[1], e_new_static, e_new_rot, f"{method_name}: $B^*_{{new}}$ (Rotated vs Static)")
+        
+        # Global Legend
+        # We need handles for: Class 0, 1, 2 (Static) AND Class 0, 1, 2 (Rotated)
+        # They should be in axs[0] (or axs[1])
+        handles, lbls = axs[0].get_legend_handles_labels()
+        
+        # Sort by Class Num then Type (Rotated/Static)
+        # key=lambda x: x[0].split()[-1] + x[0].split()[0]
+        # "Rotated (Class 0)" -> "0)Rotated"
+        # "Static (Class 0)" -> "0)Static"
+        # R < S, so Rotated comes first.
+        sorted_pairs = sorted(zip(lbls, handles), key=lambda x: x[0].split()[-1] + x[0].split()[0])
+        
+        fig.legend(
+            [h for l, h in sorted_pairs], 
+            [l for l, h in sorted_pairs], 
+            loc='lower center', 
+            bbox_to_anchor=(0.5, -0.05), 
+            ncol=3, # 3 classes * 2 variants = 6 items. 3 cols = 2 rows.
+            frameon=False,
+        )
+        
+        plt.subplots_adjust(bottom=0.20, wspace=0.2)
         
         save_figure(fig, out_dir, stem)
         print(f"Saved {stem}")

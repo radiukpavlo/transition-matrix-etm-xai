@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import List
 
 # --- STYLE CONFIGURATION ---
-BASE_FONT_SIZE = 23  # reduced by 1 point
+BASE_FONT_SIZE = 22  # reduced by 1 point
 TITLE_FONT_SIZE = BASE_FONT_SIZE + 4
 LEGEND_FONT_SIZE = BASE_FONT_SIZE - 2
 DARK_EDGE_COLOR = "#1f2937"
