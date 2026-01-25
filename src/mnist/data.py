@@ -1,7 +1,7 @@
 """MNIST dataset access without torchvision.
 
 The user supplies MNIST raw IDX files (standard format). We keep them under:
-  data/mnist/MNIST/raw/
+  data/mnist/raw/
 
 We implement a minimal IDX reader and a PyTorch Dataset.
 This avoids torchvision build/ABI issues and keeps the pipeline broadly portable.
@@ -40,7 +40,7 @@ class MNISTDataConfig:
 
 
 def mnist_root(repo_root: Path) -> Path:
-    return repo_root / "data" / "mnist"
+    return repo_root / "inputs" / "mnist"
 
 
 def _open_maybe_gz(path: Path):
@@ -115,7 +115,7 @@ def assert_mnist_present(root: Path) -> None:
             missing.append(str(p))
     if missing:
         raise FileNotFoundError(
-            "MNIST raw files not found. Expected data/mnist/MNIST/raw with standard IDX filenames. "
+            "MNIST raw files not found. Expected inputs/mnist/raw with standard IDX filenames. "
             f"Missing: {missing}"
         )
 

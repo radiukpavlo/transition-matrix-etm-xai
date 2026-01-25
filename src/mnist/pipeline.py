@@ -27,7 +27,7 @@ from .generators import GeneratorConfig, estimate_generators
 from .model import CNNConfig, MNISTCNN
 from .train import TrainConfig, train_cnn
 from .transition import TransitionConfig, save_transition_matrices, solve_T_new_lsqr, solve_T_old
-from ..utils import (
+from etm.utils import (
     configure_logger,
     ensure_dir,
     load_json_matrix,

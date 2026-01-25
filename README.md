@@ -254,7 +254,7 @@ python src/synthetic/generate_figures_extended.py
 **MNIST:**
 
 ```bash
-python src/scripts/generate_figures_mnist.py
+python src/mnist/generate_figures_mnist.py
 ```
 
 ### 4. Запуск Всього Одразу

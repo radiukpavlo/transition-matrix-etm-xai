@@ -23,7 +23,7 @@ from skimage.metrics import structural_similarity as ssim
 from skimage.metrics import peak_signal_noise_ratio as psnr
 
 from .rotate import rotate_batch
-from ..utils import ensure_dir, save_json
+from etm.utils import ensure_dir, save_json
 
 
 @dataclass

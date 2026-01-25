@@ -11,7 +11,7 @@ This repository provides a reproducible implementation of the methodology descri
 ## Repository structure (required folders)
 
 - `inputs/` – manuscript matrices stored as JSON (`inputs/synthetic/` contains Appendix 1.1).
-- `data/` – datasets (MNIST raw IDX files live in `data/mnist/MNIST/raw/`).
+- `data/` – datasets (MNIST raw IDX files live in `inputs/mnist/raw/`).
 - `outputs/` – all computed artifacts:
   - `outputs/synthetic/` – synthetic matrices + figures
   - `outputs/mnist/` – MNIST matrices + figures + model weights (generated when you run MNIST)
@@ -210,7 +210,7 @@ J^B =
 
 The provided MNIST archive was extracted to:
 
-- `data/mnist/MNIST/raw/` (IDX files)
+- `inputs/mnist/raw/` (IDX files)
 
 No downloads occur automatically.
 

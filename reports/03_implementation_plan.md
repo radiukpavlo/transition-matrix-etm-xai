@@ -18,7 +18,7 @@ The implementation emphasizes:
 Top-level directories (required by the project contract):
 
 - `inputs/` – JSON input matrices extracted from the manuscript
-- `data/` – datasets (MNIST raw IDX files)
+- `inputs/mnist/` – datasets (MNIST raw IDX files)
 - `outputs/` – all generated artifacts
 - `outputs/logs/` – logs for every run
 - `reports/` – intermediate reports
@@ -72,15 +72,15 @@ Implemented in `src/synthetic/core.py::solve_equivariant_T`:
 
 ### MNIST pipeline
 
-Implemented in `src/etm/mnist/pipeline.py`:
+Implemented in `src/mnist/pipeline.py`:
 
-- **FM**: CNN with penultimate dimension k=490 (`src/etm/mnist/model.py`)
+- **FM**: CNN with penultimate dimension k=490 (`src/mnist/model.py`)
 - **MM**: flattened pixels (l=784)
-- **Generator estimation**: uses autograd JVP through a differentiable rotation operator (`src/etm/mnist/rotate.py`, `src/etm/mnist/generators.py`)
+- **Generator estimation**: uses autograd JVP through a differentiable rotation operator (`src/mnist/rotate.py`, `src/mnist/generators.py`)
 - **Transition matrices**:
   - baseline `T_old`: SVD pseudoinverse on Gram matrix `(A^T A)^+ A^T B`
   - equivariant `T_new`: LSQR on an implicit stacked operator (SVD-grounded iterative method)
-- **Evaluation**: SSIM, PSNR, symmetry error, and robustness curves (`src/etm/mnist/eval.py`)
+- **Evaluation**: SSIM, PSNR, symmetry error, and robustness curves (`src/mnist/eval.py`)
 
 ## Testing and validation
 

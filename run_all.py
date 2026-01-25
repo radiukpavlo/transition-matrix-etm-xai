@@ -61,7 +61,7 @@ def main() -> None:
     # Load MNIST config lazily (only if needed)
     mn_cfg = None
     if args.mnist or args.mnist_stage1 or args.mnist_stage2 or args.all:
-        from etm.mnist.pipeline import MNISTPipelineConfig  # noqa: E402
+        from mnist.pipeline import MNISTPipelineConfig  # noqa: E402
 
         mn_cfg = MNISTPipelineConfig()
         if Path(args.mnist_config).exists():
@@ -80,7 +80,7 @@ def main() -> None:
 
     if args.mnist or args.mnist_stage1 or args.mnist_stage2 or args.all:
         logger.info("Running MNIST pipeline")
-        from etm.mnist.pipeline import run_stage1_train_extract, run_stage2_experiments  # noqa: E402
+        from mnist.pipeline import run_stage1_train_extract, run_stage2_experiments  # noqa: E402
 
         mn_out = root / "outputs" / "mnist"
         ensure_dir(mn_out)

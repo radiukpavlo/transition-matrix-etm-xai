@@ -20,7 +20,7 @@ from torch.optim import Adam
 from tqdm import tqdm
 
 from .model import MNISTCNN, CNNConfig
-from ..utils import ensure_dir, save_json
+from etm.utils import ensure_dir, save_json
 
 
 @dataclass

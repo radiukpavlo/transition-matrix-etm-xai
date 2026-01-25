@@ -7,7 +7,7 @@ Expected archive layout (as provided by the user):
   raw/t10k-labels-idx1-ubyte
 
 We re-home files to torchvision-compatible layout:
-  data/mnist/MNIST/raw/...
+  data/mnist/raw/...
 
 Usage:
   python scripts/extract_mnist_zip.py --zip /path/to/MNIST.zip
@@ -28,7 +28,7 @@ def main() -> None:
 
     repo = Path(args.repo)
     zpath = Path(args.zip_path)
-    out_raw = repo / "data" / "mnist" / "MNIST" / "raw"
+    out_raw = repo / "inputs" / "mnist" / "MNIST" / "raw"
     out_raw.mkdir(parents=True, exist_ok=True)
 
     with zipfile.ZipFile(zpath, "r") as z:

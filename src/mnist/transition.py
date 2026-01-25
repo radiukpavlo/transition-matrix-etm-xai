@@ -20,7 +20,7 @@ from typing import Dict, Tuple
 import numpy as np
 from scipy.sparse.linalg import LinearOperator, lsqr
 
-from ..utils import ensure_dir, save_json, save_json_matrix
+from etm.utils import ensure_dir, save_json, save_json_matrix
 
 
 @dataclass

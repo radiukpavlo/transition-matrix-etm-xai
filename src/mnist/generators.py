@@ -21,7 +21,7 @@ import numpy as np
 import torch
 
 from .rotate import rotate_batch, jvp_theta
-from ..utils import ensure_dir, save_json, save_json_matrix
+from etm.utils import ensure_dir, save_json, save_json_matrix
 
 
 @dataclass
