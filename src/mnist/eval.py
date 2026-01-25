@@ -1,4 +1,4 @@
-"""Evaluation and visualization for MNIST experiments.
+"""Evaluation and data extraction for MNIST experiments.
 
 Metrics:
 - SSIM (Structural Similarity Index)
@@ -6,7 +6,7 @@ Metrics:
 - symmetry error ||T J^A - J^B T||_F
 - robustness curves over rotated test inputs
 
-Generates the MNIST-required figures (10+), when called from the pipeline.
+Saves all data required for figure generation to disk.
 """
 
 from __future__ import annotations
@@ -18,7 +18,6 @@ from typing import Dict, List, Tuple
 
 import numpy as np
 import torch
-import matplotlib.pyplot as plt
 from skimage.metrics import structural_similarity as ssim
 from skimage.metrics import peak_signal_noise_ratio as psnr
 
@@ -78,37 +77,7 @@ def image_metrics(orig: np.ndarray, recon: np.ndarray) -> Tuple[np.ndarray, np.n
     return ssim_vals, psnr_vals
 
 
-def plot_recon_grid(orig: np.ndarray, recon: np.ndarray, title: str, path: Path) -> None:
-    import math as _m
-
-    n = orig.shape[0]
-    cols = int(_m.sqrt(n))
-    rows = int(_m.ceil(n / cols))
-    plt.figure(figsize=(2 * cols, 2 * rows))
-    for i in range(n):
-        plt.subplot(rows, cols, i + 1)
-        plt.imshow(np.concatenate([orig[i], recon[i]], axis=1), cmap="gray", vmin=0, vmax=1)
-        plt.axis("off")
-    plt.suptitle(title)
-    plt.tight_layout()
-    plt.savefig(path, dpi=160)
-    plt.close()
-
-
-def plot_histogram(a: np.ndarray, b: np.ndarray, la: str, lb: str, title: str, path: Path) -> None:
-    plt.figure(figsize=(6, 4))
-    plt.hist(a, bins=30, alpha=0.6, label=la)
-    plt.hist(b, bins=30, alpha=0.6, label=lb)
-    plt.title(title)
-    plt.xlabel("Value")
-    plt.ylabel("Count")
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(path, dpi=160)
-    plt.close()
-
-
-def evaluate_and_plot(
+def evaluate_and_save(
     out_root: Path,
     model,
     loader,
@@ -122,50 +91,48 @@ def evaluate_and_plot(
     logger,
     subset_name: str,
 ) -> Dict[str, object]:
-    ensure_dir(out_root / "figures")
     ensure_dir(out_root / "matrices")
 
     device = torch.device(cfg.device)
     model = model.to(device)
     model.eval()
 
+    # 1. Collect evaluation samples
     images_list: List[torch.Tensor] = []
+    labels_list: List[int] = []
     seen = 0
-    for x, _y in loader:
-        if seen >= cfg.n_eval_samples:
-            break
-        take = min(x.shape[0], cfg.n_eval_samples - seen)
-        images_list.append(x[:take])
-        seen += take
+    
+    # Store reference to full loader iteration for digit selection
+    all_images_for_digits = []
+    all_labels_for_digits = []
+
+    for x, y in loader:
+        # Collect for metrics
+        if seen < cfg.n_eval_samples:
+            take = min(x.shape[0], cfg.n_eval_samples - seen)
+            images_list.append(x[:take])
+            labels_list.extend(y[:take].tolist())
+            seen += take
+        
+        # Collect for digit selection (keep all until we have enough)
+        if len(all_images_for_digits) * loader.batch_size < 5000: # Limit memory
+            all_images_for_digits.append(x)
+            all_labels_for_digits.append(y)
 
     images01 = torch.cat(images_list, dim=0)
+    labels = np.array(labels_list)
 
+    # 2. Main Metrics (SSIM/PSNR on unrotated)
     orig, recon_old = reconstruct_images(model, W_old, images01, normalize_mean, normalize_std, device)
     _orig, recon_new = reconstruct_images(model, W_new, images01, normalize_mean, normalize_std, device)
 
     ssim_old, psnr_old = image_metrics(orig, recon_old)
     ssim_new, psnr_new = image_metrics(orig, recon_new)
 
-    n_viz = min(cfg.n_viz_samples, orig.shape[0])
-    n_viz = min(cfg.n_viz_samples, orig.shape[0])
-    plot_recon_grid(orig[:n_viz], recon_old[:n_viz], f"Original | Reconstructed (T_old) [{subset_name}]", out_root / "figures" / f"03_recon_grid_old_{subset_name}.png")
-    plot_recon_grid(orig[:n_viz], recon_new[:n_viz], f"Original | Reconstructed (T_new) [{subset_name}]", out_root / "figures" / f"04_recon_grid_new_{subset_name}.png")
-
-    plot_histogram(ssim_old, ssim_new, "T_old", "T_new", f"SSIM distribution ({subset_name})", out_root / "figures" / f"05_ssim_hist_{subset_name}.png")
-    plot_histogram(psnr_old, psnr_new, "T_old", "T_new", f"PSNR distribution ({subset_name})", out_root / "figures" / f"06_psnr_hist_{subset_name}.png")
-
     sym_old = symmetry_error(W_old.T, J_A, J_B, squared=False)
     sym_new = symmetry_error(W_new.T, J_A, J_B, squared=False)
 
-    # Bar (supplementary) - the required curve is produced in pipeline.py
-    plt.figure(figsize=(4, 4))
-    plt.bar(["T_old", "T_new"], [sym_old, sym_new])
-    plt.ylabel("||T J_A - J_B T||_F")
-    plt.title("Symmetry error (single λ)")
-    plt.tight_layout()
-    plt.savefig(out_root / "figures" / f"07b_symmetry_error_bar_{subset_name}.png", dpi=160)
-    plt.close()
-
+    # 3. Robustness Curves
     angles = np.arange(-cfg.rotation_deg_max, cfg.rotation_deg_max + 1e-9, cfg.rotation_deg_step)
     mean_ssim_old, mean_ssim_new, mean_psnr_old, mean_psnr_new = [], [], [], []
 
@@ -186,80 +153,13 @@ def evaluate_and_plot(
         mean_psnr_old.append(float(np.mean(p_o)))
         mean_psnr_new.append(float(np.mean(p_n)))
 
-    plt.figure(figsize=(6, 4))
-    plt.plot(angles, mean_ssim_old, marker="o", label="T_old")
-    plt.plot(angles, mean_ssim_new, marker="o", label="T_new")
-    plt.xlabel("Rotation angle (deg)")
-    plt.ylabel("Mean SSIM")
-    plt.title("Robustness: SSIM vs rotation")
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(out_root / "figures" / f"08_robustness_ssim_vs_angle_{subset_name}.png", dpi=160)
-    plt.close()
-
-    plt.figure(figsize=(6, 4))
-    plt.plot(angles, mean_psnr_old, marker="o", label="T_old")
-    plt.plot(angles, mean_psnr_new, marker="o", label="T_new")
-    plt.xlabel("Rotation angle (deg)")
-    plt.ylabel("Mean PSNR (dB)")
-    plt.title("Robustness: PSNR vs rotation")
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(out_root / "figures" / f"09_robustness_psnr_vs_angle_{subset_name}.png", dpi=160)
-    plt.close()
-
-    # Qualitative rotated grid at 15°
-    theta = torch.tensor(15.0 * math.pi / 180.0, device=device)
-    x15 = rotate_batch(images_rob[: min(8, images_rob.shape[0])], theta).detach().cpu()
-    o15, ro15 = reconstruct_images(model, W_old, x15, normalize_mean, normalize_std, device)
-    _o15, rn15 = reconstruct_images(model, W_new, x15, normalize_mean, normalize_std, device)
-
-    plt.figure(figsize=(10, 6))
-    for i in range(o15.shape[0]):
-        plt.subplot(3, o15.shape[0], i + 1)
-        plt.imshow(o15[i], cmap="gray", vmin=0, vmax=1)
-        plt.axis("off")
-        if i == 0:
-            plt.title("Rotated input")
-
-        plt.subplot(3, o15.shape[0], o15.shape[0] + i + 1)
-        plt.imshow(ro15[i], cmap="gray", vmin=0, vmax=1)
-        plt.axis("off")
-        if i == 0:
-            plt.title("Recon T_old")
-
-        plt.subplot(3, o15.shape[0], 2 * o15.shape[0] + i + 1)
-        plt.imshow(rn15[i], cmap="gray", vmin=0, vmax=1)
-        plt.axis("off")
-        if i == 0:
-            plt.title("Recon T_new")
-
-    plt.tight_layout()
-    plt.savefig(out_root / "figures" / f"10_qualitative_rotated_grid_{subset_name}.png", dpi=160)
-    plt.close()
-
-    # --- ROBUSTNESS SCATTER PLOTS (PCA, MDS, t-SNE, UMAP) ---
-    # Visualize predicted embeddings B* colored by digit label to show cluster structure
-    from sklearn.decomposition import PCA
-    from sklearn.manifold import MDS, TSNE
-    
-    scatter_angles = np.array([-25.0, -15.0, -5.0, 5.0, 15.0, 25.0])  # degrees
+    # 4. Embeddings for Scatter Plot (PCA/MDS etc)
+    # Use a subset of labeled data
+    scatter_angles = np.array([-25.0, -15.0, -5.0, 5.0, 15.0, 25.0])
     n_scatter = min(128, images01.shape[0])
     
-    # Collect labels for scatter subset from loader
-    labels_list: List[int] = []
-    images_scatter_list: List[torch.Tensor] = []
-    scatter_seen = 0
-    for x, y in loader:
-        if scatter_seen >= n_scatter:
-            break
-        take = min(x.shape[0], n_scatter - scatter_seen)
-        images_scatter_list.append(x[:take])
-        labels_list.extend(y[:take].tolist())
-        scatter_seen += take
-    
-    images_scatter = torch.cat(images_scatter_list, dim=0).to(device)
-    base_labels = np.array(labels_list)
+    images_scatter = images01[:n_scatter].to(device)
+    labels_scatter = labels[:n_scatter]
     
     recon_old_all = []
     recon_new_all = []
@@ -269,83 +169,65 @@ def evaluate_and_plot(
         theta = torch.tensor(float(deg) * math.pi / 180.0, device=device)
         x_rot = rotate_batch(images_scatter, theta).detach().cpu()
         
-        _orig_s, recon_old_s = reconstruct_images(model, W_old, x_rot, normalize_mean, normalize_std, device)
-        _orig_s2, recon_new_s = reconstruct_images(model, W_new, x_rot, normalize_mean, normalize_std, device)
+        _, recon_old_s = reconstruct_images(model, W_old, x_rot, normalize_mean, normalize_std, device)
+        _, recon_new_s = reconstruct_images(model, W_new, x_rot, normalize_mean, normalize_std, device)
         
         recon_old_all.append(recon_old_s.reshape(n_scatter, -1))
         recon_new_all.append(recon_new_s.reshape(n_scatter, -1))
-        all_labels.extend(base_labels.tolist())
+        all_labels.extend(labels_scatter.tolist())
     
-    recon_old_stacked = np.vstack(recon_old_all)  # (N*angles, 784)
-    recon_new_stacked = np.vstack(recon_new_all)  # (N*angles, 784)
-    all_embeddings = np.vstack([recon_old_stacked, recon_new_stacked])
+    recon_old_stacked = np.vstack(recon_old_all)
+    recon_new_stacked = np.vstack(recon_new_all)
     all_labels = np.array(all_labels)
 
-    # Save embeddings for external plotting
-    # Save embeddings for external plotting
-    # np.savez(
-    #    out_root / "matrices" / f"mnist_robustness_embeddings_{subset_name}.npz", ...
-    # ) MOVED TO END
+    # 5. Extract specific rotated digit samples for "The Chaos Figure"
+    # Select one random instance of each digit 0-9
+    # Rotate by random angle in [-90, 90]
     
-
-
-
-
-
-
+    all_imgs = torch.cat(all_images_for_digits, dim=0)
+    all_lbls = torch.cat(all_labels_for_digits, dim=0).cpu().numpy()
     
-    def plot_mnist_embedding(old_2d, new_2d, labels, method_name: str, out_path: Path):
-        plt.figure(figsize=(14, 5))
+    chaos_samples_orig = []
+    chaos_samples_old = []
+    chaos_samples_new = []
+    chaos_labels = []
+    chaos_angles = []
+
+    np.random.seed(42)  # For reproducibility of sample selection
+    
+    for digit in range(10):
+        # Find indices for this digit
+        indices = np.where(all_lbls == digit)[0]
+        if len(indices) == 0:
+            continue
+            
+        # Pick one random sample
+        idx = np.random.choice(indices)
+        img = all_imgs[idx:idx+1].to(device)
         
-        plt.subplot(1, 2, 1)
-        scatter = plt.scatter(old_2d[:, 0], old_2d[:, 1], c=labels, cmap='tab10', s=8, alpha=0.6)
-        plt.colorbar(scatter, label='Digit')
-        plt.title(f"{method_name}: $B^*_{{old}}$ (MNIST)")
-        plt.xlabel(f"{method_name}-1")
-        plt.ylabel(f"{method_name}-2")
+        # Pick random angle in [-90, 90]
+        angle_deg = np.random.uniform(-90, 90)
+        theta = torch.tensor(float(angle_deg) * math.pi / 180.0, device=device)
+        
+        # Rotate
+        img_rot = rotate_batch(img, theta).detach().cpu()
+        
+        # Reconstruct
+        orig_rot, rec_old = reconstruct_images(model, W_old, img_rot, normalize_mean, normalize_std, device)
+        _, rec_new = reconstruct_images(model, W_new, img_rot, normalize_mean, normalize_std, device)
+        
+        chaos_samples_orig.append(orig_rot[0])
+        chaos_samples_old.append(rec_old[0])
+        chaos_samples_new.append(rec_new[0])
+        chaos_labels.append(digit)
+        chaos_angles.append(angle_deg)
 
-        plt.subplot(1, 2, 2)
-        scatter = plt.scatter(new_2d[:, 0], new_2d[:, 1], c=labels, cmap='tab10', s=8, alpha=0.6)
-        plt.colorbar(scatter, label='Digit')
-        plt.title(f"{method_name}: $B^*_{{new}}$ ({subset_name})")
-        plt.xlabel(f"{method_name}-1")
-        plt.ylabel(f"{method_name}-2")
+    # Convert to arrays
+    chaos_samples_orig = np.array(chaos_samples_orig)
+    chaos_samples_old = np.array(chaos_samples_old)
+    chaos_samples_new = np.array(chaos_samples_new)
 
-        plt.tight_layout()
-        plt.savefig(out_path, dpi=160)
-        plt.close()
-    
-    n_old = recon_old_stacked.shape[0]
-    
-    # 1) PCA
-    pca = PCA(n_components=2, random_state=42)
-    pca.fit(all_embeddings)
-    old_pca = pca.transform(recon_old_stacked)
-    new_pca = pca.transform(recon_new_stacked)
-    plot_mnist_embedding(old_pca, new_pca, all_labels, "PCA", out_root / "figures" / f"09a_mnist_scatter_pca_{subset_name}.png")
-    
-    # 2) MDS
-    mds = MDS(n_components=2, random_state=42, normalized_stress='auto', max_iter=300, n_init=1)
-    all_2d_mds = mds.fit_transform(all_embeddings)
-    old_mds = all_2d_mds[:n_old]
-    new_mds = all_2d_mds[n_old:]
-    plot_mnist_embedding(old_mds, new_mds, all_labels, "MDS", out_root / "figures" / f"09b_mnist_scatter_mds_{subset_name}.png")
-    
-    # 3) t-SNE
-    tsne = TSNE(n_components=2, random_state=42, perplexity=min(30, all_embeddings.shape[0] // 4))
-    all_2d_tsne = tsne.fit_transform(all_embeddings)
-    old_tsne = all_2d_tsne[:n_old]
-    new_tsne = all_2d_tsne[n_old:]
-    plot_mnist_embedding(old_tsne, new_tsne, all_labels, "t-SNE", out_root / "figures" / f"09c_mnist_scatter_tsne_{subset_name}.png")
-    
-    # 4) UMAP
-    import umap
-    umap_reducer = umap.UMAP(n_components=2, random_state=42, n_neighbors=min(15, all_embeddings.shape[0] // 4))
-    all_2d_umap = umap_reducer.fit_transform(all_embeddings)
-    old_umap = all_2d_umap[:n_old]
-    new_umap = all_2d_umap[n_old:]
-    plot_mnist_embedding(old_umap, new_umap, all_labels, "UMAP", out_root / "figures" / f"09d_mnist_scatter_umap_{subset_name}.png")
-
+    # 6. Save Everything
     metrics = {
         "n_eval_samples": int(orig.shape[0]),
         "ssim": {
@@ -372,20 +254,21 @@ def evaluate_and_plot(
 
     save_json(out_root / "matrices" / f"mnist_metrics_{subset_name}.json", metrics)
 
-    # Save additional matrices
     np.savez(
-        out_root / "matrices" / f"mnist_B_star_{subset_name}.npz",
-        B_star_old=recon_old,
-        B_star_new=recon_new,
-        B_orig=orig
-    )
-
-    np.savez(
-        out_root / "matrices" / f"mnist_robustness_embeddings_{subset_name}.npz",
+        out_root / "matrices" / f"mnist_embeddings_{subset_name}.npz",
         B_star_old=recon_old_stacked,
         B_star_new=recon_new_stacked,
         labels=all_labels,
         angles=scatter_angles
+    )
+    
+    np.savez(
+        out_root / "matrices" / f"mnist_chaos_samples_{subset_name}.npz",
+        orig=chaos_samples_orig,
+        recon_old=chaos_samples_old,
+        recon_new=chaos_samples_new,
+        labels=np.array(chaos_labels),
+        angles=np.array(chaos_angles)
     )
 
     logger.info(

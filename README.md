@@ -154,25 +154,25 @@ $$ \min_T \|B - AT^\top\|_F^2 + \lambda \|TJ^A - J^BT\|_F^2 $$
 Як виглядає простір кодів для обернутих цифр?
 
 **1. PCA:**
-![MNIST PCA](outputs/mnist/figures/09a_mnist_scatter_pca_test.png)
+![MNIST PCA](outputs/mnist/figures/09a_scatter_pca_test.png)
 *Найпростіша проекція. Вже тут видно кращу згрупованість.*
 
 **2. MDS:**
-![MNIST MDS](outputs/mnist/figures/09b_mnist_scatter_mds_test.png)
+![MNIST MDS](outputs/mnist/figures/09b_scatter_mds_test.png)
 
 **3. t-SNE:**
-![MNIST t-SNE](outputs/mnist/figures/09c_mnist_scatter_tsne_test.png)
+![MNIST t-SNE](outputs/mnist/figures/09c_scatter_tsne_test.png)
 *Критично важливий графік. Для $T_{new}$ ми бачимо чіткі, ізольовані кластери цифр. Для $T_{old}$ границі розмиті.*
 
 **4. UMAP:**
-![MNIST UMAP](outputs/mnist/figures/09d_mnist_scatter_umap_test.png)
+![MNIST UMAP](outputs/mnist/figures/09d_scatter_umap_test.png)
 *UMAP ще краще підкреслює збереження глобальної топології.*
 
 ### Якісний Аналіз Обертань
 
 Приклад того, як виглядають цифри при повороті.
-![Rotated Grid](outputs/mnist/figures/10_qualitative_rotated_grid_test.png)
-*Демонстрація вхідних даних, на яких тестувалася стійкість.*
+![Chaos Figure](outputs/mnist/figures/10_chaos_figure_test.png)
+*Демонстрація "хаосу" проти "порядку". Кожен стовпчик - випадковий поворот цифри.  Зверху: Вхід. Середина: $T_{old}$ (шум/розмиття). Знизу: $T_{new}$ (чітка цифра).*
 
 ---
 

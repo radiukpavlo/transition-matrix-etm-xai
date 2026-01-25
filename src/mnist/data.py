@@ -72,7 +72,7 @@ def _read_idx_labels(path: Path) -> np.ndarray:
 
 class MNISTRawDataset(Dataset):
     def __init__(self, root: Path, train: bool, normalize: bool = True, mean: float = 0.1307, std: float = 0.3081):
-        raw = root / "MNIST" / "raw"
+        raw = root / "raw"
         if train:
             img_path = raw / "train-images-idx3-ubyte"
             lab_path = raw / "train-labels-idx1-ubyte"
@@ -102,7 +102,7 @@ class MNISTRawDataset(Dataset):
 
 
 def assert_mnist_present(root: Path) -> None:
-    raw = root / "MNIST" / "raw"
+    raw = root / "raw"
     required = [
         raw / "train-images-idx3-ubyte",
         raw / "train-labels-idx1-ubyte",

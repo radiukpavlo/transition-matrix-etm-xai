@@ -45,3 +45,5 @@ After running the MNIST pipeline, key numeric results will be stored in:
 - `outputs/mnist/matrices/mnist_metrics.json`
 - `outputs/mnist/matrices/lambda_sweep.json`
 - `outputs/mnist/runs/*_manifest.json`
+- `outputs/mnist/matrices/mnist_embeddings_*.npz`
+- `outputs/mnist/matrices/mnist_chaos_samples_*.npz`

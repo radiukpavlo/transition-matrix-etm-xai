@@ -22,7 +22,7 @@ import numpy as np
 import torch
 
 from .data import MNISTDataConfig, assert_mnist_present, get_dataloaders, get_raw_dataloaders, mnist_root
-from .eval import EvalConfig, evaluate_and_plot, symmetry_error
+from .eval import EvalConfig, evaluate_and_save, symmetry_error
 from .generators import GeneratorConfig, estimate_generators
 from .model import CNNConfig, MNISTCNN
 from .train import TrainConfig, train_cnn
@@ -262,7 +262,7 @@ def run_stage2_experiments(repo_root: Path, out_root: Path, cfg: MNISTPipelineCo
     cfg.eval.device = cfg.device
     
     logger.info("Evaluating on TRAIN subset...")
-    metrics_train = evaluate_and_plot(
+    metrics_train = evaluate_and_save(
         out_root,
         model,
         train_raw_loader,
@@ -278,7 +278,7 @@ def run_stage2_experiments(repo_root: Path, out_root: Path, cfg: MNISTPipelineCo
     )
 
     logger.info("Evaluating on TEST subset...")
-    metrics_test = evaluate_and_plot(
+    metrics_test = evaluate_and_save(
         out_root,
         model,
         test_raw_loader,
