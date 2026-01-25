@@ -208,7 +208,7 @@ python run_all.py --synthetic
 Для запуску розширеного стрес-тесту (кути $\pm 120^\circ$) та генерації нових візуалізацій (Displacement Vectors, Error vs Angle):
 
 ```bash
-python src/scripts/run_extended_synthetic.py
+python src/synthetic/run_extended.py
 ```
 
 *Примітка: Цей скрипт використовує налаштування з `configs/synthetic.yaml`. Ви можете змінити діапазон кутів, змінивши параметр `robustness_range_degrees` у цьому файлі.*
@@ -242,13 +242,13 @@ python run_all.py --mnist
 **Синтетичні дані:**
 
 ```bash
-python src/scripts/generate_figures_synthetic.py
+python src/synthetic/generate_figures.py
 ```
 
 **Extended Visualization (Rotated vs Static):**
 
 ```bash
-python src/scripts/generate_figures_synthetic_extended.py
+python src/synthetic/generate_figures_extended.py
 ```
 
 **MNIST:**

@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "src"))
 
 from etm.config import dataclass_from_dict  # noqa: E402
-from etm.synthetic import SyntheticConfig, run_synthetic  # noqa: E402
+from synthetic.core import SyntheticConfig, run_synthetic  # noqa: E402
 from etm.utils import configure_logger, ensure_dir, repo_root, save_json, set_global_seed, utc_timestamp  # noqa: E402
 
 

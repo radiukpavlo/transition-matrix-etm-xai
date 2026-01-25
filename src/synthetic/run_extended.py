@@ -24,8 +24,8 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.etm.utils import load_json_matrix
-from src.etm.synthetic import mds_2d, rotate_2d, mse_fid
-from src.etm.viz_utils import (
+from src.synthetic.core import mds_2d, rotate_2d, mse_fid
+from src.synthetic.viz_utils import (
     configure_style, save_figure,
     CLASS_COLORS, LIGHT_COLORS, CLASS_MARKERS,
     MAJOR_GRID_STYLE, TITLE_FONT_SIZE,

@@ -4,10 +4,10 @@ from pathlib import Path
 import numpy as np
 
 import sys
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from etm.utils import load_json_matrix, parse_repeating_decimal
-from etm.synthetic import solve_equivariant_T, mse_fid, sym_err
+from src.etm.utils import load_json_matrix, parse_repeating_decimal
+from src.synthetic.core import solve_equivariant_T, mse_fid, sym_err
 
 
 class TestSynthetic(unittest.TestCase):

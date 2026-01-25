@@ -20,7 +20,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import necessary utils
 from src.etm.utils import load_json_matrix  # noqa: E402
-from src.etm.viz_utils import (
+from src.synthetic.viz_utils import (
     configure_style, save_figure,
     CLASS_COLORS, LIGHT_COLORS, CLASS_MARKERS,
     MAJOR_GRID_STYLE, MARKER_SIZE_MEDIUM, MARKER_SIZE_LARGE, LINE_MARKER_SIZE

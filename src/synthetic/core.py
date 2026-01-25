@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 from sklearn.manifold import MDS
 from sklearn.linear_model import LinearRegression
 
-from .utils import ensure_dir, load_json_matrix, save_json, save_json_matrix, utc_timestamp
+from src.etm.utils import ensure_dir, load_json_matrix, save_json, save_json_matrix, utc_timestamp
 
 
 @dataclass
