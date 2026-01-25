@@ -38,7 +38,7 @@ def load_json(path: Path) -> Any:
 
 
 def _plot_heatmap(M: np.ndarray, title: str, out_dir: Path, stem: str) -> None:
-    fig, ax = plt.subplots(figsize=(8, 6.5)) # Increased from (6, 5)
+    fig, ax = plt.subplots(figsize=(9, 7.5)) # Increased from (8, 6.5)
     im = ax.imshow(M, aspect="auto")
     plt.colorbar(im, ax=ax)
     ax.set_title(title)
@@ -54,7 +54,7 @@ def _plot_tradeoff(
     out_dir: Path,
     stem: str,
 ) -> None:
-    fig, ax = plt.subplots(figsize=(8, 6)) # Increased from (6, 4)
+    fig, ax = plt.subplots(figsize=(9, 7)) # Increased from (8, 6)
     ax.plot(x, y, marker="o", linewidth=3, markersize=LINE_MARKER_SIZE)
     ax.grid(True, **MAJOR_GRID_STYLE)
     ax.set_xlabel(xlabel)
@@ -65,7 +65,7 @@ def _plot_tradeoff(
 
 def _plot_scatter(X2d: np.ndarray, title: str, out_dir: Path, stem: str) -> None:
     labels = np.array([0] * 5 + [1] * 5 + [2] * 5, dtype=int)
-    fig, ax = plt.subplots(figsize=(6, 5))
+    fig, ax = plt.subplots(figsize=(7, 6)) # Increased from (6, 5)
     for c in np.unique(labels):
         idx = labels == c
         ax.scatter(X2d[idx, 0], X2d[idx, 1], label=f"Class {c}", s=MARKER_SIZE_MEDIUM, color=CLASS_COLORS[c], marker=CLASS_MARKERS[c])
@@ -78,7 +78,7 @@ def _plot_scatter(X2d: np.ndarray, title: str, out_dir: Path, stem: str) -> None
 
 
 def _plot_singular_values(svals: np.ndarray, title: str, out_dir: Path, stem: str) -> None:
-    fig, ax = plt.subplots(figsize=(6, 4))
+    fig, ax = plt.subplots(figsize=(7, 5)) # Increased from (6, 4)
     ax.semilogy(np.arange(1, len(svals) + 1), svals, marker="o", linewidth=2, color=CLASS_COLORS[2]) # Blue
     ax.set_title(title)
     ax.set_xlabel("Index")
@@ -100,7 +100,7 @@ def _plot_embedding_comparison(
     Note: These are implicitly 'Rotated' embeddings in the original context (B*_old vs B*_new).
     So we use LIGHT_COLORS.
     """
-    fig, axs = plt.subplots(1, 2, figsize=(20, 8)) # Increased size for fonts/legends
+    fig, axs = plt.subplots(1, 2, figsize=(22, 10)) # Increased size for fonts/legends
     
     # Left: B*_old - Chaos
     for c in np.unique(labels):

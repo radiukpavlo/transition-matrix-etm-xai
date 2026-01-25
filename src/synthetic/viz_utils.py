@@ -9,7 +9,8 @@ from pathlib import Path
 from typing import List
 
 # --- STYLE CONFIGURATION ---
-BASE_FONT_SIZE = 22  # reduced by 1 point
+# --- STYLE CONFIGURATION ---
+BASE_FONT_SIZE = 20  # reduced from 22
 TITLE_FONT_SIZE = BASE_FONT_SIZE + 4
 LEGEND_FONT_SIZE = BASE_FONT_SIZE - 2
 DARK_EDGE_COLOR = "#1f2937"
@@ -30,23 +31,22 @@ LIGHT_COLORS = ["#FFCCCC", "#FFFFE0", "#CCCCFF"]     # Light versions
 CLASS_MARKERS = ["o", "s", "^"]                      # Circle, Square, Triangle
 
 # --- MARKER SIZES ---
-# "Make all markers one time larger" -> Double the area (or radius? usually area in 's')
-# Previous: s=120 (Large), s=40/60 (Small) -> New: s=240, s=120
-MARKER_SIZE_LARGE = 240
-MARKER_SIZE_MEDIUM = 120
-MARKER_SIZE_SMALL = 80
-LINE_MARKER_SIZE = 12 # For plot() markers
+# Reduced by user request (-2 points scale approx)
+MARKER_SIZE_LARGE = 200 # Was 240
+MARKER_SIZE_MEDIUM = 100 # Was 120
+MARKER_SIZE_SMALL = 60  # Was 80
+LINE_MARKER_SIZE = 10   # Was 12
 
 def configure_style() -> None:
     """Apply global matplotlib style settings."""
     mpl.rcParams.update(
         {
             "font.size": BASE_FONT_SIZE,
-            "font.weight": "bold",
+            "font.weight": "normal",
             "axes.labelsize": BASE_FONT_SIZE,
-            "axes.labelweight": "bold",
+            "axes.labelweight": "normal",
             "axes.titlesize": TITLE_FONT_SIZE,
-            "axes.titleweight": "bold",
+            "axes.titleweight": "normal",
             "xtick.labelsize": BASE_FONT_SIZE,
             "ytick.labelsize": BASE_FONT_SIZE,
             "legend.fontsize": LEGEND_FONT_SIZE,
