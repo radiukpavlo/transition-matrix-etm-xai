@@ -63,6 +63,30 @@ def _plot_tradeoff(
     save_figure(fig, out_dir, stem)
 
 
+def _plot_scatter(X2d: np.ndarray, title: str, out_dir: Path, stem: str) -> None:
+    labels = np.array([0] * 5 + [1] * 5 + [2] * 5, dtype=int)
+    fig, ax = plt.subplots(figsize=(6, 5))
+    for c in np.unique(labels):
+        idx = labels == c
+        ax.scatter(X2d[idx, 0], X2d[idx, 1], label=f"Class {c}", s=MARKER_SIZE_MEDIUM, color=CLASS_COLORS[c], marker=CLASS_MARKERS[c])
+    ax.set_title(title)
+    ax.set_xlabel("MDS-1")
+    ax.set_ylabel("MDS-2")
+    ax.legend(borderaxespad=0)
+    ax.grid(True, **MAJOR_GRID_STYLE)
+    save_figure(fig, out_dir, stem)
+
+
+def _plot_singular_values(svals: np.ndarray, title: str, out_dir: Path, stem: str) -> None:
+    fig, ax = plt.subplots(figsize=(6, 4))
+    ax.semilogy(np.arange(1, len(svals) + 1), svals, marker="o", linewidth=2, color=CLASS_COLORS[2]) # Blue
+    ax.set_title(title)
+    ax.set_xlabel("Index")
+    ax.set_ylabel("σ")
+    ax.grid(True, **MAJOR_GRID_STYLE)
+    save_figure(fig, out_dir, stem)
+
+
 def _plot_embedding_comparison(
     old_2d: np.ndarray,
     new_2d: np.ndarray,
@@ -145,6 +169,9 @@ def run_synthetic_viz(out_dir: Path) -> None:
     JA = load_json_matrix(matrices_dir / "J_A.json")
     JB = load_json_matrix(matrices_dir / "J_B.json")
 
+    A_2d = load_json_matrix(matrices_dir / "A_2d.json")
+    B_2d = load_json_matrix(matrices_dir / "B_2d.json")
+
     # Sweep Data
     sweep_data = load_json(matrices_dir / "lambda_sweep.json")
     
@@ -167,6 +194,14 @@ def run_synthetic_viz(out_dir: Path) -> None:
     _plot_heatmap(W_new, "Heatmap: T_new (Equivariant)", out_dir, "04_heatmap_T_new")
     _plot_heatmap(JA, "Heatmap: J^A", out_dir, "05_heatmap_JA")
     _plot_heatmap(JB, "Heatmap: J^B", out_dir, "06_heatmap_JB")
+
+    # 1b. Scatter Plots (MDS)
+    _plot_scatter(A_2d, "Synthetic: MDS(A)", out_dir, "01_mds_A")
+    _plot_scatter(B_2d, "Synthetic: MDS(B)", out_dir, "02_mds_B")
+
+    # 1c. Singular Values
+    svals = np.array([r["meta"]["singular_values"] for r in sweep_data["rows"] if r["lambda"] == sweep_data["default_lambda"]][0])
+    _plot_singular_values(svals, f"Singular values of M (λ={sweep_data['default_lambda']})", out_dir, "07_singular_values_M")
 
     # 2. Trade-offs
     lambdas = [r["lambda"] for r in sweep_data["rows"]]

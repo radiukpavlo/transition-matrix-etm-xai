@@ -13,7 +13,8 @@ from __future__ import annotations
 import math
 import sys
 from pathlib import Path
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, Dict
+import json
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -33,11 +34,121 @@ from src.synthetic.viz_utils import (
     configure_style, save_figure,
     CLASS_COLORS, LIGHT_COLORS, CLASS_MARKERS,
     MAJOR_GRID_STYLE, TITLE_FONT_SIZE,
-    MARKER_SIZE_MEDIUM, MARKER_SIZE_LARGE, MARKER_SIZE_SMALL
+    MARKER_SIZE_MEDIUM, MARKER_SIZE_LARGE, MARKER_SIZE_SMALL, LINE_MARKER_SIZE
 )
 
 # --- STYLE CONFIGURATION ---
 configure_style()
+
+
+def load_json(path: Path) -> Any:
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def plot_error_vs_angle(metrics: Dict[str, Any], out_dir: Path) -> None:
+    angles_deg = np.array(metrics["angles_deg"])
+    results_old = metrics["mse_old"]
+    results_new = metrics["mse_new"]
+    start_deg = metrics["start_deg"]
+    end_deg = metrics["end_deg"]
+
+    # Vivid Colors
+    COLOR_OLD = "#FF1493" # DeepPink
+    COLOR_NEW = "#1E90FF" # DodgerBlue
+
+    plt.figure(figsize=(12, 8))
+    plt.plot(angles_deg, results_old, marker='o', color=COLOR_OLD, label="Old Method ($T_{old}$)", linewidth=4, markersize=LINE_MARKER_SIZE)
+    plt.plot(angles_deg, results_new, marker='o', color=COLOR_NEW, label="New Method ($T_{new}$)", linewidth=4, markersize=LINE_MARKER_SIZE)
+    plt.xlabel("Rotation Angle (degrees)")
+    plt.ylabel("MSE (Fidelity)")
+    plt.title(f"Robustness to Rotation (Stress Test)\nRange: [{start_deg}, {end_deg}]")
+    plt.legend(bbox_to_anchor=(0.5, -0.15), loc='upper center', ncol=2, borderaxespad=0)
+    plt.grid(True, **MAJOR_GRID_STYLE)
+    save_figure(plt.gcf(), out_dir, "12_error_vs_angle")
+    print(f"Saved 12_error_vs_angle")
+
+
+def plot_displacement_vectors(demo_data: Dict[str, Any], out_dir: Path) -> None:
+    angle_deg = demo_data["angle_deg"]
+    X_target = np.array(demo_data["B_target"])
+    X_pred_old = np.array(demo_data["B_pred_old"])
+    X_pred_new = np.array(demo_data["B_pred_new"])
+
+    pca = PCA(n_components=2)
+    pca.fit(X_target)
+    
+    xy_target = pca.transform(X_target)
+    xy_old = pca.transform(X_pred_old)
+    xy_new = pca.transform(X_pred_new)
+    
+    # Plotting
+    fig, axes = plt.subplots(1, 2, figsize=(22, 10))
+    
+    # Shared limits
+    all_xy = np.vstack([xy_target, xy_old, xy_new])
+    x_min, x_max = all_xy[:,0].min(), all_xy[:,0].max()
+    y_min, y_max = all_xy[:,1].min(), all_xy[:,1].max()
+    pad = (x_max - x_min) * 0.1
+    xlim = (x_min - pad, x_max + pad)
+    ylim = (y_min - pad, y_max + pad)
+
+    labels = np.array([0]*5 + [1]*5 + [2]*5)
+
+    def plot_arrows(ax, start, end, title):
+        for c in np.unique(labels):
+            idx = labels == c
+            
+            # Ideal (Target)
+            ax.scatter(
+                start[idx, 0], start[idx, 1],
+                color=CLASS_COLORS[c],
+                marker=CLASS_MARKERS[c],
+                s=MARKER_SIZE_LARGE,
+                alpha=1.0,
+                edgecolor='black',
+                linewidth=1.2,
+                label=f"Ideal (Class {c})",
+                zorder=5
+            )
+            
+            # Predicted
+            ax.scatter(
+                end[idx, 0], end[idx, 1],
+                color=LIGHT_COLORS[c],
+                marker=CLASS_MARKERS[c],
+                s=200,
+                alpha=0.9,
+                edgecolor=CLASS_COLORS[c],
+                linewidth=0.8,
+                label=f"Predicted (Class {c})",
+                zorder=4
+            )
+        
+        # Arrows
+        for i in range(len(start)):
+            ax.arrow(start[i,0], start[i,1], 
+                     end[i,0] - start[i,0], end[i,1] - start[i,1],
+                     head_width=pad*0.1, length_includes_head=True, 
+                     color='black', alpha=0.6, width=pad*0.005, zorder=2)
+        
+        ax.set_title(title, fontsize=TITLE_FONT_SIZE)
+        ax.set_xlim(xlim)
+        ax.set_ylim(ylim)
+        
+        # Legend
+        handles, lbls = ax.get_legend_handles_labels()
+        sorted_pairs = sorted(zip(lbls, handles), key=lambda x: x[0].split()[-1] + x[0].split()[0])
+        ax.legend([h for l, h in sorted_pairs], [l for l, h in sorted_pairs], 
+                  loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, borderaxespad=0, fontsize='small')
+
+        ax.grid(True, **MAJOR_GRID_STYLE)
+
+    plot_arrows(axes[0], xy_target, xy_old, f"Old Method (Angle={angle_deg:.0f}°)")
+    plot_arrows(axes[1], xy_target, xy_new, f"New Method (Angle={angle_deg:.0f}°)")
+
+    save_figure(fig, out_dir, "11_displacement_vectors")
+    print(f"Saved 11_displacement_vectors")
 
 
 
@@ -225,6 +336,25 @@ def generate_extended_figures():
         plot_comparison(all_umap, "UMAP", "13d_robustness_umap")
     except ImportError:
         print("UMAP not installed, skipping.")
+    
+    # 5. Plot Extended Figures (11, 12)
+    # Load data saved by run_extended.py
+    metrics_path = matrices_dir / "robustness_metrics_extended.json"
+    demo_path = matrices_dir / "displacement_test_data.json"
+
+    if metrics_path.exists():
+        print("Plotting Error vs Angle...")
+        metrics = load_json(metrics_path)
+        plot_error_vs_angle(metrics, out_dir)
+    else:
+        print(f"Warning: {metrics_path} not found. Skipping Figure 12.")
+
+    if demo_path.exists():
+        print("Plotting Displacement Vectors...")
+        demo_data = load_json(demo_path)
+        plot_displacement_vectors(demo_data, out_dir)
+    else:
+        print(f"Warning: {demo_path} not found. Skipping Figure 11.")
 
 if __name__ == "__main__":
     generate_extended_figures()

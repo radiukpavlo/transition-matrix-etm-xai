@@ -14,7 +14,6 @@ import sys
 from pathlib import Path
 from typing import List, Tuple
 
-import matplotlib.pyplot as plt
 import numpy as np
 import yaml
 from sklearn.linear_model import LinearRegression
@@ -25,12 +24,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.etm.utils import load_json_matrix
 from src.synthetic.core import mds_2d, rotate_2d, mse_fid
-from src.synthetic.viz_utils import (
-    configure_style, save_figure,
-    CLASS_COLORS, LIGHT_COLORS, CLASS_MARKERS,
-    MAJOR_GRID_STYLE, TITLE_FONT_SIZE,
-    MARKER_SIZE_LARGE, MARKER_SIZE_MEDIUM, LINE_MARKER_SIZE
-)
+from src.synthetic.core import mds_2d, rotate_2d, mse_fid
+
 
 # --- CONFIG ---
 # We'll read from configs/synthetic.yaml just for the angle range and step
@@ -40,8 +35,7 @@ def _load_config():
     with open(CONFIG_PATH, "r") as f:
         return yaml.safe_load(f)
 
-# --- PLOTTING STYLE ---
-configure_style()
+
 
 
 def run_extended_experiments():
@@ -135,142 +129,36 @@ def run_extended_experiments():
         
         if abs(angles_deg[i] - demo_angle_deg) < 1e-5:
             demo_data = {
-                "angle_deg": angles_deg[i],
-                "B_target": B_target,
-                "B_pred_old": B_pred_old,
-                "B_pred_new": B_pred_new
+                "angle_deg": float(angles_deg[i]),
+                "B_target": B_target.tolist(), # Convert to list for JSON
+                "B_pred_old": B_pred_old.tolist(),
+                "B_pred_new": B_pred_new.tolist()
             }
 
-    # Vivid Colors
-    # Old/New line plots
-    COLOR_OLD = "#FF1493" # DeepPink
-    COLOR_NEW = "#1E90FF" # DodgerBlue
-    
-    # --- 2. VIZ: ERROR vs ANGLE ---
-    plt.figure(figsize=(12, 8)) # Increased from (10, 6)
-    plt.plot(angles_deg, results_old, marker='o', color=COLOR_OLD, label="Old Method ($T_{old}$)", linewidth=4, markersize=LINE_MARKER_SIZE)
-    plt.plot(angles_deg, results_new, marker='o', color=COLOR_NEW, label="New Method ($T_{new}$)", linewidth=4, markersize=LINE_MARKER_SIZE)
-    plt.xlabel("Rotation Angle (degrees)")
-    plt.ylabel("MSE (Fidelity)")
-    plt.title(f"Robustness to Rotation (Stress Test)\nRange: [{start_deg}, {end_deg}]")
-    plt.title(f"Robustness to Rotation (Stress Test)\nRange: [{start_deg}, {end_deg}]")
-    plt.legend(bbox_to_anchor=(0.5, -0.15), loc='upper center', ncol=2, borderaxespad=0)
-    plt.grid(True, **MAJOR_GRID_STYLE)
-    save_figure(plt.gcf(), out_dir, "12_error_vs_angle")
-    print(f"Saved 12_error_vs_angle")
+    # Save Metrics for Figure 12
+    robustness_metrics = {
+        "angles_deg": angles_deg.tolist(),
+        "mse_old": results_old,
+        "mse_new": results_new,
+        "start_deg": start_deg,
+        "end_deg": end_deg
+    }
+    from src.etm.utils import save_json
+    save_json(matrices_dir / "robustness_metrics_extended.json", robustness_metrics)
 
-
-    # --- 3. VIZ: DISPLACEMENT VECTORS ---
-    # Need to project B_target, B_pred_old, B_pred_new into 2D to plot arrows.
-    # We should use a COMMON projection.
-    # Let's use MDS on the union of all standard samples (B) + demo targets + demo predictions to define the space,
-    # OR just train MDS on B and project others? MDS doesn't really "project" new points easily without Out-of-Sample extension.
-    # PCA is easier for projection. Let's use PCA fitted on the original B (or B_target).
-    
+    # Save Demo Data for Figure 11
     if not demo_data:
         print("Warning: Demo angle data not found via exact match. Using last angle.")
+        # Re-compute for last just in case loop logic missed it
         demo_data = {
-             "angle_deg": angles_deg[-1],
-             # Re-compute for last just in case loop logic missed it
-             "B_target": decoderB.predict(rotate_2d(B_2d, angles_rad[-1])),
-             "B_pred_old": decoderA.predict(rotate_2d(A_2d, angles_rad[-1])) @ W_old,
-             "B_pred_new": decoderA.predict(rotate_2d(A_2d, angles_rad[-1])) @ W_new
+             "angle_deg": float(angles_deg[-1]),
+             "B_target": decoderB.predict(rotate_2d(B_2d, angles_rad[-1])).tolist(),
+             "B_pred_old": (decoderA.predict(rotate_2d(A_2d, angles_rad[-1])) @ W_old).tolist(),
+             "B_pred_new": (decoderA.predict(rotate_2d(A_2d, angles_rad[-1])) @ W_new).tolist()
         }
-
-    from sklearn.decomposition import PCA
     
-    # Collect all points to fit PCA or just fit on B_target?
-    # Fitting on B_target (the "truth" at this angle) makes sense to see deviations from it.
-    X_target = demo_data["B_target"]
-    X_pred_old = demo_data["B_pred_old"]
-    X_pred_new = demo_data["B_pred_new"]
-
-    pca = PCA(n_components=2)
-    # Fit on Target to establish the "Truth" plane
-    pca.fit(X_target)
-    
-    xy_target = pca.transform(X_target)
-    xy_old = pca.transform(X_pred_old)
-    xy_new = pca.transform(X_pred_new)
-    
-    # Plotting
-    # Two subplots: Old vs New
-    fig, axes = plt.subplots(1, 2, figsize=(22, 10)) # Increased from (14, 6)
-    
-    # Shared limits
-    all_xy = np.vstack([xy_target, xy_old, xy_new])
-    x_min, x_max = all_xy[:,0].min(), all_xy[:,0].max()
-    y_min, y_max = all_xy[:,1].min(), all_xy[:,1].max()
-    pad = (x_max - x_min) * 0.1
-    xlim = (x_min - pad, x_max + pad)
-    ylim = (y_min - pad, y_max + pad)
-
-    # Infer labels for demo data
-    # Assuming demo data preserves order of input B (15 samples: 5x0, 5x1, 5x2)
-    labels = np.array([0]*5 + [1]*5 + [2]*5)
-
-    def plot_arrows(ax, start, end, title):
-        # start = Ideal (Static/Target style), end = Predicted (Rotated/Light style)
-        
-        # Plot points per class
-        for c in np.unique(labels):
-            idx = labels == c
-            
-            # Ideal (Target) points -> Class Color + Class Marker (Solid)
-            # Use zorder=5 to stay above arrows
-            ax.scatter(
-                start[idx, 0], start[idx, 1],
-                color=CLASS_COLORS[c],
-                marker=CLASS_MARKERS[c],
-                s=MARKER_SIZE_LARGE, # Was 120 -> 240
-                alpha=1.0,
-                edgecolor='black',
-                linewidth=1.2,
-                label=f"Ideal (Class {c})",
-                zorder=5
-            )
-            
-            # Predicted points -> Light Class Color + Class Marker (Solid but light)
-            # Use zorder=4 to stay above arrows (usually) or below ideal?
-            ax.scatter(
-                end[idx, 0], end[idx, 1],
-                color=LIGHT_COLORS[c],
-                marker=CLASS_MARKERS[c],
-                s=200, # Was 100 -> 200
-                alpha=0.9,
-                edgecolor=CLASS_COLORS[c], # Thin edge of main color
-                linewidth=0.8,
-                label=f"Predicted (Class {c})",
-                zorder=4
-            )
-        
-        # Arrows - Black
-        for i in range(len(start)):
-            ax.arrow(start[i,0], start[i,1], 
-                     end[i,0] - start[i,0], end[i,1] - start[i,1],
-                     head_width=pad*0.1, length_includes_head=True, 
-                     color='black', alpha=0.6, width=pad*0.005, zorder=2)
-        
-        ax.set_title(title, fontsize=TITLE_FONT_SIZE)
-        ax.set_xlim(xlim)
-        ax.set_ylim(ylim)
-        
-        # Smart Legend
-        handles, lbls = ax.get_legend_handles_labels()
-        # Sort by Class then Type (Ideal/Pred)
-        # Type is first word. Class is last word.
-        # "Ideal (Class 0)", "Predicted (Class 0)"
-        sorted_pairs = sorted(zip(lbls, handles), key=lambda x: x[0].split()[-1] + x[0].split()[0])
-        ax.legend([h for l, h in sorted_pairs], [l for l, h in sorted_pairs], 
-                  loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, borderaxespad=0, fontsize='small')
-
-        ax.grid(True, **MAJOR_GRID_STYLE)
-
-    plot_arrows(axes[0], xy_target, xy_old, f"Old Method (Angle={demo_data['angle_deg']:.0f}°)")
-    plot_arrows(axes[1], xy_target, xy_new, f"New Method (Angle={demo_data['angle_deg']:.0f}°)")
-
-    save_figure(fig, out_dir, "11_displacement_vectors")
-    print(f"Saved 11_displacement_vectors")
+    save_json(matrices_dir / "displacement_test_data.json", demo_data)
+    print("Saved extended metrics and demo data to matrices/")
 
 
 if __name__ == "__main__":

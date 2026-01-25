@@ -16,7 +16,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Sequence, Tuple
 
 import numpy as np
-import matplotlib.pyplot as plt
 from sklearn.manifold import MDS
 from sklearn.linear_model import LinearRegression
 
@@ -247,135 +246,11 @@ def run_synthetic(repo: Path, out_dir: Path, cfg: SyntheticConfig) -> Dict[str, 
 
     save_json(out_dir / "matrices" / "lambda_sweep.json", {"rows": sweep_rows, "default_lambda": lam0})
 
-    # --- Figures (10 synthetic minimum) ---
-    def scatter(X2d: np.ndarray, title: str, path: Path) -> None:
-        plt.figure(figsize=(6, 5))
-        for c in np.unique(labels):
-            idx = labels == c
-            plt.scatter(X2d[idx, 0], X2d[idx, 1], label=f"Class {c}")
-        plt.title(title)
-        plt.xlabel("MDS-1")
-        plt.ylabel("MDS-2")
-        plt.legend()
-        plt.tight_layout()
-        plt.savefig(path, dpi=160)
-        plt.close()
-
-    scatter(A_2d, "Synthetic: MDS(A) (3 classes)", out_dir / "figures" / "01_mds_A.png")
-    scatter(B_2d, "Synthetic: MDS(B) (3 classes)", out_dir / "figures" / "02_mds_B.png")
-
-    def heatmap(M: np.ndarray, title: str, path: Path) -> None:
-        plt.figure(figsize=(6, 5))
-        plt.imshow(M, aspect="auto")
-        plt.colorbar()
-        plt.title(title)
-        plt.tight_layout()
-        plt.savefig(path, dpi=160)
-        plt.close()
-
-    heatmap(W_old, "Heatmap: T_old_ls^T (baseline least squares)", out_dir / "figures" / "03_heatmap_T_old.png")
-    heatmap(W_old_provided, "Heatmap: T_old_provided^T (Appendix 1.1)", out_dir / "figures" / "03b_heatmap_T_old_provided.png")
-    heatmap(W_new, f"Heatmap: T_new^T (k×l), λ={lam0}", out_dir / "figures" / "04_heatmap_T_new.png")
-    heatmap(JA, "Heatmap: J^A (k×k)", out_dir / "figures" / "05_heatmap_JA.png")
-    heatmap(JB, "Heatmap: J^B (l×l)", out_dir / "figures" / "06_heatmap_JB.png")
-
-    svals = np.array([r["meta"]["singular_values"] for r in sweep_rows if r["lambda"] == lam0][0])
-    plt.figure(figsize=(6, 4))
-    plt.semilogy(np.arange(1, len(svals) + 1), svals, marker="o")
-    plt.title(f"Singular values of M (λ={lam0})")
-    plt.xlabel("Index")
-    plt.ylabel("σ")
-    plt.tight_layout()
-    plt.savefig(out_dir / "figures" / "07_singular_values_M.png", dpi=160)
-    plt.close()
-
-    lambdas = [r["lambda"] for r in sweep_rows]
-    fid = [r["mse_fid"] for r in sweep_rows]
-    sym = [r["sym_err"] for r in sweep_rows]
-
-    plt.figure(figsize=(6, 4))
-    plt.plot(lambdas, fid, marker="o")
-    plt.title("Trade-off: MSE_fid vs λ")
-    plt.xlabel("λ")
-    plt.ylabel("MSE_fid")
-    plt.tight_layout()
-    plt.savefig(out_dir / "figures" / "08_tradeoff_mse_vs_lambda.png", dpi=160)
-    plt.close()
-
-    plt.figure(figsize=(6, 4))
-    plt.plot(lambdas, sym, marker="o")
-    plt.title("Trade-off: Sym_err vs λ")
-    plt.xlabel("λ")
-    plt.ylabel("Sym_err")
-    plt.tight_layout()
-    plt.savefig(out_dir / "figures" / "09_tradeoff_sym_vs_lambda.png", dpi=160)
-    plt.close()
-
-    # Robustness scatter (author-requested): Visualize predicted embeddings B*
-    # Show that T_old produces "chaotic" embeddings while T_new preserves cluster structure.
-    
-    # Stack all predicted embeddings for rotated data
-    B_old_stacked = np.vstack(B_old_rots)  # (N*angles, l)
-    B_new_stacked = np.vstack(B_new_rots)  # (N*angles, l)
-    all_embeddings = np.vstack([B_old_stacked, B_new_stacked])
-    labels_rep = np.tile(labels, len(angles))
-    
-    from sklearn.decomposition import PCA
-    from sklearn.manifold import TSNE
-    
-    def plot_embedding_comparison(old_2d, new_2d, labels_rep, method_name: str, out_path: Path):
-        plt.figure(figsize=(12, 5))
-        plt.subplot(1, 2, 1)
-        for c in np.unique(labels_rep):
-            idx = labels_rep == c
-            plt.scatter(old_2d[idx, 0], old_2d[idx, 1], s=12, alpha=0.7, label=f"Class {c}")
-        plt.title(f"{method_name}: $B^*_{{old}}$ (очікується хаос)")
-        plt.xlabel(f"{method_name}-1")
-        plt.ylabel(f"{method_name}-2")
-        plt.legend()
-
-        plt.subplot(1, 2, 2)
-        for c in np.unique(labels_rep):
-            idx = labels_rep == c
-            plt.scatter(new_2d[idx, 0], new_2d[idx, 1], s=12, alpha=0.7, label=f"Class {c}")
-        plt.title(f"{method_name}: $B^*_{{new}}$ (очікується порядок)")
-        plt.xlabel(f"{method_name}-1")
-        plt.ylabel(f"{method_name}-2")
-        plt.legend()
-
-        plt.tight_layout()
-        plt.savefig(out_path, dpi=160)
-        plt.close()
-    
-    n_old = B_old_stacked.shape[0]
-    
-    # 1) PCA
-    pca = PCA(n_components=2, random_state=cfg.mds_random_state)
-    pca.fit(all_embeddings)
-    old_pca = pca.transform(B_old_stacked)
-    new_pca = pca.transform(B_new_stacked)
-    plot_embedding_comparison(old_pca, new_pca, labels_rep, "PCA", out_dir / "figures" / "10a_robustness_pca.png")
-    
-    # 2) MDS (shared embedding via concatenated data)
-    all_2d_mds = mds_2d(all_embeddings, random_state=cfg.mds_random_state, normalized_stress=cfg.mds_normalized_stress)
-    old_mds = all_2d_mds[:n_old]
-    new_mds = all_2d_mds[n_old:]
-    plot_embedding_comparison(old_mds, new_mds, labels_rep, "MDS", out_dir / "figures" / "10b_robustness_mds.png")
-    
-    # 3) t-SNE
-    tsne = TSNE(n_components=2, random_state=cfg.mds_random_state, perplexity=min(30, all_embeddings.shape[0] // 4))
-    all_2d_tsne = tsne.fit_transform(all_embeddings)
-    old_tsne = all_2d_tsne[:n_old]
-    new_tsne = all_2d_tsne[n_old:]
-    plot_embedding_comparison(old_tsne, new_tsne, labels_rep, "t-SNE", out_dir / "figures" / "10c_robustness_tsne.png")
-    
-    # 4) UMAP
-    import umap
-    umap_reducer = umap.UMAP(n_components=2, random_state=cfg.mds_random_state, n_neighbors=min(15, all_embeddings.shape[0] // 4))
-    all_2d_umap = umap_reducer.fit_transform(all_embeddings)
-    old_umap = all_2d_umap[:n_old]
-    new_umap = all_2d_umap[n_old:]
-    plot_embedding_comparison(old_umap, new_umap, labels_rep, "UMAP", out_dir / "figures" / "10d_robustness_umap.png")
+    # Data saving logic covers all matrices needed for external plotting.
+    # A_2d, B_2d are not explicitly saved to JSON in the original code, but are needed for plotting.
+    # We should save them.
+    save_json_matrix(out_dir / "matrices" / "A_2d.json", A_2d, name="A_2d", source="MDS(A)")
+    save_json_matrix(out_dir / "matrices" / "B_2d.json", B_2d, name="B_2d", source="MDS(B)")
 
     summary = {
         "m": int(A.shape[0]),
