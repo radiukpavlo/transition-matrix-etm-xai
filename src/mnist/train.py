@@ -117,26 +117,39 @@ def train_cnn(
                 history["seconds"][i]
             ])
 
-    import matplotlib.pyplot as plt
+    # Plotting code using mnist_viz_utils if available, otherwise fallback or just update style
+    try:
+        from . import mnist_viz_utils as viz
+        viz.configure_style()
+    except ImportError:
+        pass  # Fallback to defaults if module issues (though it should be there)
 
-    plt.figure(figsize=(6, 4))
-    plt.plot(history["epoch"], history["loss"], marker="o")
-    plt.xlabel("Epoch")
-    plt.ylabel("Cross-entropy loss")
-    plt.title("MNIST CNN training loss")
-    plt.tight_layout()
-    plt.savefig(out_root / "figures" / "01_train_loss.png", dpi=160)
-    plt.close()
+    # 1. Training Loss
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.plot(history["epoch"], history["loss"], marker="o", color=viz.COLOR_CYCLE[0], linewidth=2.5)
+    ax.set_xlabel("Epoch")
+    ax.set_ylabel("Cross-entropy loss")
+    ax.set_title("MNIST CNN training loss")
+    ax.grid(True, **viz.MAJOR_GRID_STYLE)
+    
+    viz.enforce_bold_text(ax)
+    
+    # Save 01_train_loss
+    viz.save_figure(fig, out_root, "01_train_loss")
 
-    plt.figure(figsize=(6, 4))
-    plt.plot(history["epoch"], history["train_acc"], marker="o", label="Train")
-    plt.plot(history["epoch"], history["test_acc"], marker="o", label="Test")
-    plt.xlabel("Epoch")
-    plt.ylabel("Accuracy")
-    plt.title("MNIST CNN accuracy")
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(out_root / "figures" / "02_train_accuracy.png", dpi=160)
-    plt.close()
+    # 2. Accuracy
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.plot(history["epoch"], history["train_acc"], marker="o", label="Train", color=viz.COLOR_CYCLE[0], linewidth=2.5)
+    ax.plot(history["epoch"], history["test_acc"], marker="s", label="Test", color=viz.COLOR_CYCLE[1], linewidth=2.5)
+    ax.set_xlabel("Epoch")
+    ax.set_ylabel("Accuracy")
+    ax.set_title("MNIST CNN accuracy")
+    ax.legend()
+    ax.grid(True, **viz.MAJOR_GRID_STYLE)
+    
+    viz.enforce_bold_text(ax)
+    
+    # Save 02_train_accuracy
+    viz.save_figure(fig, out_root, "02_train_accuracy")
 
     return weights_path, history

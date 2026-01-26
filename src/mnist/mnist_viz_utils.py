@@ -66,6 +66,6 @@ def save_figure(fig: plt.Figure, out_dir: Path, stem: str) -> None:
     # User requested PNG specifically with 300 dpi.
     # We can also save PDF/SVG for completeness if desired, 
     # but strictly user emphasized "saving all figures in PNG".
-    for ext in ("png", "pdf"):
+    for ext in ["png"]:
         fig.savefig(figures_dir / f"{stem}.{ext}", format=ext, bbox_inches="tight", dpi=300)
     plt.close(fig)

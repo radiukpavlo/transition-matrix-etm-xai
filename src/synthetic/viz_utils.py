@@ -78,6 +78,6 @@ def save_figure(fig: plt.Figure, out_dir: Path, stem: str) -> None:
     figures_dir = out_dir / "figures"
     figures_dir.mkdir(parents=True, exist_ok=True)
     
-    for ext in ("pdf", "svg", "png"):
+    for ext in ("png"):
         fig.savefig(figures_dir / f"{stem}.{ext}", format=ext, bbox_inches="tight", dpi=300)
     plt.close(fig)
