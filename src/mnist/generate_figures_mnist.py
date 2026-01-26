@@ -7,11 +7,13 @@ Follows strict visual style guidelines and relies on pre-computed data.
 from __future__ import annotations
 
 import json
+import math
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import numpy as np
 import torch
 from skimage.metrics import structural_similarity as ssim
@@ -22,7 +24,10 @@ from tqdm import tqdm
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+# Import visualization utilities
 from src.mnist import mnist_viz_utils as viz
+# Import rotation utility
+from src.mnist.rotate import rotate_batch
 
 def load_json(path: Path) -> Any:
     with open(path, "r", encoding="utf-8") as f:
@@ -54,9 +59,7 @@ def plot_complex_robustness_curve(
     ax1.legend(loc="upper center", ncol=2, frameon=False)
     ax1.grid(True, **viz.MAJOR_GRID_STYLE)
     
-    # Ax2: Advantage Ratio (New / Old for Score Metrics)
-    # If standard is Error (lower better), we use Old/New.
-    # Here SSIM/PSNR are scores (higher better), so New/Old > 1 is good.
+    # Ax2: Advantage Ratio
     ratio = v_new / v_old
     ratio_label = "Advantage ($T_{new} / T_{old}$)"
     
@@ -68,7 +71,6 @@ def plot_complex_robustness_curve(
     ax2.grid(True, **viz.MAJOR_GRID_STYLE)
     ax2.set_xlim(-90, 90)
     
-    # viz.enforce_bold_text(fig.axes) # Disabled
     viz.save_figure(fig, out_dir, stem)
 
 def plot_symmetry_bar(
@@ -84,7 +86,6 @@ def plot_symmetry_bar(
     colors = [viz.COLOR_CYCLE[0], viz.COLOR_CYCLE[1]]
     
     bars = ax.bar(labels, values, color=colors, edgecolor=viz.DARK_EDGE_COLOR, width=0.6)
-    # ax.bar_label(bars, fmt="%.2e", padding=3, fontweight="bold")
     ax.bar_label(bars, fmt="%.2e", padding=3) # Regular weight
     
     ax.set_ylabel(r"$||T J_A - J_B T||_F$")
@@ -162,7 +163,7 @@ def plot_extended_scatter(
         ax.scatter(
             rot_2d[:, 0], rot_2d[:, 1],
             c="lightgray", # Or use tabulated colors but very faint
-            s=40, alpha=0.3, 
+            s=60, alpha=0.3, # Increased size slightly for visibility
             edgecolor='none',
             label="Rotated",
             zorder=1
@@ -172,7 +173,7 @@ def plot_extended_scatter(
         ax.scatter(
             static_2d[:, 0], static_2d[:, 1],
             c=labels, cmap="tab10",
-            s=120, alpha=1.0,
+            s=150, alpha=1.0,
             edgecolor='black', linewidth=1.5,
             label="Static",
             zorder=2
@@ -189,11 +190,11 @@ def plot_extended_scatter(
     # Right: New
     _plot_side(axs[1], new_static_2d, new_rot_2d, f"{method_name}: $B^*_{{new}}$ (Rotated vs Static)")
     
-    # Add Colorbar for class identification
-    # Since we used "tab10" for static, we can add a colorbar
-    # Create a dummy scalar mappable
+    # Add Colorbar for class identification "outside the figure plot"
+    # To match Figure 09 style:
     sm = plt.cm.ScalarMappable(cmap="tab10", norm=plt.Normalize(vmin=0, vmax=9))
     sm.set_array([])
+    # fraction=0.02, pad=0.04 puts it nicely on the right
     cbar = fig.colorbar(sm, ax=axs, orientation='vertical', fraction=0.02, pad=0.04)
     cbar.set_label("Digit Class")
     cbar.set_ticks(range(10))
@@ -201,177 +202,16 @@ def plot_extended_scatter(
     plt.subplots_adjust(bottom=0.15)
     viz.save_figure(fig, out_dir, stem)
 
-def plot_chaos_figure(
-    samples_path: Path,
-    out_dir: Path,
-    stem: str,
-    subtitle: str = ""
-) -> None:
-    if not samples_path.exists():
-        print(f"Skipping Chaos Figure: {samples_path} not found.")
-        return
-        
-    data = np.load(samples_path)
-    orig = data["orig"]
-    func_old = data["recon_old"]
-    func_new = data["recon_new"]
-    labels = data["labels"]
-    
-    idxs = np.argsort(labels)
-    orig = orig[idxs]
-    func_old = func_old[idxs]
-    func_new = func_new[idxs]
-    labels = labels[idxs]
-    
-    n = 10
-    fig, axs = plt.subplots(3, n, figsize=(n * 1.5, 5))
-    row_titles = ["Input (Rotated)", "Recon ($T_{old}$)", "Recon ($T_{new}$)"]
-    
-    for i in range(n):
-        axs[0, i].imshow(orig[i], cmap="gray", vmin=0, vmax=1)
-        axs[0, i].axis("off")
-        axs[0, i].set_title(str(labels[i]), fontsize=viz.BASE_FONT_SIZE)
-        
-        axs[1, i].imshow(func_old[i], cmap="gray", vmin=0, vmax=1)
-        axs[1, i].axis("off")
-        
-        axs[2, i].imshow(func_new[i], cmap="gray", vmin=0, vmax=1)
-        axs[2, i].axis("off")
-    
-    for r, txt in enumerate(row_titles):
-        axs[r, 0].text(-0.2, 0.5, txt, transform=axs[r, 0].transAxes, 
-                       rotation=90, va='center', ha='right', fontsize=viz.BASE_FONT_SIZE)
-
-    fig.suptitle(f"Rotated Digit Reconstruction Analysis\n{subtitle}", fontsize=viz.TITLE_FONT_SIZE)
-    plt.tight_layout()
-    viz.save_figure(fig, out_dir, stem)
-
-def generate_subset_figures(subset: str, matrices_dir: Path, out_dir: Path) -> None:
-    print(f"--- Generating figures for subset: {subset} ---")
-    
-    # 1. Metrics JSON
-    metrics_path = matrices_dir / f"mnist_metrics_{subset}.json"
-    if not metrics_path.exists():
-        print(f"Metrics not found: {metrics_path}")
-        return
-        
-    metrics = load_json(metrics_path)
-    rob = metrics["robustness"]
-    angles = np.array(rob["angles_deg"])
-    
-    # Robustness Curves (Complex)
-    plot_complex_robustness_curve(
-        angles, rob["mean_ssim_old"], rob["mean_ssim_new"], 
-        "Mean SSIM", f"Robustness: SSIM vs Angle ({subset})", out_dir, f"08_robustness_ssim_vs_angle_{subset}"
-    )
-    plot_complex_robustness_curve(
-        angles, rob["mean_psnr_old"], rob["mean_psnr_new"], 
-        "Mean PSNR (dB)", f"Robustness: PSNR vs Angle ({subset})", out_dir, f"09_robustness_psnr_vs_angle_{subset}"
-    )
-    
-    # Symmetry Bar
-    sym_old = metrics["symmetry_error_fro"]["old"]
-    sym_new = metrics["symmetry_error_fro"]["new"]
-    plot_symmetry_bar(sym_old, sym_new, out_dir, f"07b_symmetry_bar_{subset}", subtitle=f"({subset})")
-    
-    # 2. Chaos Figure
-    chaos_path = matrices_dir / f"mnist_chaos_samples_{subset}.npz"
-    plot_chaos_figure(chaos_path, out_dir, f"10_chaos_figure_{subset}", subtitle=f"Subset: {subset}")
-    
-    # 3. Scatter Plots
-    emb_path = matrices_dir / f"mnist_embeddings_{subset}.npz"
-    if emb_path.exists():
-        data = np.load(emb_path)
-        old_stack = data["B_star_old"]
-        new_stack = data["B_star_new"]
-        labels = data["labels"]
-        
-        all_emb = np.vstack([old_stack, new_stack])
-        n_old = old_stack.shape[0]
-        
-        # Calculate Static vs Rotated
-        try:
-            static_angle_idx = np.where(angles == 0)[0][0]
-            n_samples = n_old // len(angles)
-            start = static_angle_idx * n_samples
-            end = (static_angle_idx + 1) * n_samples
-            
-            # Static embeddings indices
-            # old_static = old_stack[start:end]
-            
-            print(f"Computing projections for {subset} (N={all_emb.shape[0]})...")
-            
-            from sklearn.decomposition import PCA
-            from sklearn.manifold import MDS, TSNE
-            import warnings
-            warnings.filterwarnings("ignore")
-            
-            # Helper to run reduction and plot both types
-            def run_and_plot(reducer, name, stem_simple, stem_complex):
-                emb_all = reducer.fit_transform(all_emb)
-                
-                # Split Old/New
-                emb_old_all = emb_all[:n_old]
-                emb_new_all = emb_all[n_old:]
-                
-                # Split Static/Rotated for Complex Plot
-                emb_old_stat = emb_old_all[start:end]
-                emb_new_stat = emb_new_all[start:end]
-                
-                # 1. Simple Plot (09)
-                plot_embeddings(emb_old_all, emb_new_all, labels, name, out_dir, stem_simple, subset)
-                
-                # 2. Complex Plot (11)
-                plot_extended_scatter(
-                    emb_old_stat, emb_old_all,
-                    emb_new_stat, emb_new_all,
-                    labels[:n_samples], # Assume labels are repeated per angle, so take first chunk
-                    name, out_dir, stem_complex
-                )
-
-            # A. PCA
-            pca = PCA(n_components=2, random_state=42)
-            run_and_plot(pca, "PCA", f"09a_scatter_pca_{subset}", f"11a_robustness_pca_{subset}")
-            
-            # B. MDS
-            if all_emb.shape[0] <= 3000: # Threshold for slowness
-                mds = MDS(n_components=2, random_state=42, normalized_stress='auto', n_init=1)
-                run_and_plot(mds, "MDS", f"09b_scatter_mds_{subset}", f"11b_robustness_mds_{subset}")
-            else:
-                print("Skipping MDS (N too large)")
-                
-            # C. t-SNE
-            tsne = TSNE(n_components=2, random_state=42)
-            run_and_plot(tsne, "t-SNE", f"09c_scatter_tsne_{subset}", f"11c_robustness_tsne_{subset}")
-            
-            # D. UMAP
-            try:
-                import umap
-                reducer = umap.UMAP(n_components=2, random_state=42)
-                # Note: User requested 131_robustness_umap, assuming typo for 11d or specific request.
-                # Plan said 11d. Let's use 11d but also 131 if needed. I will stick to plan (11d) unless directed.
-                # User prompted: "11a... and 131_robustness_umap". Okay, I will use 131 as requested.
-                complex_stem = f"131_robustness_umap_{subset}"
-                run_and_plot(reducer, "UMAP", f"09d_scatter_umap_{subset}", complex_stem)
-            except ImportError:
-                print("UMAP skipped")
-                
-        except Exception as e:
-            print(f"Error computing extended figures: {e}")
-            import traceback
-            traceback.print_exc()
-
-# --- New Functions for On-the-Fly Generation (Figures 03-06) ---
-
-from src.mnist.model import MNISTCNN, CNNConfig
-from src.mnist.data import get_raw_dataloaders
-from src.etm.utils import load_json_matrix
-
-# Configuration for on-the-fly evaluation
+# --- Configuration for on-the-fly evaluation ---
 BATCH_SIZE = 256
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 NORM_MEAN = 0.1307
 NORM_STD = 0.3081
+
+# Models and Data Loading (Needed for Figures 03-06 and 10)
+from src.mnist.model import MNISTCNN, CNNConfig
+from src.mnist.data import get_raw_dataloaders
+from src.etm.utils import load_json_matrix
 
 def load_data_and_model(out_dir: Path) -> Tuple[torch.nn.Module, torch.utils.data.DataLoader, Dict[str, np.ndarray]]:
     print(f"Loading resources (device={DEVICE})...")
@@ -400,13 +240,136 @@ def load_data_and_model(out_dir: Path) -> Tuple[torch.nn.Module, torch.utils.dat
     return model, test_loader, matrices
 
 def reconstruct_batch(model, W_kxl: np.ndarray, x: torch.Tensor) -> np.ndarray:
+    """Reconstruct batch x (N, 1, 28, 28) using transition W (k, l)."""
+    # Normalize for feature extraction
     x_norm = (x.to(DEVICE) - NORM_MEAN) / NORM_STD
     with torch.no_grad():
-        A = model.penultimate(x_norm).cpu().numpy().astype(np.float64) 
+        A = model.penultimate(x_norm).cpu().numpy().astype(np.float64) # (N, k)
     
-    B_hat = A @ W_kxl 
+    B_hat = A @ W_kxl # (N, l)
     recon = np.clip(B_hat.reshape(-1, 28, 28), 0.0, 1.0)
     return recon
+
+def generate_chaos_variants(
+    model, 
+    test_loader, 
+    matrices: Dict[str, np.ndarray], 
+    out_dir: Path, 
+    subset: str
+) -> None:
+    """
+    Generate Figures 10a (0deg), 10b (+-45deg), 10c (+-90deg) on the fly.
+    Features:
+    - Large visible digits.
+    - 4 Rows: Input, Old, New, Difference (Improvement).
+    - Distinct Axes.
+    """
+    # 1. Select distinct samples (one per digit 0-9)
+    # We iterate loader until we find one of each.
+    samples_by_digit = {}
+    for x, y in test_loader:
+        for i in range(len(y)):
+            lbl = int(y[i])
+            if lbl not in samples_by_digit:
+                samples_by_digit[lbl] = x[i:i+1] # Keep as (1, 1, 28, 28)
+            if len(samples_by_digit) == 10:
+                break
+        if len(samples_by_digit) == 10:
+            break
+            
+    # Sort 0-9
+    digits = [samples_by_digit[i] for i in range(10)]
+    input_batch = torch.cat(digits, dim=0).to(DEVICE) # (10, 1, 28, 28)
+    
+    # 2. Define Variants
+    variants = [
+        ("10a", 0.0),
+        ("10b", 45.0),
+        ("10c", 90.0)
+    ]
+    
+    # Fixed seed for angle signs
+    rng = np.random.default_rng(42)
+    
+    for stem_prefix, angle_mag in variants:
+        stem = f"{stem_prefix}_chaos_figure_{subset}"
+        print(f"Generating {stem} (Angle magnitude: {angle_mag})...")
+        
+        # Prepare Rotated Inputs
+        if angle_mag == 0:
+            angles = np.zeros(10)
+        else:
+            # Random sign per digit
+            signs = rng.choice([-1, 1], size=10)
+            angles = signs * angle_mag
+            
+        theta = torch.tensor(angles * math.pi / 180.0, device=DEVICE, dtype=torch.float32)
+        rotated_inputs = rotate_batch(input_batch, theta).detach() # (10, 1, 28, 28)
+        
+        # Reconstruct
+        recon_old = reconstruct_batch(model, matrices["T_old"], rotated_inputs.cpu())
+        recon_new = reconstruct_batch(model, matrices["T_new"], rotated_inputs.cpu())
+        orig_np = rotated_inputs.cpu().numpy().reshape(-1, 28, 28)
+        
+        # Compute Visual Advantage (Difference Row)
+        # Improvement = Error_Old - Error_New
+        # Error = |Input - Recon|
+        # Positive (Green) means New has less error (Better).
+        err_old = np.abs(orig_np - recon_old)
+        err_new = np.abs(orig_np - recon_new)
+        improvement = err_old - err_new
+        
+        # Plotting
+        n = 10
+        fig, axs = plt.subplots(4, n, figsize=(n * 2.0, 9)) # Taller/Wider for clarity
+        
+        row_titles = ["Input", "Recon ($T_{old}$)", "Recon ($T_{new}$)", "Advantage\n($T_{new}$ vs $T_{old}$)"]
+        
+        # Global color scale for difference map
+        # centered at 0. Green for positive (better), Red for negative (worse)
+        div_norm = mcolors.TwoSlopeNorm(vmin=improvement.min(), vcenter=0., vmax=improvement.max())
+        cmap_diff = plt.cm.RdYlGn # Red-Yellow-Green
+        
+        for i in range(n):
+            # Row 0: Input
+            axs[0, i].imshow(orig_np[i], cmap="gray", vmin=0, vmax=1)
+            axs[0, i].axis("off")
+            title_text = f"{i}\n({angles[i]:.0f}°)" if angle_mag > 0 else f"{i}"
+            axs[0, i].set_title(title_text, fontsize=viz.BASE_FONT_SIZE + 2)
+            
+            # Row 1: Old
+            axs[1, i].imshow(recon_old[i], cmap="gray", vmin=0, vmax=1)
+            axs[1, i].axis("off")
+            
+            # Row 2: New
+            axs[2, i].imshow(recon_new[i], cmap="gray", vmin=0, vmax=1)
+            axs[2, i].axis("off")
+            
+            # Row 3: Difference (Advantage)
+            im_diff = axs[3, i].imshow(improvement[i], cmap=cmap_diff, norm=div_norm)
+            axs[3, i].axis("off")
+            
+        # Row Labels (Far Left)
+        for r, txt in enumerate(row_titles):
+            # Place text reasonably to the left
+            axs[r, 0].text(-0.25, 0.5, txt, transform=axs[r, 0].transAxes, 
+                           rotation=90, va='center', ha='right', fontsize=viz.BASE_FONT_SIZE)
+        
+        # Add colorbar for the difference row
+        # Position it to the right of the bottom row
+        cbar_ax = fig.add_axes([0.92, 0.15, 0.015, 0.15]) # [left, bottom, width, height]
+        cbar = fig.colorbar(im_diff, cax=cbar_ax, orientation="vertical")
+        cbar.set_label("Improvement", fontsize=viz.LEGEND_FONT_SIZE)
+        cbar.set_ticks([improvement.min(), 0, improvement.max()])
+        cbar.ax.set_yticklabels(["Worse", "0", "Better"])
+        
+        fig.suptitle(f"Reconstruction & Robustness Analysis ({subset})\nAngle Magnitude: {angle_mag}°", fontsize=viz.TITLE_FONT_SIZE)
+        
+        # Separate axes clearly (handled by subplots, but we ensure spacing)
+        plt.subplots_adjust(wspace=0.1, hspace=0.1)
+        
+        viz.save_figure(fig, out_dir, stem)
+
 
 def compute_metrics(model, matrices: Dict[str, np.ndarray], loader) -> Dict[str, Dict[str, list]]:
     print("Computing metrics on test set...")
@@ -499,39 +462,156 @@ def run_mnist_viz(out_dir: Path) -> None:
         print(f"Error: Matrices directory not found at {matrices_dir}")
         return
 
-    # --- Part 1: On-the-fly generation for Figures 03-06 ---
+    # --- Part 1: On-the-fly generation ---
+    # We need model interactions for Figures 03-06 (Recons/Hist) AND 10 (Chaos Variants)
     try:
         model, test_loader, matrices = load_data_and_model(out_dir)
         
+        # 03. Reconstructions T_old
         plot_reconstructions(
             model, matrices["T_old"], test_loader, 
             "Reconstructions ($T_{old}$)", out_dir, "03_reconstructions_T_old"
         )
         
+        # 04. Reconstructions T_new
         plot_reconstructions(
             model, matrices["T_new"], test_loader, 
             "Reconstructions ($T_{new}$)", out_dir, "04_reconstructions_T_new"
         )
         
+        # Calculate metrics (SSIM/PSNR distributions)
         metrics = compute_metrics(model, matrices, test_loader)
         
+        # 05. SSIM
         plot_metric_histogram(
             metrics["ssim"]["T_old"], metrics["ssim"]["T_new"], 
             "SSIM", out_dir, "05_ssim_comparison"
         )
         
+        # 06. PSNR
         plot_metric_histogram(
             metrics["psnr"]["T_old"], metrics["psnr"]["T_new"], 
             "PSNR (dB)", out_dir, "06_psnr_comparison"
         )
+        
+        # 10. Chaos Variants (10a, 10b, 10c) for "test" subset (represented by loader)
+        generate_chaos_variants(model, test_loader, matrices, out_dir, "test")
+        
     except Exception as e:
-        print(f"Warning: Could not generate on-the-fly figures (03-06): {e}")
+        print(f"Warning: Could not generate on-the-fly figures (03-06, 10): {e}")
         import traceback
         traceback.print_exc()
 
-    # --- Part 2: Pre-computed subset figures (Figures 07-11/13) ---
+    # --- Part 2: Pre-computed subset figures (Figures 07-11/13 etc) ---
     for subset in ["train", "test"]:
         generate_subset_figures(subset, matrices_dir, out_dir)
+
+def generate_subset_figures(subset: str, matrices_dir: Path, out_dir: Path) -> None:
+    print(f"--- Generating figures for subset: {subset} ---")
+    
+    # 1. Metrics JSON
+    metrics_path = matrices_dir / f"mnist_metrics_{subset}.json"
+    if not metrics_path.exists():
+        print(f"Metrics not found: {metrics_path}")
+        return
+        
+    metrics = load_json(metrics_path)
+    rob = metrics["robustness"]
+    angles = np.array(rob["angles_deg"])
+    
+    # Robustness Curves (Complex)
+    plot_complex_robustness_curve(
+        angles, rob["mean_ssim_old"], rob["mean_ssim_new"], 
+        "Mean SSIM", f"Robustness: SSIM vs Angle ({subset})", out_dir, f"08_robustness_ssim_vs_angle_{subset}"
+    )
+    plot_complex_robustness_curve(
+        angles, rob["mean_psnr_old"], rob["mean_psnr_new"], 
+        "Mean PSNR (dB)", f"Robustness: PSNR vs Angle ({subset})", out_dir, f"09_robustness_psnr_vs_angle_{subset}"
+    )
+    
+    # Symmetry Bar
+    sym_old = metrics["symmetry_error_fro"]["old"]
+    sym_new = metrics["symmetry_error_fro"]["new"]
+    plot_symmetry_bar(sym_old, sym_new, out_dir, f"07b_symmetry_bar_{subset}", subtitle=f"({subset})")
+    
+    # 3. Scatter Plots
+    emb_path = matrices_dir / f"mnist_embeddings_{subset}.npz"
+    if emb_path.exists():
+        data = np.load(emb_path)
+        old_stack = data["B_star_old"]
+        new_stack = data["B_star_new"]
+        labels = data["labels"]
+        
+        all_emb = np.vstack([old_stack, new_stack])
+        n_old = old_stack.shape[0]
+        
+        # Calculate Static vs Rotated
+        try:
+            static_angle_idx = np.where(angles == 0)[0][0]
+            n_samples = n_old // len(angles)
+            start = static_angle_idx * n_samples
+            end = (static_angle_idx + 1) * n_samples
+            
+            # Static embeddings indices
+            print(f"Computing projections for {subset} (N={all_emb.shape[0]})...")
+            
+            from sklearn.decomposition import PCA
+            from sklearn.manifold import MDS, TSNE
+            import warnings
+            warnings.filterwarnings("ignore")
+            
+            # Helper to run reduction and plot both types
+            def run_and_plot(reducer, name, stem_simple, stem_complex):
+                # Ensure reproducibility of reducer
+                emb_all = reducer.fit_transform(all_emb)
+                
+                # Split Old/New
+                emb_old_all = emb_all[:n_old]
+                emb_new_all = emb_all[n_old:]
+                
+                # Split Static/Rotated for Complex Plot
+                emb_old_stat = emb_old_all[start:end]
+                emb_new_stat = emb_new_all[start:end]
+                
+                # 1. Simple Plot (09)
+                plot_embeddings(emb_old_all, emb_new_all, labels, name, out_dir, stem_simple, subset)
+                
+                # 2. Complex Plot (11)
+                plot_extended_scatter(
+                    emb_old_stat, emb_old_all,
+                    emb_new_stat, emb_new_all,
+                    labels[:n_samples], 
+                    name, out_dir, stem_complex
+                )
+
+            # A. PCA
+            pca = PCA(n_components=2, random_state=42)
+            run_and_plot(pca, "PCA", f"09a_scatter_pca_{subset}", f"11a_robustness_pca_{subset}")
+            
+            # B. MDS
+            if all_emb.shape[0] <= 3000:
+                mds = MDS(n_components=2, random_state=42, normalized_stress='auto', n_init=1)
+                run_and_plot(mds, "MDS", f"09b_scatter_mds_{subset}", f"11b_robustness_mds_{subset}")
+            else:
+                print("Skipping MDS (N too large)")
+                
+            # C. t-SNE
+            tsne = TSNE(n_components=2, random_state=42)
+            run_and_plot(tsne, "t-SNE", f"09c_scatter_tsne_{subset}", f"11c_robustness_tsne_{subset}")
+            
+            # D. UMAP
+            try:
+                import umap
+                reducer = umap.UMAP(n_components=2, random_state=42)
+                complex_stem = f"11d_robustness_umap_{subset}" # Using standard naming scheme
+                run_and_plot(reducer, "UMAP", f"09d_scatter_umap_{subset}", complex_stem)
+            except ImportError:
+                print("UMAP skipped")
+                
+        except Exception as e:
+            print(f"Error computing extended figures: {e}")
+            import traceback
+            traceback.print_exc()
 
 if __name__ == "__main__":
     out_dir_path = Path("outputs/mnist")
