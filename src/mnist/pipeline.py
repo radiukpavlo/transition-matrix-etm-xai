@@ -54,7 +54,7 @@ class MNISTPipelineConfig:
 
     def __post_init__(self):
         if self.lambda_sweep is None:
-            self.lambda_sweep = [0.0, 0.1, 0.5, 1.0]
+            self.lambda_sweep = [0.0, 0.1, 0.5, 1.0, 10.0]
 
 
 def run_stage1_train_extract(repo_root: Path, out_root: Path, cfg: MNISTPipelineConfig) -> Dict[str, object]:

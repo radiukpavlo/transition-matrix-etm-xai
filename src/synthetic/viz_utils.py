@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import List
 
 # --- STYLE CONFIGURATION ---
-# --- STYLE CONFIGURATION ---
 BASE_FONT_SIZE = 20  # reduced from 22
 TITLE_FONT_SIZE = BASE_FONT_SIZE + 4
 LEGEND_FONT_SIZE = BASE_FONT_SIZE - 2

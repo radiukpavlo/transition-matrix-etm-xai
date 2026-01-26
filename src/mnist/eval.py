@@ -28,10 +28,10 @@ from etm.utils import ensure_dir, save_json
 @dataclass
 class EvalConfig:
     device: str = "cpu"
-    n_eval_samples: int = 2000
-    n_viz_samples: int = 16
-    rotation_deg_max: float = 30.0
-    rotation_deg_step: float = 5.0
+    n_eval_samples: int = 5000
+    n_viz_samples: int = 30
+    rotation_deg_max: float = 90.0
+    rotation_deg_step: float = 10.0
 
 
 def symmetry_error(T_lxk: np.ndarray, J_A: np.ndarray, J_B: np.ndarray, squared: bool = False) -> float:
@@ -155,7 +155,7 @@ def evaluate_and_save(
 
     # 4. Embeddings for Scatter Plot (PCA/MDS etc)
     # Use a subset of labeled data
-    scatter_angles = np.array([-25.0, -15.0, -5.0, 5.0, 15.0, 25.0])
+    scatter_angles = np.array([-90.0, -45.0, -5.0, 5.0, 45.0, 90.0])
     n_scatter = min(128, images01.shape[0])
     
     images_scatter = images01[:n_scatter].to(device)

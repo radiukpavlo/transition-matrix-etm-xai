@@ -25,7 +25,7 @@ from src.etm.utils import ensure_dir, load_json_matrix, save_json, save_json_mat
 @dataclass
 class SyntheticConfig:
     epsilon: float = 1e-2
-    lambdas: Sequence[float] = (0.0, 0.1, 0.25, 0.5, 1.0, 2.0)
+    lambdas: Sequence[float] = (0.0, 0.1, 0.25, 0.5, 1.0, 2.0, 10.0)
     tau: float = 1e-10
     mds_random_state: int = 42
     mds_normalized_stress: bool = False
