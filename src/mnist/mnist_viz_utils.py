@@ -48,15 +48,16 @@ def configure_style() -> None:
     )
 
 def enforce_bold_text(ax: mpl.axes.Axes) -> None:
-    """Ensure all text elements in the axes are bold."""
+    """Ensure all text elements in the axes are normal weight (not bold), as per user request."""
+    # Explicitly set to normal just in case style defaults are otherwise
     for label in ax.get_xticklabels() + ax.get_yticklabels():
-        label.set_fontweight("bold")
+        label.set_fontweight("normal")
     for text in ax.texts:
-        text.set_fontweight("bold")
+        text.set_fontweight("normal")
     legend = ax.get_legend()
     if legend:
         for text in legend.get_texts():
-            text.set_fontweight("bold")
+            text.set_fontweight("normal")
 
 def save_figure(fig: plt.Figure, out_dir: Path, stem: str) -> None:
     """Save figure in PNG format with 300 DPI."""

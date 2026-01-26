@@ -58,14 +58,14 @@ def plot_error_vs_angle(metrics: Dict[str, Any], out_dir: Path) -> None:
     COLOR_NEW = "#1E90FF" # DodgerBlue
 
     # Create subplot with ratio
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10), sharex=True, gridspec_kw={'height_ratios': [2, 1]})
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 10), sharex=True, gridspec_kw={'height_ratios': [2, 1]})
     
     # Main Plot (MSE)
     ax1.plot(angles_deg, results_old, marker='o', color=COLOR_OLD, label="Old Method ($T_{old}$)", linewidth=4, markersize=LINE_MARKER_SIZE)
     ax1.plot(angles_deg, results_new, marker='o', color=COLOR_NEW, label="New Method ($T_{new}$)", linewidth=4, markersize=LINE_MARKER_SIZE)
     ax1.set_ylabel("MSE (Fidelity)")
-    ax1.set_title(f"Robustness to Rotation (Stress Test)\nRange: [{start_deg}, {end_deg}]")
-    ax1.legend(loc='lower center', ncol=2) # Moved Legend inside to upper center to avoid overlap
+    ax1.set_title(f"Robustness to Rotation (Stress Test)\nRange: [-90, 90]")
+    ax1.legend(loc='upper center', ncol=2, frameon=False) 
     ax1.grid(True, **MAJOR_GRID_STYLE)
     
     # Ratio Plot
@@ -75,7 +75,8 @@ def plot_error_vs_angle(metrics: Dict[str, Any], out_dir: Path) -> None:
     ax2.set_xlabel("Rotation Angle (degrees)")
     ax2.set_ylabel("Error Ratio\n(Higher is Better)")
     ax2.grid(True, **MAJOR_GRID_STYLE)
-    ax2.legend(loc='upper right')
+    ax2.legend(loc='upper right', frameon=False)
+    ax2.set_xlim(-90, 90)
 
     plt.tight_layout()
     save_figure(fig, out_dir, "12_error_vs_angle")
