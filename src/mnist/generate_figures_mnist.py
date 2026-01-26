@@ -198,11 +198,11 @@ def generate_subset_figures(subset: str, matrices_dir: Path, out_dir: Path) -> N
     # Robustness Curves
     plot_robustness_curve(
         angles, rob["mean_ssim_old"], rob["mean_ssim_new"], 
-        "Mean SSIM", f"Robustness: SSIM ({subset})", out_dir, f"08_robustness_ssim_{subset}"
+        "Mean SSIM", f"Robustness: SSIM ({subset})", out_dir, f"08_robustness_ssim_vs_angle_{subset}"
     )
     plot_robustness_curve(
         angles, rob["mean_psnr_old"], rob["mean_psnr_new"], 
-        "Mean PSNR (dB)", f"Robustness: PSNR ({subset})", out_dir, f"09_robustness_psnr_{subset}"
+        "Mean PSNR (dB)", f"Robustness: PSNR ({subset})", out_dir, f"09_robustness_psnr_vs_angle_{subset}"
     )
     
     # Symmetry Bar
