@@ -357,7 +357,7 @@ def generate_extended_figures():
     # B. MDS
     print("Running MDS...")
     # MDS is slow on large N, but N here is roughly (15 + 15 + 15*17 + 15*17) ~ 540 samples. Doable.
-    mds = MDS(n_components=2, random_state=random_state, normalized_stress=False)
+    mds = MDS(n_components=2, random_state=random_state, normalized_stress=False, n_init=4)
     all_mds = mds.fit_transform(all_data)
     plot_comparison(all_mds, "MDS", "13b_robustness_mds")
     
@@ -371,7 +371,7 @@ def generate_extended_figures():
     try:
         import umap
         print("Running UMAP...")
-        reducer = umap.UMAP(n_components=2, random_state=random_state)
+        reducer = umap.UMAP(n_components=2, random_state=random_state, n_jobs=1)
         all_umap = reducer.fit_transform(all_data)
         plot_comparison(all_umap, "UMAP", "13d_robustness_umap")
     except ImportError:

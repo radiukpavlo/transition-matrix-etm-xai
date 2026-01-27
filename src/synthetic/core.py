@@ -38,7 +38,7 @@ def _labels_for_15() -> np.ndarray:
 
 
 def mds_2d(X: np.ndarray, random_state: int, normalized_stress: bool) -> np.ndarray:
-    mds = MDS(n_components=2, random_state=random_state, normalized_stress=normalized_stress)
+    mds = MDS(n_components=2, random_state=random_state, normalized_stress=normalized_stress, n_init=4)
     return mds.fit_transform(X)
 
 

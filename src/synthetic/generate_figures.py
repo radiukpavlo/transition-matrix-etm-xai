@@ -252,7 +252,7 @@ def run_synthetic_viz(out_dir: Path) -> None:
     )
 
     # MDS
-    mds = MDS(n_components=2, random_state=42, normalized_stress=False)
+    mds = MDS(n_components=2, random_state=42, normalized_stress=False, n_init=4)
     all_2d_mds = mds.fit_transform(all_embeddings)
     old_mds = all_2d_mds[:n_old]
     new_mds = all_2d_mds[n_old:]
@@ -279,6 +279,7 @@ def run_synthetic_viz(out_dir: Path) -> None:
             n_components=2,
             random_state=42,
             n_neighbors=min(15, all_embeddings.shape[0] // 4),
+            n_jobs=1,
         )
         all_2d_umap = umap_reducer.fit_transform(all_embeddings)
         old_umap = all_2d_umap[:n_old]
