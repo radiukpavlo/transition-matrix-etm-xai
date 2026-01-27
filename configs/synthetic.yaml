@@ -1,5 +1,5 @@
 epsilon: 0.01
-lambdas: [0.0, 0.1, 0.25, 0.5, 1.0, 2.0]
+lambdas: [0.0, 0.001, 0.01, 0.1, 0.5, 1.0, 5.0, 10.0]
 tau: 1.0e-10
 mds_random_state: 42
 mds_normalized_stress: false
