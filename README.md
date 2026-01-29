@@ -14,10 +14,10 @@
     * [Аналіз Trade-off (Точність vs Симетрія)](#аналіз-trade-off-точність-vs-симетрія)
     * [Стійкість: Хаос проти Порядку](#стійкість-хаос-проти-порядку)
 3. [Експеримент 2: MNIST](#експеримент-2-mnist)
-    * [Якість Реконструкції](#якість-реконструкції)
+    * [Якість Реконструкції (Тестовий набір)](#якість-реконструкції-тестовий-набір)
     * [Аналіз Симетрії](#аналіз-симетрії)
     * [Стійкість до Обертань](#стійкість-до-обертань)
-    * [Геометрія Латентного Простору](#геометрія-латентного-простору)
+    * [Геометрія Латентного Простору (Тестовий набір)](#геометрія-латентного-простору-тестовий-набір)
     * [Якісний Аналіз Обертань](#якісний-аналіз-обертань)
 4. [Висновки](#висновки)
 5. [Інструкція з Відтворення](#інструкція-з-відтворення)
@@ -43,14 +43,14 @@ $$ \min_T \|B - AT^\top\|_F^2 + \lambda \|TJ^A - J^BT\|_F^2 $$
 
 | Вхідні дані (MDS A) | Цільові параметри (MDS B) |
 | :---: | :---: |
-| ![MDS A](outputs/synthetic/figures/01_mds_A.png) | ![MDS B](outputs/synthetic/figures/02_mds_B.png) |
+| ![MDS A](outputs/synthetic/figures/png/01_mds_A.png) | ![MDS B](outputs/synthetic/figures/png/02_mds_B.png) |
 | *2D проекція вхідних даних $A$ ($k=5$). Чітко видно кільцеву структуру, що відповідає групі обертань SO(2).* | *2D проекція цільового простору $B$ ($l=4$). Структура зберігається, що підтверджує наявність геометричного зв'язку.* |
 
 ### Спектральний аналіз
 
 Аналіз сингулярних чисел матриці системи рівнянь дозволяє оцінити "жорсткість" або "м'якість" задачі оптимізації.
 
-![Singular Values](outputs/synthetic/figures/07_singular_values_M.png)
+![Singular Values](outputs/synthetic/figures/png/07_singular_values_M.png)
 *Спектр сингулярних чисел $M$. Різке спадання вказує на те, що існує багато напрямків у просторі параметрів, які майже не впливають на нев'язку, що дозволяє нам оптимізувати еквіваріантність без втрати точності.*
 
 ### Матриці Переходу та Генератори
@@ -61,14 +61,14 @@ $$ \min_T \|B - AT^\top\|_F^2 + \lambda \|TJ^A - J^BT\|_F^2 $$
 
 | Старий підхід ($T_{old}$) | Новий підхід ($T_{new}$) |
 | :---: | :---: |
-| ![T old](outputs/synthetic/figures/03_heatmap_T_old.png) | ![T new](outputs/synthetic/figures/04_heatmap_T_new.png) |
+| ![T old](outputs/synthetic/figures/png/03_heatmap_T_old.png) | ![T new](outputs/synthetic/figures/png/04_heatmap_T_new.png) |
 | *Хаотична структура, велика дисперсія значень. "Підгонка" під шум.* | *Впорядкована структура, чіткі патерни. Відображає справжню геометрію.* |
 
 **Генератори Групи Лі:**
 
 | Генератор $J^A$ (Вхід) | Генератор $J^B$ (Вихід) |
 | :---: | :---: |
-| ![JA](outputs/synthetic/figures/05_heatmap_JA.png) | ![JB](outputs/synthetic/figures/06_heatmap_JB.png) |
+| ![JA](outputs/synthetic/figures/png/05_heatmap_JA.png) | ![JB](outputs/synthetic/figures/png/06_heatmap_JB.png) |
 | *Кососиметрична матриця $5 \times 5$.* | *Блочно-діагональна структура $4 \times 4$.* |
 
 ### Аналіз Trade-off (Точність vs Симетрія)
@@ -77,7 +77,7 @@ $$ \min_T \|B - AT^\top\|_F^2 + \lambda \|TJ^A - J^BT\|_F^2 $$
 
 | Помилка реконструкції (Fidelity) | Помилка симетрії (Equivariance) |
 | :---: | :---: |
-| ![MSE vs Lambda](outputs/synthetic/figures/08_tradeoff_mse_vs_lambda.png) | ![Sym vs Lambda](outputs/synthetic/figures/09_tradeoff_sym_vs_lambda.png) |
+| ![MSE vs Lambda](outputs/synthetic/figures/png/08_tradeoff_mse_vs_lambda.png) | ![Sym vs Lambda](outputs/synthetic/figures/png/09_tradeoff_sym_vs_lambda.png) |
 | *MSE зростає дуже повільно при збільшенні $\lambda$. Це "ціна", яку ми платимо.* | *Помилка симетрії падає експоненційно! Це гігантський "виграш".* |
 
 ### Стійкість: Хаос проти Порядку
@@ -85,19 +85,19 @@ $$ \min_T \|B - AT^\top\|_F^2 + \lambda \|TJ^A - J^BT\|_F^2 $$
 Ми тестуємо стійкість, обертаючи вхідні дані і проектуючи їх через $T_{old}$ та $T_{new}$.
 
 **1. PCA Проекція:**
-![PCA](outputs/synthetic/figures/10a_robustness_pca.png)
+![PCA](outputs/synthetic/figures/png/10a_robustness_pca.png)
 *Ліворуч ($T_{old}$): Точки перемішуються. Праворуч ($T_{new}$): Точки рухаються по орбітах, зберігаючи кластерну структуру.*
 
 **2. MDS (Multidimensional Scaling):**
-![MDS](outputs/synthetic/figures/10b_robustness_mds.png)
+![MDS](outputs/synthetic/figures/png/10b_robustness_mds.png)
 *MDS підтверджує, що глобальна метрика простору зберігається значно краще у нашому методі.*
 
 **3. t-SNE:**
-![t-SNE](outputs/synthetic/figures/10c_robustness_tsne.png)
+![t-SNE](outputs/synthetic/figures/png/10c_robustness_tsne.png)
 *t-SNE показує локальну структуру. Старий метод створює "кашу", новий — чіткі лінії.*
 
 **4. UMAP:**
-![UMAP](outputs/synthetic/figures/10d_robustness_umap.png)
+![UMAP](outputs/synthetic/figures/png/10d_robustness_umap.png)
 *Аналогічно до t-SNE, UMAP демонструє повну сепарабельність класів при використанні еквіваріантної матриці.*
 
 ---
@@ -112,14 +112,14 @@ $$ \min_T \|B - AT^\top\|_F^2 + \lambda \|TJ^A - J^BT\|_F^2 $$
 
 | $T_{old}$ (SVD) | $T_{new}$ (Equivariant) |
 | :---: | :---: |
-| ![Recon Old](outputs/mnist/figures/03_reconstructions_T_old.png) | ![Recon New](outputs/mnist/figures/04_reconstructions_T_new.png) |
+| ![Recon Old](outputs/mnist/figures/png/03_reconstructions_T_old.png) | ![Recon New](outputs/mnist/figures/png/04_reconstructions_T_new.png) |
 | *Якість візуально ідентична. Додавання еквіваріантності не погіршує сприйняття.* | *Зображення чіткі, цифри розпізнавані.* |
 
 **Гістрограми метрик якості (SSIM/PSNR):**
 
 | SSIM (Structural Similarity) | PSNR (Peak Signal-to-Noise Ratio) |
 | :---: | :---: |
-| ![SSIM Hist](outputs/mnist/figures/05_ssim_comparison.png) | ![PSNR Hist](outputs/mnist/figures/06_psnr_comparison.png) |
+| ![SSIM Hist](outputs/mnist/figures/png/05_ssim_comparison.png) | ![PSNR Hist](outputs/mnist/figures/png/06_psnr_comparison.png) |
 | *Розподіли майже накладаються один на одного. Втрати якості немає.* | *Високі значення PSNR свідчать про гарну реконструкцію.* |
 
 ### Аналіз Симетрії
@@ -128,7 +128,7 @@ $$ \min_T \|B - AT^\top\|_F^2 + \lambda \|TJ^A - J^BT\|_F^2 $$
 
 | Порівняння (Bar Plot) |
 | :---: |
-| ![Sym Bar](outputs/mnist/figures/07b_symmetry_bar_test.png) |
+| ![Sym Bar](outputs/mnist/figures/png/07b_symmetry_bar_test.png) |
 | *Наш метод (помаранчевий) має в рази меншу помилку симетрії, ніж Baseline (синій).* |
 
 ### Стійкість до Обертань
@@ -137,7 +137,7 @@ $$ \min_T \|B - AT^\top\|_F^2 + \lambda \|TJ^A - J^BT\|_F^2 $$
 
 | SSIM vs Angle | PSNR vs Angle |
 | :---: | :---: |
-| ![SSIM Curve](outputs/mnist/figures/08_robustness_ssim_vs_angle_test.png) | ![PSNR Curve](outputs/mnist/figures/09_robustness_psnr_vs_angle_test.png) |
+| ![SSIM Curve](outputs/mnist/figures/png/08_robustness_ssim_vs_angle_test.png) | ![PSNR Curve](outputs/mnist/figures/png/09_robustness_psnr_vs_angle_test.png) |
 | *Криві майже ідентичні. Це контрінтуїтивний, але валий результат: ми досягли еквіваріантності (структурної стійкості) без погіршення числової стійкості реконструкції.* | |
 
 ### Геометрія Латентного Простору (Тестовий набір)
@@ -145,24 +145,24 @@ $$ \min_T \|B - AT^\top\|_F^2 + \lambda \|TJ^A - J^BT\|_F^2 $$
 Як виглядає простір кодів для обернутих цифр?
 
 **1. PCA:**
-![MNIST PCA](outputs/mnist/figures/09a_scatter_pca_test.png)
+![MNIST PCA](outputs/mnist/figures/png/09a_scatter_pca_test.png)
 *Найпростіша проекція. Вже тут видно кращу згрупованість.*
 
 **2. MDS:**
-![MNIST MDS](outputs/mnist/figures/09b_scatter_mds_test.png)
+![MNIST MDS](outputs/mnist/figures/png/09b_scatter_mds_test.png)
 
 **3. t-SNE:**
-![MNIST t-SNE](outputs/mnist/figures/09c_scatter_tsne_test.png)
+![MNIST t-SNE](outputs/mnist/figures/png/09c_scatter_tsne_test.png)
 *Критично важливий графік. Для $T_{new}$ ми бачимо чіткі, ізольовані кластери цифр. Для $T_{old}$ границі розмиті.*
 
 **4. UMAP:**
-![MNIST UMAP](outputs/mnist/figures/09d_scatter_umap_test.png)
+![MNIST UMAP](outputs/mnist/figures/png/09d_scatter_umap_test.png)
 *UMAP ще краще підкреслює збереження глобальної топології.*
 
 ### Якісний Аналіз Обертань
 
 Приклад того, як виглядають цифри при повороті.
-![Chaos Figure](outputs/mnist/figures/10a_chaos_figure_test.png)
+![Chaos Figure](outputs/mnist/figures/png/10a_chaos_figure_test.png)
 *Демонстрація "хаосу" проти "порядку". Кожен стовпчик - випадковий поворот цифри.*
 
 ---
@@ -233,13 +233,13 @@ python run_all.py --mnist
 **Синтетичні дані:**
 
 ```bash
-python src/synthetic/generate_figures.py
+python src/synthetic/generate_figures_synthetic.py
 ```
 
 **Extended Visualization (Rotated vs Static):**
 
 ```bash
-python src/synthetic/generate_figures_extended.py
+python src/synthetic/generate_figures_synthetic.py
 ```
 
 **MNIST:**

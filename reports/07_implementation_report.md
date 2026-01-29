@@ -109,18 +109,18 @@ A λ sweep confirms the expected trade-off: fidelity mildly degrades as λ incre
 
 ### Required synthetic figures (10+)
 
-All figures are saved under `outputs/synthetic/figures/`.
+All figures are saved under `outputs/synthetic/figures/png/`.
 
-1. MDS scatter of `A`: ![MDS(A)](outputs/synthetic/figures/01_mds_A.png)
-2. MDS scatter of `B`: ![MDS(B)](outputs/synthetic/figures/02_mds_B.png)
-3. Heatmap of baseline `T_old` (least squares): ![T_old](outputs/synthetic/figures/03_heatmap_T_old.png)
-4. Heatmap of `T_new`: ![T_new](outputs/synthetic/figures/04_heatmap_T_new.png)
-5. Heatmap of `J^A`: ![J_A](outputs/synthetic/figures/05_heatmap_JA.png)
-6. Heatmap of `J^B`: ![J_B](outputs/synthetic/figures/06_heatmap_JB.png)
-7. Singular values of combined system matrix `M`: ![svd](outputs/synthetic/figures/07_singular_values_M.png)
-8. Trade-off: `MSE_fid` vs `λ`: ![mse-vs-lam](outputs/synthetic/figures/08_tradeoff_mse_vs_lambda.png)
-9. Trade-off: `Sym_err` vs `λ`: ![sym-vs-lam](outputs/synthetic/figures/09_tradeoff_sym_vs_lambda.png)
-10. Robustness scatter (author-requested, side-by-side): ![robustness](outputs/synthetic/figures/10_robustness_scatter_old_vs_new.png)
+1. MDS scatter of `A`: ![MDS(A)](outputs/synthetic/figures/png/01_mds_A.png)
+2. MDS scatter of `B`: ![MDS(B)](outputs/synthetic/figures/png/02_mds_B.png)
+3. Heatmap of baseline `T_old` (least squares): ![T_old](outputs/synthetic/figures/png/03_heatmap_T_old.png)
+4. Heatmap of `T_new`: ![T_new](outputs/synthetic/figures/png/04_heatmap_T_new.png)
+5. Heatmap of `J^A`: ![J_A](outputs/synthetic/figures/png/05_heatmap_JA.png)
+6. Heatmap of `J^B`: ![J_B](outputs/synthetic/figures/png/06_heatmap_JB.png)
+7. Singular values of combined system matrix `M`: ![svd](outputs/synthetic/figures/png/07_singular_values_M.png)
+8. Trade-off: `MSE_fid` vs `λ`: ![mse-vs-lam](outputs/synthetic/figures/png/08_tradeoff_mse_vs_lambda.png)
+9. Trade-off: `Sym_err` vs `λ`: ![sym-vs-lam](outputs/synthetic/figures/png/09_tradeoff_sym_vs_lambda.png)
+10. Robustness scatter (author-requested, side-by-side): ![robustness](outputs/synthetic/figures/png/10_robustness_scatter_old_vs_new.png)
 
 ### Full worked numerical example (matrices)
 
@@ -229,7 +229,7 @@ This will generate:
 - `outputs/mnist/matrices/J_A.json`, `J_B.json`
 - `outputs/mnist/matrices/T_old_*.json`, `T_new_*.json`
 - `outputs/mnist/matrices/mnist_metrics.json`
-- `outputs/mnist/figures/` (10+ figures)
+- `outputs/mnist/figures/png/` (10+ figures)
 - `outputs/logs/` (detailed run logs)
 - `outputs/mnist/runs/*_manifest.json` (run manifest with config + metrics)
 
@@ -241,7 +241,7 @@ After a successful MNIST run, verify:
 ls outputs/mnist/models/mnist_cnn_k490.pt
 ls outputs/mnist/matrices/J_A.json outputs/mnist/matrices/J_B.json
 ls outputs/mnist/matrices/T_old_lxk.json outputs/mnist/matrices/T_new_lxk.json
-ls outputs/mnist/figures/01_train_loss.png outputs/mnist/figures/10_qualitative_rotated_grid.png
+ls outputs/mnist/figures/png/01_train_loss.png outputs/mnist/figures/png/10_qualitative_rotated_grid.png
 ```
 
 ---
