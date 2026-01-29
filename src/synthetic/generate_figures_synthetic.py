@@ -103,10 +103,10 @@ def _plot_embedding_comparison(
     out_dir: Path,
     stem: str,
 ) -> None:
-    """Plot Old vs New embeddings side-by-side (chaos vs order)."""
+    """Plot Old vs New embeddings side-by-side."""
     fig, axs = plt.subplots(1, 2, figsize=(22, 10))
     
-    # Left: B*_old - Chaos
+    # Left: B*_old
     for c in np.unique(labels):
         idx = labels == c
         axs[0].scatter(
@@ -120,12 +120,12 @@ def _plot_embedding_comparison(
             label=f"Class {c}",
             marker=CLASS_MARKERS[c % len(CLASS_MARKERS)]
         )
-    axs[0].set_title(f"{method_name}: $B^*_{{old}}$ (Chaos)")
+    axs[0].set_title(f"{method_name}: $B^*_{{old}}$")
     axs[0].set_xlabel(f"{method_name}-1")
     axs[0].set_ylabel(f"{method_name}-2")
     axs[0].grid(True, **MAJOR_GRID_STYLE)
     
-    # Right: B*_new - Order
+    # Right: B*_new
     for c in np.unique(labels):
         idx = labels == c
         axs[1].scatter(
@@ -139,7 +139,7 @@ def _plot_embedding_comparison(
             label=f"Class {c}",
             marker=CLASS_MARKERS[c % len(CLASS_MARKERS)]
         )
-    axs[1].set_title(f"{method_name}: $B^*_{{new}}$ (Order)")
+    axs[1].set_title(f"{method_name}: $B^*_{{new}}$")
     axs[1].set_xlabel(f"{method_name}-1")
     axs[1].set_ylabel(f"{method_name}-2")
     axs[1].grid(True, **MAJOR_GRID_STYLE)
@@ -432,7 +432,7 @@ def run_synthetic_viz(out_dir: Path) -> None:
         "Trade-off: Symmetry Error vs Lambda", out_dir, "09_tradeoff_sym_vs_lambda"
     )
 
-    # 3. Robustness Scatter Plots (chaos vs order) [Figure 10]
+    # 3. Robustness Scatter Plots [Figure 10]
     B_old_stacked = np.vstack(B_old_rots)
     B_new_stacked = np.vstack(B_new_rots)
     all_embeddings = np.vstack([B_old_stacked, B_new_stacked])
