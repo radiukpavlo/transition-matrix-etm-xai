@@ -19,6 +19,7 @@ import torch
 from skimage.metrics import structural_similarity as ssim
 from skimage.metrics import peak_signal_noise_ratio as psnr
 from tqdm import tqdm
+from PIL import Image, ImageDraw, ImageFont
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -202,7 +203,195 @@ def plot_extended_scatter(
     plt.subplots_adjust(bottom=0.15)
     viz.save_figure(fig, out_dir, stem)
 
-# --- Configuration for on-the-fly evaluation ---
+def plot_symmetry_bar_train_test(train_metrics: dict, test_metrics: dict, out_dir: Path, stem: str) -> None:
+    sym_old_train = float(train_metrics["symmetry_error_fro"]["old"])
+    sym_new_train = float(train_metrics["symmetry_error_fro"]["new"])
+    sym_old_test = float(test_metrics["symmetry_error_fro"]["old"])
+    sym_new_test = float(test_metrics["symmetry_error_fro"]["new"])
+
+    fig, ax = plt.subplots(figsize=(5.5, 3.2), dpi=200)
+    groups = ["Train", "Test"]
+    x = np.arange(len(groups))
+    width = 0.35
+    ax.bar(x - width / 2, [sym_old_train, sym_old_test], width, label="Baseline $T_{old}$", color=viz.COLOR_CYCLE[0])
+    ax.bar(x + width / 2, [sym_new_train, sym_new_test], width, label="ETM $T_{new}$", color=viz.COLOR_CYCLE[1])
+    ax.set_ylabel(r"$\|T J^A - J^B T\|_F$")
+    ax.set_xticks(x)
+    ax.set_xticklabels(groups)
+    ax.set_yscale("log")
+    ax.legend(frameon=False, fontsize=7)
+    ax.set_title("Symmetry Defect (log scale)")
+    ax.grid(axis='y', **viz.MAJOR_GRID_STYLE)
+    
+    viz.save_figure(fig, out_dir, stem)
+
+
+def plot_lambda_sweep_symerr(lambda_sweep: dict, out_dir: Path, stem: str, highlight_lambda: float = 0.5) -> None:
+    rows = lambda_sweep["rows"]
+    lambdas = [float(r["lambda"]) for r in rows]
+    sym_err = [float(r["symmetry_error"]) for r in rows]
+    x_vals = [1e-4 if l == 0.0 else l for l in lambdas]  # visualize 0 on log axis
+
+    fig, ax = plt.subplots(figsize=(5.5, 3.2), dpi=200)
+    ax.plot(x_vals, sym_err, marker="o")
+    ax.set_xscale("log")
+    ax.set_xlabel(r"$\lambda$ (log scale)")
+    ax.set_ylabel(r"$\|T J^A - J^B T\|_F$")
+    ax.set_title(r"MNIST: Symmetry Defect vs. $\lambda$")
+    ax.grid(True, **viz.MAJOR_GRID_STYLE)
+
+    for xv, l, se in zip(x_vals, lambdas, sym_err):
+        if abs(l - highlight_lambda) < 1e-12:
+            ax.scatter([xv], [se], s=40, zorder=5)
+            ax.annotate(rf"$\lambda={highlight_lambda}$", (xv, se), textcoords="offset points",
+                        xytext=(6, 6), fontsize=7)
+
+    viz.save_figure(fig, out_dir, stem)
+
+
+def plot_generator_singular_values(gen_sv: dict, out_dir: Path, stem: str) -> None:
+    svA = np.array(gen_sv["GA_singular_values"], dtype=float)
+    svB = np.array(gen_sv["GB_singular_values"], dtype=float)
+
+    fig, ax = plt.subplots(figsize=(5.5, 3.2), dpi=200)
+    ax.semilogy(svA, label=r"$G_A$ fit")
+    ax.semilogy(svB, label=r"$G_B$ fit")
+    ax.set_xlabel("Index")
+    ax.set_ylabel("Singular value (log)")
+    ax.set_title("Generator Estimation: Singular Value Spectra")
+    ax.legend(frameon=False, fontsize=7)
+    ax.grid(True, **viz.MAJOR_GRID_STYLE)
+    
+    viz.save_figure(fig, out_dir, stem)
+
+
+def plot_extended_robustness_curves(metrics_test: dict, out_dir: Path) -> None:
+    """Generate extended robustness curves (Test set): 14a, 14b, 14c, 14d."""
+    angles = np.array(metrics_test["robustness"]["angles_deg"], dtype=float)
+    ssim_old = np.array(metrics_test["robustness"]["mean_ssim_old"], dtype=float)
+    ssim_new = np.array(metrics_test["robustness"]["mean_ssim_new"], dtype=float)
+    psnr_old = np.array(metrics_test["robustness"]["mean_psnr_old"], dtype=float)
+    psnr_new = np.array(metrics_test["robustness"]["mean_psnr_new"], dtype=float)
+
+    # 14a: SSIM
+    fig, ax = plt.subplots(figsize=(5.5, 3.2), dpi=200)
+    ax.plot(angles, ssim_old, label="Baseline SSIM")
+    ax.plot(angles, ssim_new, label="ETM SSIM")
+    ax.set_xlabel("Rotation angle (deg)")
+    ax.set_ylabel("Mean SSIM")
+    ax.set_title("MNIST Robustness (Test): SSIM vs Rotation, ±90°")
+    ax.legend(frameon=False, fontsize=7)
+    ax.grid(True, **viz.MAJOR_GRID_STYLE)
+    viz.save_figure(fig, out_dir, "14a_robustness_ssim_vs_angle_test_90deg")
+
+    # 14b: PSNR
+    fig, ax = plt.subplots(figsize=(5.5, 3.2), dpi=200)
+    ax.plot(angles, psnr_old, label="Baseline PSNR")
+    ax.plot(angles, psnr_new, label="ETM PSNR")
+    ax.set_xlabel("Rotation angle (deg)")
+    ax.set_ylabel("Mean PSNR")
+    ax.set_title("MNIST Robustness (Test): PSNR vs Rotation, ±90°")
+    ax.legend(frameon=False, fontsize=7)
+    ax.grid(True, **viz.MAJOR_GRID_STYLE)
+    viz.save_figure(fig, out_dir, "14b_robustness_psnr_vs_angle_test_90deg")
+
+    # 14c: Delta SSIM
+    fig, ax = plt.subplots(figsize=(5.5, 3.2), dpi=200)
+    ax.axhline(0.0, linewidth=0.8, color='black')
+    ax.plot(angles, ssim_new - ssim_old, marker="o")
+    ax.set_xlabel("Rotation angle (deg)")
+    ax.set_ylabel(r"$\Delta$SSIM (ETM - Baseline)")
+    ax.set_title("MNIST Robustness Gain: SSIM Difference vs Rotation")
+    ax.grid(True, **viz.MAJOR_GRID_STYLE)
+    viz.save_figure(fig, out_dir, "14c_delta_ssim_vs_angle_test_90deg")
+
+    # 14d: Delta PSNR
+    fig, ax = plt.subplots(figsize=(5.5, 3.2), dpi=200)
+    ax.axhline(0.0, linewidth=0.8, color='black')
+    ax.plot(angles, psnr_new - psnr_old, marker="o")
+    ax.set_xlabel("Rotation angle (deg)")
+    ax.set_ylabel(r"$\Delta$PSNR (ETM - Baseline)")
+    ax.set_title("MNIST Robustness Gain: PSNR Difference vs Rotation")
+    ax.grid(True, **viz.MAJOR_GRID_STYLE)
+    viz.save_figure(fig, out_dir, "14d_delta_psnr_vs_angle_test_90deg")
+
+
+def plot_mega_panel(out_dir: Path, stem: str) -> None:
+    # Requires availability of specific source figures in PNG format
+    # Source paths (we rely on the 'png' folder we just populated)
+    # Layout: 2 rows x 3 cols
+    
+    png_dir = out_dir / "figures" / "png"
+    
+    # Files expected to exist:
+    # (a) 05_ssim_comparison.png
+    # (b) 06_psnr_comparison.png
+    # (c) 12a_symmetry_bar_train_test.png
+    # (d) 08_robustness_ssim_vs_angle_test.png (Assuming this is what was intended, or 14a?)
+    #     Note: User original code referenced "08_robustness_ssim_vs_angle_test.png" 
+    #     which comes from generate_subset_figures("test").
+    # (e) 09_robustness_psnr_vs_angle_test.png
+    # (f) 12b_lambda_sweep_symerr.png
+    
+    panel_sources = [
+        "05_ssim_comparison.png",
+        "06_psnr_comparison.png",
+        "12a_symmetry_bar_train_test.png",
+        "08_robustness_ssim_vs_angle_test.png",
+        "09_robustness_psnr_vs_angle_test.png",
+        "12b_lambda_sweep_symerr.png"
+    ]
+    
+    panel_paths = [png_dir / fname for fname in panel_sources]
+    
+    # Check existence
+    for p in panel_paths:
+        if not p.exists():
+            print(f"Warning: Missing panel source for mega figure: {p}")
+            return
+
+    panel_w, panel_h = 900, 600
+    cols, rows = 3, 2
+
+    imgs = [Image.open(p).convert("RGB").resize((panel_w, panel_h)) for p in panel_paths]
+    mega = Image.new("RGB", (panel_w * cols, panel_h * rows), color=(255, 255, 255))
+
+    labels = ["(a)", "(b)", "(c)", "(d)", "(e)", "(f)"]
+    try:
+        # Try a standard font, else default
+        font = ImageFont.truetype("arial.ttf", 36)
+    except IOError:
+        try:
+             font = ImageFont.truetype("DejaVuSans-Bold.ttf", 36)
+        except IOError:
+             font = ImageFont.load_default()
+
+    draw = ImageDraw.Draw(mega)
+    for idx, im in enumerate(imgs):
+        r = idx // cols
+        c = idx % cols
+        mega.paste(im, (c * panel_w, r * panel_h))
+        # small white background for label
+        draw.rectangle([c * panel_w + 10, r * panel_h + 10, c * panel_w + 110, r * panel_h + 60],
+                       fill=(255, 255, 255))
+        draw.text((c * panel_w + 20, r * panel_h + 15), labels[idx], fill=(0, 0, 0), font=font)
+
+    # Save manually to the 3 folders using logic similar to viz.save_figure but for PIL image
+    # Note: viz.save_figure works on matplotlib figures. Here we have a PIL image.
+    # We will replicate the saving logic.
+    formats = ["png", "pdf"] # SVG not directly supported by PIL save easily without conversion, leaving as PNG/PDF
+    # Actually user requested SVG for everything. PIL doesn't save SVG. 
+    # But since this is a raster composition, wrapping it in SVG is just embedding the raster.
+    # For now, we will save as PNG and PDF.
+    
+    base_figures_dir = out_dir / "figures"
+    for fmt in ["png", "pdf"]:
+        fmt_dir = base_figures_dir / fmt
+        fmt_dir.mkdir(parents=True, exist_ok=True)
+        #For PDF, resolution arg is different usually, but save handles it
+        mega.save(fmt_dir / f"{stem}.{fmt}") 
+        
+    print(f"Generated Mega Panel: {stem}")
 BATCH_SIZE = 256
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 NORM_MEAN = 0.1307
@@ -505,6 +694,43 @@ def run_mnist_viz(out_dir: Path) -> None:
     # --- Part 2: Pre-computed subset figures (Figures 07-11/13 etc) ---
     for subset in ["train", "test"]:
         generate_subset_figures(subset, matrices_dir, out_dir)
+        
+    # --- Part 3: Mega Panel & Extra Figures (from legacy generate_mnist_mega...) ---
+    try:
+        print("Generating consolidated mega figures...")
+        train_metrics = load_json(matrices_dir / "mnist_metrics_train.json")
+        test_metrics = load_json(matrices_dir / "mnist_metrics_test.json")
+        lambda_sweep = load_json(matrices_dir / "lambda_sweep.json")
+        gen_sv = load_json(matrices_dir / "generator_singular_values.json")
+        
+        # 12a. Symmetry Bar (Train vs Test)
+        plot_symmetry_bar_train_test(
+            train_metrics, test_metrics, 
+            out_dir, "12a_symmetry_bar_train_test"
+        )
+        
+        # 12b. Lambda Sweep
+        plot_lambda_sweep_symerr(
+            lambda_sweep, out_dir, "12b_lambda_sweep_symerr"
+        )
+        
+        # 13. Generator SV
+        plot_generator_singular_values(
+            gen_sv, out_dir, "13_generator_singular_values"
+        )
+        
+        # 14. Extended Robustness (Test 90deg)
+        plot_extended_robustness_curves(test_metrics, out_dir)
+        
+        # 12. Mega Panel (Must be last to ensure inputs exist)
+        plot_mega_panel(out_dir, "12_mega_mnist_panel")
+        
+    except FileNotFoundError as e:
+        print(f"Skipping Mega Figures due to missing data: {e}")
+    except Exception as e:
+        print(f"Error generating mega figures: {e}")
+        import traceback
+        traceback.print_exc()
 
 def generate_subset_figures(subset: str, matrices_dir: Path, out_dir: Path) -> None:
     print(f"--- Generating figures for subset: {subset} ---")
