@@ -73,10 +73,22 @@ def enforce_bold_text(ax: mpl.axes.Axes) -> None:
             text.set_fontweight("bold")
 
 def save_figure(fig: plt.Figure, out_dir: Path, stem: str) -> None:
-    """Save figure in PDF, SVG, and PNG formats with 300 DPI."""
-    figures_dir = out_dir / "figures"
-    figures_dir.mkdir(parents=True, exist_ok=True)
+    """Save figure in PNG (300 dpi), PDF, and SVG formats in separate subfolders."""
+    # Define formats and their specific kwargs
+    formats = {
+        "png": {"dpi": 300},
+        "pdf": {},
+        "svg": {}
+    }
     
-    for ext in ["png"]:
-        fig.savefig(figures_dir / f"{stem}.{ext}", format=ext, bbox_inches="tight", dpi=300)
+    base_figures_dir = out_dir / "figures"
+    
+    for fmt, kwargs in formats.items():
+        # Create specific subfolder for each format
+        fmt_dir = base_figures_dir / fmt
+        fmt_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Save figure
+        fig.savefig(fmt_dir / f"{stem}.{fmt}", format=fmt, bbox_inches="tight", **kwargs)
+    
     plt.close(fig)
