@@ -517,7 +517,7 @@ def generate_chaos_variants(
         # Global color scale for difference map
         # centered at 0. Green for positive (better), Red for negative (worse)
         div_norm = mcolors.TwoSlopeNorm(vmin=improvement.min(), vcenter=0., vmax=improvement.max())
-        cmap_diff = plt.cm.RdYlGn # Red-Yellow-Green
+        cmap_diff = plt.cm.RdBu # Red-Blue (Red=Deterioration, Blue=Improvement)
         
         for i in range(n):
             # Row 0: Input

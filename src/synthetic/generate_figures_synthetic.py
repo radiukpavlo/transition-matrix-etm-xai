@@ -45,11 +45,13 @@ def load_json(path: Path) -> Any:
 
 # --- Plotting Functions from generate_figures.py ---
 
-def _plot_heatmap(M: np.ndarray, title: str, out_dir: Path, stem: str) -> None:
+def _plot_heatmap(M: np.ndarray, title: str, out_dir: Path, stem: str, xlabel: str = "Features", ylabel: str = "Components") -> None:
     fig, ax = plt.subplots(figsize=(9, 7.5)) 
     im = ax.imshow(M, aspect="auto")
     plt.colorbar(im, ax=ax)
     ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
     save_figure(fig, out_dir, stem)
 
 
@@ -405,10 +407,10 @@ def run_synthetic_viz(out_dir: Path) -> None:
     # --- Generate Original Figures (01-10) ---
 
     # 1. Heatmaps (numbered to match existing naming convention)
-    _plot_heatmap(W_old, "Heatmap: T_old (Baseline)", out_dir, "03_heatmap_T_old")
-    _plot_heatmap(W_new, "Heatmap: T_new (Equivariant)", out_dir, "04_heatmap_T_new")
-    _plot_heatmap(JA, "Heatmap: J^A", out_dir, "05_heatmap_JA")
-    _plot_heatmap(JB, "Heatmap: J^B", out_dir, "06_heatmap_JB")
+    _plot_heatmap(W_old, "Heatmap: T_old (Baseline)", out_dir, "03_heatmap_T_old", xlabel="Features (Input Dim)", ylabel="Latent Components")
+    _plot_heatmap(W_new, "Heatmap: T_new (Equivariant)", out_dir, "04_heatmap_T_new", xlabel="Features (Input Dim)", ylabel="Latent Components")
+    _plot_heatmap(JA, "Heatmap: J^A", out_dir, "05_heatmap_JA", xlabel="Dimension 2", ylabel="Dimension 1")
+    _plot_heatmap(JB, "Heatmap: J^B", out_dir, "06_heatmap_JB", xlabel="Dimension 2", ylabel="Dimension 1")
 
     # 1b. Scatter Plots (MDS)
     _plot_scatter(A_2d, "Synthetic: MDS(A)", out_dir, "01_mds_A")
