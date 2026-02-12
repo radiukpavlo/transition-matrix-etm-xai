@@ -42,6 +42,8 @@ def plot_complex_robustness_curve(
     title: str,
     out_dir: Path,
     stem: str,
+    parent_gs: Optional[mpl.gridspec.SubplotSpec] = None,
+    fig: Optional[plt.Figure] = None
 ) -> None:
     """Plot robustness curve with ratio subplot."""
     # Filter for -90 to 90
@@ -50,14 +52,20 @@ def plot_complex_robustness_curve(
     v_old = np.array(vals_old)[mask]
     v_new = np.array(vals_new)[mask]
     
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 10), sharex=True, gridspec_kw={'height_ratios': [2, 1]})
+    if parent_gs is not None and fig is not None:
+        # Create nested gridspec
+        gs_inner = mpl.gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=parent_gs, height_ratios=[2, 1], hspace=0.1)
+        ax1 = fig.add_subplot(gs_inner[0])
+        ax2 = fig.add_subplot(gs_inner[1], sharex=ax1)
+    else:
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 10), sharex=True, gridspec_kw={'height_ratios': [2, 1]})
     
     # Ax1: Main metrics
     ax1.plot(a, v_old, marker=viz.CLASS_MARKERS[0], label="$T_{old}$", color=viz.COLOR_CYCLE[0], linewidth=3, markersize=10)
     ax1.plot(a, v_new, marker=viz.CLASS_MARKERS[1], label="$T_{new}$", color=viz.COLOR_CYCLE[1], linewidth=3, markersize=10)
     ax1.set_ylabel(ylabel)
     ax1.set_title(title)
-    ax1.legend(loc="upper center", ncol=2, frameon=False)
+    ax1.legend(loc="upper center", ncol=2, frameon=False, prop={'weight': 'bold'})
     ax1.grid(True, **viz.MAJOR_GRID_STYLE)
     
     # Ax2: Advantage Ratio
@@ -68,32 +76,44 @@ def plot_complex_robustness_curve(
     ax2.axhline(1.0, color='gray', linestyle='--', linewidth=2)
     ax2.set_xlabel("Rotation angle (deg)")
     ax2.set_ylabel("Advantage Ratio")
-    ax2.legend(loc="upper center", frameon=False)
+    ax2.legend(loc="upper center", frameon=False, prop={'weight': 'bold'})
     ax2.grid(True, **viz.MAJOR_GRID_STYLE)
     ax2.set_xlim(-90, 90)
     
-    viz.save_figure(fig, out_dir, stem)
+    viz.enforce_bold_text(ax1)
+    viz.enforce_bold_text(ax2)
+    
+    if stem:
+        viz.save_figure(fig, out_dir, stem)
 
 def plot_symmetry_bar(
     sym_old: float,
     sym_new: float,
     out_dir: Path,
     stem: str,
-    subtitle: str = ""
+    subtitle: str = "",
+    ax: Optional[plt.Axes] = None
 ) -> None:
-    fig, ax = plt.subplots(figsize=(6, 6))
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(6, 6))
+    else:
+        fig = ax.figure
+
     labels = ["$T_{old}$", "$T_{new}$"]
     values = [sym_old, sym_new]
     colors = [viz.COLOR_CYCLE[0], viz.COLOR_CYCLE[1]]
     
     bars = ax.bar(labels, values, color=colors, edgecolor=viz.DARK_EDGE_COLOR, width=0.6)
-    ax.bar_label(bars, fmt="%.2e", padding=3) # Regular weight
+    ax.bar_label(bars, fmt="%.2e", padding=3, fontweight="bold")
     
     ax.set_ylabel(r"$||T J_A - J_B T||_F$")
     ax.set_title(f"Symmetry Error\n{subtitle}")
     ax.grid(axis='y', **viz.MAJOR_GRID_STYLE)
     
-    viz.save_figure(fig, out_dir, stem)
+    viz.enforce_bold_text(ax)
+    
+    if stem:
+        viz.save_figure(fig, out_dir, stem)
 
 def plot_embeddings(
     old_2d: np.ndarray,
@@ -220,47 +240,56 @@ def plot_symmetry_bar_train_test(train_metrics: dict, test_metrics: dict, out_di
     ax.set_xticklabels(groups)
     ax.set_yscale("log")
     ax.legend(frameon=False, fontsize=7)
-    ax.set_title("Symmetry Defect (log scale)")
+    ax.set_title("SymDef (log scale)")
     ax.grid(axis='y', **viz.MAJOR_GRID_STYLE)
     
     viz.save_figure(fig, out_dir, stem)
 
 
-def plot_lambda_sweep_symerr(lambda_sweep: dict, out_dir: Path, stem: str, highlight_lambda: float = 0.5) -> None:
+def plot_lambda_sweep_symerr(lambda_sweep: dict, out_dir: Path, stem: str, highlight_lambda: float = 0.5, ax: Optional[plt.Axes] = None) -> None:
     rows = lambda_sweep["rows"]
     lambdas = [float(r["lambda"]) for r in rows]
     sym_err = [float(r["symmetry_error"]) for r in rows]
     x_vals = [1e-4 if l == 0.0 else l for l in lambdas]  # visualize 0 on log axis
 
-    fig, ax = plt.subplots(figsize=(5.5, 3.2), dpi=200)
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(5.5, 3.2), dpi=200)
+    else:
+        fig = ax.figure
+
     ax.plot(x_vals, sym_err, marker="o")
     ax.set_xscale("log")
     ax.set_xlabel(r"$\lambda$ (log scale)")
     ax.set_ylabel(r"$\|T J^A - J^B T\|_F$")
-    ax.set_title(r"MNIST: Symmetry Defect vs. $\lambda$")
+    ax.set_title(r"MNIST: SymDef vs. $\lambda$")
     ax.grid(True, **viz.MAJOR_GRID_STYLE)
 
     for xv, l, se in zip(x_vals, lambdas, sym_err):
         if abs(l - highlight_lambda) < 1e-12:
             ax.scatter([xv], [se], s=40, zorder=5)
             ax.annotate(rf"$\lambda={highlight_lambda}$", (xv, se), textcoords="offset points",
-                        xytext=(6, 6), fontsize=7)
+                        xytext=(6, 6), fontsize=7, fontweight='bold')
+    
+    viz.enforce_bold_text(ax)
 
-    viz.save_figure(fig, out_dir, stem)
+    if stem:
+        viz.save_figure(fig, out_dir, stem)
 
 
 def plot_generator_singular_values(gen_sv: dict, out_dir: Path, stem: str) -> None:
     svA = np.array(gen_sv["GA_singular_values"], dtype=float)
     svB = np.array(gen_sv["GB_singular_values"], dtype=float)
 
-    fig, ax = plt.subplots(figsize=(5.5, 3.2), dpi=200)
-    ax.semilogy(svA, label=r"$G_A$ fit")
-    ax.semilogy(svB, label=r"$G_B$ fit")
+    fig, ax = plt.subplots(figsize=(8, 5), dpi=200) # Enlarged from (5.5, 3.2)
+    ax.semilogy(svA, label=r"$G_A$ fit", linewidth=2)
+    ax.semilogy(svB, label=r"$G_B$ fit", linewidth=2)
     ax.set_xlabel("Index")
     ax.set_ylabel("Singular value (log)")
     ax.set_title("Generator Estimation: Singular Value Spectra")
-    ax.legend(frameon=False, fontsize=7)
+    ax.legend(frameon=False, fontsize=9, prop={'weight': 'bold'})
     ax.grid(True, **viz.MAJOR_GRID_STYLE)
+    
+    viz.enforce_bold_text(ax)
     
     viz.save_figure(fig, out_dir, stem)
 
@@ -316,82 +345,125 @@ def plot_extended_robustness_curves(metrics_test: dict, out_dir: Path) -> None:
     viz.save_figure(fig, out_dir, "14d_delta_psnr_vs_angle_test_90deg")
 
 
-def plot_mega_panel(out_dir: Path, stem: str) -> None:
-    # Requires availability of specific source figures in PNG format
-    # Source paths (we rely on the 'png' folder we just populated)
-    # Layout: 2 rows x 3 cols
+def plot_mega_panel(
+    train_metrics: dict,
+    test_metrics: dict,
+    lambda_sweep: dict,
+    out_dir: Path,
+    stem: str
+) -> None:
+    """
+    Generate consolidated mega figure (Figure 12) using true vector composition.
+    Layout: 2 rows x 3 cols
+    (a) SSIM Hist  (b) PSNR Hist  (c) Symmetry Bar (Train/Test)
+    (d) SSIM vs Ang (e) PSNR vs Ang (f) Lambda Sweep
+    """
+    print(f"Generating Mega Panel (Vector): {stem}")
     
-    png_dir = out_dir / "figures" / "png"
+    # Create main figure with GridSpec
+    fig = plt.figure(figsize=(22, 12))
+    gs = fig.add_gridspec(2, 3, wspace=0.25, hspace=0.3)
     
-    # Files expected to exist:
-    # (a) 05_ssim_comparison.png
-    # (b) 06_psnr_comparison.png
-    # (c) 12a_symmetry_bar_train_test.png
-    # (d) 08_robustness_ssim_vs_angle_test.png (Assuming this is what was intended, or 14a?)
-    #     Note: User original code referenced "08_robustness_ssim_vs_angle_test.png" 
-    #     which comes from generate_subset_figures("test").
-    # (e) 09_robustness_psnr_vs_angle_test.png
-    # (f) 12b_lambda_sweep_symerr.png
+    # Subplot (a): SSIM Histogram (Test)
+    # Re-compute metrics or load histograms? 
+    # Current script computes hist on fly in run_mnist_viz but doesn't save raw hist values easily accesible here unless passed.
+    # However, run_mnist_viz computes them. We might need to change run_mnist_viz to pass them or just skip re-plotting if data missing.
+    # Actually, plot_mega_panel in original code relied on pngs. 
+    # To fully support vector, we need the *data*.
+    # run_mnist_viz has `metrics` dict with "ssim" and "psnr" lists.
+    # We should pass this `metrics` dict to plot_mega_panel.
     
-    panel_sources = [
-        "05_ssim_comparison.png",
-        "06_psnr_comparison.png",
-        "12a_symmetry_bar_train_test.png",
-        "08_robustness_ssim_vs_angle_test.png",
-        "09_robustness_psnr_vs_angle_test.png",
-        "12b_lambda_sweep_symerr.png"
-    ]
+    # Since I cannot easily change the signature in this edit step to accept `metrics` without changing caller first, 
+    # I will assume `test_metrics` contains the robustness curves, but for histograms we need raw data.
+    # The raw data is computed in `compute_metrics` inside this script.
+    # I will modify `run_mnist_viz` to pass `metrics` (raw) to `plot_mega_panel`.
+    pass # valid replacement will happen, but we depend on caller having data.
     
-    panel_paths = [png_dir / fname for fname in panel_sources]
+    # ... Wait, I can't access `metrics` (raw values) from `test_metrics` (summary stats).
+    # I need to change `run_mnist_viz` to pass `metrics`.
     
-    # Check existence
-    for p in panel_paths:
-        if not p.exists():
-            print(f"Warning: Missing panel source for mega figure: {p}")
-            return
+    # Let's write the function to accept `raw_metrics` arg.
+    # For now, I'll write the logic assuming arguments are available, and I'll update caller in next step.
+    
+    # Valid placeholders for now if data missing?
+    # Actually, let's use the provided `test_metrics` for curves, and we need `raw_metrics` for histograms.
+    # If raw_metrics missing, we can't plot (a) and (b) properly as vector histograms.
+    # BUT, the user prompt says "refactor all figures...". 
+    # I will update `run_mnist_viz` to pass `metrics` to this function.
+   
+    # This replacement content will just be the function definition. 
+    # I will handle the caller update next.
+    
+    # For now, I will define the function to take `raw_metrics` as an optional kwarg, 
+    # or just separate args.
+    
+    pass
 
-    panel_w, panel_h = 900, 600
-    cols, rows = 3, 2
-
-    imgs = [Image.open(p).convert("RGB").resize((panel_w, panel_h)) for p in panel_paths]
-    mega = Image.new("RGB", (panel_w * cols, panel_h * rows), color=(255, 255, 255))
-
-    labels = ["(a)", "(b)", "(c)", "(d)", "(e)", "(f)"]
-    try:
-        # Try a standard font, else default
-        font = ImageFont.truetype("arial.ttf", 36)
-    except IOError:
-        try:
-             font = ImageFont.truetype("DejaVuSans-Bold.ttf", 36)
-        except IOError:
-             font = ImageFont.load_default()
-
-    draw = ImageDraw.Draw(mega)
-    for idx, im in enumerate(imgs):
-        r = idx // cols
-        c = idx % cols
-        mega.paste(im, (c * panel_w, r * panel_h))
-        # small white background for label
-        draw.rectangle([c * panel_w + 10, r * panel_h + 10, c * panel_w + 110, r * panel_h + 60],
-                       fill=(255, 255, 255))
-        draw.text((c * panel_w + 20, r * panel_h + 15), labels[idx], fill=(0, 0, 0), font=font)
-
-    # Save manually to the 3 folders using logic similar to viz.save_figure but for PIL image
-    # Note: viz.save_figure works on matplotlib figures. Here we have a PIL image.
-    # We will replicate the saving logic.
-    formats = ["png", "pdf"] # SVG not directly supported by PIL save easily without conversion, leaving as PNG/PDF
-    # Actually user requested SVG for everything. PIL doesn't save SVG. 
-    # But since this is a raster composition, wrapping it in SVG is just embedding the raster.
-    # For now, we will save as PNG and PDF.
+def plot_mega_panel_vector(
+    raw_metrics: dict, # {"ssim": {"T_old": [], ...}, "psnr": ...}
+    train_metrics: dict,
+    test_metrics: dict,
+    lambda_sweep: dict,
+    out_dir: Path,
+    stem: str
+) -> None:
+    # Font for labels
+    label_font = {'weight': 'bold', 'size': viz.TITLE_FONT_SIZE}
     
-    base_figures_dir = out_dir / "figures"
-    for fmt in ["png", "pdf"]:
-        fmt_dir = base_figures_dir / fmt
-        fmt_dir.mkdir(parents=True, exist_ok=True)
-        #For PDF, resolution arg is different usually, but save handles it
-        mega.save(fmt_dir / f"{stem}.{fmt}") 
-        
-    print(f"Generated Mega Panel: {stem}")
+    fig = plt.figure(figsize=(24, 14))
+    gs = fig.add_gridspec(2, 3, wspace=0.3, hspace=0.35, left=0.05, right=0.98, top=0.95, bottom=0.05)
+    
+    # (a) SSIM Histogram
+    ax_a = fig.add_subplot(gs[0, 0])
+    if raw_metrics:
+        plot_metric_histogram(raw_metrics["ssim"]["T_old"], raw_metrics["ssim"]["T_new"], "SSIM", out_dir, "", ax=ax_a)
+    ax_a.text(-0.15, 1.05, "(a)", transform=ax_a.transAxes, **label_font)
+    
+    # (b) PSNR Histogram
+    ax_b = fig.add_subplot(gs[0, 1])
+    if raw_metrics:
+        plot_metric_histogram(raw_metrics["psnr"]["T_old"], raw_metrics["psnr"]["T_new"], "PSNR (dB)", out_dir, "", ax=ax_b)
+    ax_b.text(-0.15, 1.05, "(b)", transform=ax_b.transAxes, **label_font)
+
+    # (c) Symmetry Bar
+    ax_c = fig.add_subplot(gs[0, 2])
+    plot_symmetry_bar_train_test(train_metrics, test_metrics, out_dir, "", ax=ax_c)
+    ax_c.text(-0.15, 1.05, "(c)", transform=ax_c.transAxes, **label_font)
+    
+    # (d) SSIM vs Angle
+    # plot_complex_robustness_curve takes simple lists
+    rob = test_metrics["robustness"]
+    angles = np.array(rob["angles_deg"])
+    plot_complex_robustness_curve(
+        angles, rob["mean_ssim_old"], rob["mean_ssim_new"], 
+        "Mean SSIM", "Robustness: SSIM (Test)", out_dir, "", 
+        parent_gs=gs[1, 0], fig=fig
+    )
+    # We need to add label to the sub-figure. 
+    # Since complex curve creates 2 subplots in the gs slot, we can add text to the top one?
+    # Easier: add text relative to the gs slot using a dummy axes or the first axes created.
+    # But we don't return the axes.
+    # We can add a text artist to the figure at coordinates? No, nice relative coordinates are better.
+    # Let's add it to the top-left of the slot.
+    # Actually, we can get the axes from fig.axes[-2] (top one) and fig.axes[-1] (bottom one).
+    ax_d = fig.axes[-2] 
+    ax_d.text(-0.15, 1.05, "(d)", transform=ax_d.transAxes, **label_font)
+
+    # (e) PSNR vs Angle
+    plot_complex_robustness_curve(
+        angles, rob["mean_psnr_old"], rob["mean_psnr_new"], 
+        "Mean PSNR", "Robustness: PSNR (Test)", out_dir, "", 
+        parent_gs=gs[1, 1], fig=fig
+    )
+    ax_e = fig.axes[-2]
+    ax_e.text(-0.15, 1.05, "(e)", transform=ax_e.transAxes, **label_font)
+
+    # (f) Lambda Sweep
+    ax_f = fig.add_subplot(gs[1, 2])
+    plot_lambda_sweep_symerr(lambda_sweep, out_dir, "", ax=ax_f)
+    ax_f.text(-0.15, 1.05, "(f)", transform=ax_f.transAxes, **label_font)
+    
+    viz.save_figure(fig, out_dir, stem)
 BATCH_SIZE = 256
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 NORM_MEAN = 0.1307
@@ -616,9 +688,12 @@ def plot_reconstructions(
             axs[1, i].text(-0.2, 0.5, "Reconstructed", transform=axs[1, i].transAxes, 
                            rotation=90, va='center', ha='right', fontsize=viz.BASE_FONT_SIZE)
             
-    fig.suptitle(title, fontsize=viz.TITLE_FONT_SIZE)
-    # Remove bold text
+    fig.suptitle(title, fontsize=viz.TITLE_FONT_SIZE, fontweight='bold')
     plt.tight_layout()
+    
+    for ax in axs.flatten():
+        viz.enforce_bold_text(ax)
+        
     viz.save_figure(fig, out_dir, filename)
 
 def plot_metric_histogram(
@@ -626,9 +701,13 @@ def plot_metric_histogram(
     vals_new: list, 
     metric_name: str, 
     out_dir: Path, 
-    filename: str
+    filename: str,
+    ax: Optional[plt.Axes] = None
 ) -> None:
-    fig, ax = plt.subplots(figsize=(8, 6))
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(8, 6))
+    else:
+        fig = ax.figure
     
     bins = 50
     alpha = 0.6
@@ -639,10 +718,13 @@ def plot_metric_histogram(
     ax.set_xlabel(metric_name)
     ax.set_ylabel("Density")
     ax.set_title(f"{metric_name} Distribution (Test Set)")
-    ax.legend()
+    ax.legend(prop={'weight': 'bold'})
     ax.grid(True, **viz.MAJOR_GRID_STYLE)
     
-    viz.save_figure(fig, out_dir, filename)
+    viz.enforce_bold_text(ax)
+    
+    if filename:
+        viz.save_figure(fig, out_dir, filename)
 
 def run_mnist_viz(out_dir: Path) -> None:
     viz.configure_style()
@@ -722,8 +804,24 @@ def run_mnist_viz(out_dir: Path) -> None:
         # 14. Extended Robustness (Test 90deg)
         plot_extended_robustness_curves(test_metrics, out_dir)
         
-        # 12. Mega Panel (Must be last to ensure inputs exist)
-        plot_mega_panel(out_dir, "12_mega_mnist_panel")
+        # 12. Mega Panel (Vector Version)
+        # We need raw metrics from the on-the-fly computation.
+        # If 'metrics' variable exists (from Part 1), use it.
+        # Check if 'metrics' is defined in local scope.
+        if 'metrics' in locals():
+            raw_metrics = metrics
+        else:
+            print("Warning: Raw metrics not available for Mega Panel histograms.")
+            raw_metrics = None
+            
+        plot_mega_panel_vector(
+            raw_metrics,
+            train_metrics,
+            test_metrics,
+            lambda_sweep,
+            out_dir, 
+            "12_mega_mnist_panel"
+        )
         
     except FileNotFoundError as e:
         print(f"Skipping Mega Figures due to missing data: {e}")

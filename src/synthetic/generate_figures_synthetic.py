@@ -28,7 +28,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.etm.utils import load_json_matrix
 from src.synthetic.core import mds_2d, rotate_2d, _labels_for_15
 from src.synthetic.viz_utils import (
-    configure_style, save_figure,
+    configure_style, save_figure, enforce_bold_text,
     CLASS_COLORS, LIGHT_COLORS, CLASS_MARKERS,
     MAJOR_GRID_STYLE, TITLE_FONT_SIZE,
     MARKER_SIZE_MEDIUM, MARKER_SIZE_LARGE, MARKER_SIZE_SMALL, LINE_MARKER_SIZE
@@ -52,6 +52,8 @@ def _plot_heatmap(M: np.ndarray, title: str, out_dir: Path, stem: str, xlabel: s
     ax.set_title(title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
+    ax.set_ylabel(ylabel)
+    enforce_bold_text(ax)
     save_figure(fig, out_dir, stem)
 
 
@@ -70,6 +72,8 @@ def _plot_tradeoff(
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_title(title)
+    ax.set_title(title)
+    enforce_bold_text(ax)
     save_figure(fig, out_dir, stem)
 
 
@@ -84,16 +88,19 @@ def _plot_scatter(X2d: np.ndarray, title: str, out_dir: Path, stem: str) -> None
     ax.set_ylabel("MDS-2")
     ax.legend(borderaxespad=0)
     ax.grid(True, **MAJOR_GRID_STYLE)
+    ax.grid(True, **MAJOR_GRID_STYLE)
+    enforce_bold_text(ax)
     save_figure(fig, out_dir, stem)
 
 
 def _plot_singular_values(svals: np.ndarray, title: str, out_dir: Path, stem: str) -> None:
-    fig, ax = plt.subplots(figsize=(7, 5))
+    fig, ax = plt.subplots(figsize=(10, 5)) # Wider
     ax.semilogy(np.arange(1, len(svals) + 1), svals, marker="o", linewidth=2, color=CLASS_COLORS[2]) # Blue
     ax.set_title(title)
     ax.set_xlabel("Index")
     ax.set_ylabel("σ")
     ax.grid(True, **MAJOR_GRID_STYLE)
+    enforce_bold_text(ax)
     save_figure(fig, out_dir, stem)
 
 
@@ -151,6 +158,9 @@ def _plot_embedding_comparison(
     fig.legend(handles, labels_txt, loc="lower center", bbox_to_anchor=(0.5, -0.05), ncol=3, frameon=False)
     
     plt.subplots_adjust(bottom=0.20, wspace=0.2)
+    plt.subplots_adjust(bottom=0.20, wspace=0.2)
+    for ax in axs:
+        enforce_bold_text(ax)
     save_figure(fig, out_dir, stem)
 
 
@@ -187,6 +197,9 @@ def plot_error_vs_angle(metrics: Dict[str, Any], out_dir: Path) -> None:
     ax2.set_xlim(-90, 90)
 
     plt.tight_layout()
+    plt.tight_layout()
+    enforce_bold_text(ax1)
+    enforce_bold_text(ax2)
     save_figure(fig, out_dir, "12_error_vs_angle")
 
 
@@ -277,6 +290,9 @@ def plot_displacement_vectors(demo_data: Dict[str, Any], out_dir: Path) -> None:
     )
     
     plt.subplots_adjust(bottom=0.20, wspace=0.2)
+    plt.subplots_adjust(bottom=0.20, wspace=0.2)
+    for ax in axes:
+        enforce_bold_text(ax)
     save_figure(fig, out_dir, "11_displacement_vectors")
 
 
@@ -361,6 +377,9 @@ def plot_comparison_extended(
     )
     
     plt.subplots_adjust(bottom=0.20, wspace=0.2)
+    plt.subplots_adjust(bottom=0.20, wspace=0.2)
+    for ax in axs:
+        enforce_bold_text(ax)
     save_figure(fig, out_dir, stem)
 
 

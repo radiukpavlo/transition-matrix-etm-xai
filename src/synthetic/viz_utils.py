@@ -40,12 +40,13 @@ def configure_style() -> None:
     """Apply global matplotlib style settings."""
     mpl.rcParams.update(
         {
+            "font.family": "Palatino Linotype",
             "font.size": BASE_FONT_SIZE,
-            "font.weight": "normal",
+            "font.weight": "bold",
             "axes.labelsize": BASE_FONT_SIZE,
-            "axes.labelweight": "normal",
+            "axes.labelweight": "bold",
             "axes.titlesize": TITLE_FONT_SIZE,
-            "axes.titleweight": "normal",
+            "axes.titleweight": "bold",
             "xtick.labelsize": BASE_FONT_SIZE,
             "ytick.labelsize": BASE_FONT_SIZE,
             "legend.fontsize": LEGEND_FONT_SIZE,
@@ -71,6 +72,7 @@ def enforce_bold_text(ax: mpl.axes.Axes) -> None:
     if legend:
         for text in legend.get_texts():
             text.set_fontweight("bold")
+        legend.set_title(legend.get_title().get_text(), prop={"weight": "bold"})
 
 def save_figure(fig: plt.Figure, out_dir: Path, stem: str) -> None:
     """Save figure in PNG (300 dpi), PDF, and SVG formats in separate subfolders."""

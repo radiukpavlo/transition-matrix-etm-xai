@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="604.2125pt" height="476.42875pt" viewBox="0 0 604.2125 476.42875" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="592.55pt" height="477.04pt" viewBox="0 0 592.55 477.04" xmlns="http://www.w3.org/2000/svg" version="1.1">
  <metadata>
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-02-01T12:45:05.752517</dc:date>
+    <dc:date>2026-02-12T18:43:35.679690</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
-      <dc:title>Matplotlib v3.10.6, https://matplotlib.org/</dc:title>
+      <dc:title>Matplotlib v3.10.5, https://matplotlib.org/</dc:title>
      </cc:Agent>
     </dc:creator>
    </cc:Work>
@@ -21,816 +21,1255 @@
  </defs>
  <g id="figure_1">
   <g id="patch_1">
-   <path d="M 0 476.42875 
-L 604.2125 476.42875 
-L 604.2125 0 
+   <path d="M 0 477.04 
+L 592.55 477.04 
+L 592.55 0 
 L 0 0 
 z
 " style="fill: #ffffff"/>
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path d="M 94.8125 419.51625 
-L 597.0125 419.51625 
-L 597.0125 31.43625 
-L 94.8125 31.43625 
+    <path d="M 83.15 419.115 
+L 585.35 419.115 
+L 585.35 31.035 
+L 83.15 31.035 
 z
 " style="fill: #ffffff"/>
    </g>
    <g id="matplotlib.axis_1">
     <g id="xtick_1">
      <g id="line2d_1">
-      <path d="M 117.639773 419.51625 
-L 117.639773 31.43625 
-" clip-path="url(#p446db72492)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
+      <path d="M 105.977273 419.115 
+L 105.977273 31.035 
+" clip-path="url(#pb08da19801)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
      </g>
      <g id="line2d_2">
       <defs>
-       <path id="meb04bb0c65" d="M 0 0 
+       <path id="m643aae4801" d="M 0 0 
 L 0 3.5 
 " style="stroke: #000000; stroke-width: 0.8"/>
       </defs>
       <g>
-       <use xlink:href="#meb04bb0c65" x="117.639773" y="419.51625" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m643aae4801" x="105.977273" y="419.115" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_1">
       <!-- 0 -->
-      <g transform="translate(111.277273 441.713125) scale(0.2 -0.2)">
+      <g transform="translate(100.977273 440.665) scale(0.2 -0.2)">
        <defs>
-        <path id="DejaVuSans-30" d="M 2034 4250 
-Q 1547 4250 1301 3770 
-Q 1056 3291 1056 2328 
-Q 1056 1369 1301 889 
-Q 1547 409 2034 409 
-Q 2525 409 2770 889 
-Q 3016 1369 3016 2328 
-Q 3016 3291 2770 3770 
-Q 2525 4250 2034 4250 
+        <path id="PalatinoLinotype-Bold-30" d="M 2997 2263 
+Q 2997 1038 2691 509 
+Q 2316 -138 1556 -138 
+Q 822 -138 484 431 
+Q 206 900 206 1988 
+Q 206 2844 375 3331 
+Q 528 3781 869 4031 
+Q 1194 4269 1644 4269 
+Q 2347 4269 2656 3844 
+Q 2997 3378 2997 2263 
 z
-M 2034 4750 
-Q 2819 4750 3233 4129 
-Q 3647 3509 3647 2328 
-Q 3647 1150 3233 529 
-Q 2819 -91 2034 -91 
-Q 1250 -91 836 529 
-Q 422 1150 422 2328 
-Q 422 3509 836 4129 
-Q 1250 4750 2034 4750 
+M 2225 1750 
+Q 2225 2972 2050 3503 
+Q 1909 3928 1566 3928 
+Q 1247 3928 1113 3603 
+Q 969 3259 969 2428 
+Q 969 1384 1094 834 
+Q 1153 572 1219 456 
+Q 1372 188 1638 188 
+Q 2088 188 2178 881 
+Q 2225 1244 2225 1750 
 z
 " transform="scale(0.015625)"/>
        </defs>
-       <use xlink:href="#DejaVuSans-30"/>
+       <use xlink:href="#PalatinoLinotype-Bold-30"/>
       </g>
      </g>
     </g>
     <g id="xtick_2">
      <g id="line2d_3">
-      <path d="M 208.948864 419.51625 
-L 208.948864 31.43625 
-" clip-path="url(#p446db72492)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
+      <path d="M 197.286364 419.115 
+L 197.286364 31.035 
+" clip-path="url(#pb08da19801)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
      </g>
      <g id="line2d_4">
       <g>
-       <use xlink:href="#meb04bb0c65" x="208.948864" y="419.51625" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m643aae4801" x="197.286364" y="419.115" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_2">
       <!-- 2 -->
-      <g transform="translate(202.586364 441.713125) scale(0.2 -0.2)">
+      <g transform="translate(192.286364 440.665) scale(0.2 -0.2)">
        <defs>
-        <path id="DejaVuSans-32" d="M 1228 531 
-L 3431 531 
-L 3431 0 
-L 469 0 
-L 469 531 
-Q 828 903 1448 1529 
-Q 2069 2156 2228 2338 
-Q 2531 2678 2651 2914 
-Q 2772 3150 2772 3378 
-Q 2772 3750 2511 3984 
-Q 2250 4219 1831 4219 
-Q 1534 4219 1204 4116 
-Q 875 4013 500 3803 
-L 500 4441 
-Q 881 4594 1212 4672 
-Q 1544 4750 1819 4750 
-Q 2544 4750 2975 4387 
-Q 3406 4025 3406 3419 
-Q 3406 3131 3298 2873 
-Q 3191 2616 2906 2266 
-Q 2828 2175 2409 1742 
-Q 1991 1309 1228 531 
+        <path id="PalatinoLinotype-Bold-32" d="M 3019 703 
+Q 2981 338 3009 9 
+L 2972 -34 
+Q 2113 0 1566 0 
+Q 994 0 209 -31 
+L 169 6 
+L 169 291 
+L 806 941 
+Q 1522 1669 1741 2047 
+Q 1869 2269 1922 2451 
+Q 1975 2634 1975 2841 
+Q 1975 3588 1291 3588 
+Q 909 3588 684 3297 
+Q 650 3163 563 2828 
+L 528 2797 
+L 350 2797 
+L 319 2828 
+L 434 3872 
+Q 828 4266 1531 4266 
+Q 2159 4266 2500 3938 
+Q 2816 3638 2816 3141 
+Q 2816 2938 2769 2766 
+Q 2672 2416 2372 2059 
+Q 2122 1763 1616 1278 
+Q 1431 1097 1056 744 
+L 1063 703 
+L 1616 703 
+Q 1856 703 2072 709 
+L 2613 725 
+Q 2819 731 2972 744 
+L 3019 703 
 z
 " transform="scale(0.015625)"/>
        </defs>
-       <use xlink:href="#DejaVuSans-32"/>
+       <use xlink:href="#PalatinoLinotype-Bold-32"/>
       </g>
      </g>
     </g>
     <g id="xtick_3">
      <g id="line2d_5">
-      <path d="M 300.257955 419.51625 
-L 300.257955 31.43625 
-" clip-path="url(#p446db72492)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
+      <path d="M 288.595455 419.115 
+L 288.595455 31.035 
+" clip-path="url(#pb08da19801)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
      </g>
      <g id="line2d_6">
       <g>
-       <use xlink:href="#meb04bb0c65" x="300.257955" y="419.51625" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m643aae4801" x="288.595455" y="419.115" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_3">
       <!-- 4 -->
-      <g transform="translate(293.895455 441.713125) scale(0.2 -0.2)">
+      <g transform="translate(283.595455 440.665) scale(0.2 -0.2)">
        <defs>
-        <path id="DejaVuSans-34" d="M 2419 4116 
-L 825 1625 
-L 2419 1625 
-L 2419 4116 
+        <path id="PalatinoLinotype-Bold-34" d="M 3025 13 
+L 2991 -25 
+Q 2538 0 1981 0 
+Q 1666 0 941 -25 
+L 909 9 
+L 909 203 
+L 944 238 
+L 1278 263 
+Q 1528 281 1575 331 
+Q 1638 400 1647 669 
+L 1659 1078 
+L 1247 1078 
+L 622 1072 
+Q 453 1072 125 1063 
+L 81 1322 
+Q 209 1719 763 2744 
+Q 1331 3797 1647 4191 
+L 2431 4347 
+L 2488 4294 
+Q 2431 3691 2431 2328 
+L 2431 1594 
+L 2531 1594 
+Q 2678 1594 2969 1609 
+L 3006 1575 
+Q 2997 1269 3006 1113 
+L 2969 1075 
+Q 2919 1078 2809 1078 
+L 2431 1078 
+Q 2431 391 2500 325 
+Q 2556 272 2741 256 
+Q 2881 244 2994 228 
+L 3025 200 
+L 3025 13 
 z
-M 2253 4666 
-L 3047 4666 
-L 3047 1625 
-L 3713 1625 
-L 3713 1100 
-L 3047 1100 
-L 3047 0 
-L 2419 0 
-L 2419 1100 
-L 313 1100 
-L 313 1709 
-L 2253 4666 
+M 1697 3769 
+Q 1281 3103 1081 2728 
+Q 944 2472 541 1594 
+L 1663 1594 
+L 1697 3769 
 z
 " transform="scale(0.015625)"/>
        </defs>
-       <use xlink:href="#DejaVuSans-34"/>
+       <use xlink:href="#PalatinoLinotype-Bold-34"/>
       </g>
      </g>
     </g>
     <g id="xtick_4">
      <g id="line2d_7">
-      <path d="M 391.567045 419.51625 
-L 391.567045 31.43625 
-" clip-path="url(#p446db72492)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
+      <path d="M 379.904545 419.115 
+L 379.904545 31.035 
+" clip-path="url(#pb08da19801)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
      </g>
      <g id="line2d_8">
       <g>
-       <use xlink:href="#meb04bb0c65" x="391.567045" y="419.51625" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m643aae4801" x="379.904545" y="419.115" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_4">
       <!-- 6 -->
-      <g transform="translate(385.204545 441.713125) scale(0.2 -0.2)">
+      <g transform="translate(374.904545 440.665) scale(0.2 -0.2)">
        <defs>
-        <path id="DejaVuSans-36" d="M 2113 2584 
-Q 1688 2584 1439 2293 
-Q 1191 2003 1191 1497 
-Q 1191 994 1439 701 
-Q 1688 409 2113 409 
-Q 2538 409 2786 701 
-Q 3034 994 3034 1497 
-Q 3034 2003 2786 2293 
-Q 2538 2584 2113 2584 
+        <path id="PalatinoLinotype-Bold-36" d="M 3000 1419 
+Q 3000 519 2363 72 
+Q 2063 -138 1613 -138 
+Q 975 -138 616 325 
+Q 247 794 247 1647 
+Q 247 2472 544 3016 
+Q 859 3591 1369 3928 
+Q 1894 4275 2541 4275 
+L 2788 4072 
+L 2691 3966 
+Q 2578 3984 2478 3984 
+Q 1997 3984 1634 3631 
+Q 1472 3472 1350 3228 
+Q 1150 2822 1081 2113 
+Q 1500 2503 1584 2538 
+Q 1784 2622 2050 2622 
+Q 2453 2622 2716 2322 
+Q 3000 1997 3000 1419 
 z
-M 3366 4563 
-L 3366 3988 
-Q 3128 4100 2886 4159 
-Q 2644 4219 2406 4219 
-Q 1781 4219 1451 3797 
-Q 1122 3375 1075 2522 
-Q 1259 2794 1537 2939 
-Q 1816 3084 2150 3084 
-Q 2853 3084 3261 2657 
-Q 3669 2231 3669 1497 
-Q 3669 778 3244 343 
-Q 2819 -91 2113 -91 
-Q 1303 -91 875 529 
-Q 447 1150 447 2328 
-Q 447 3434 972 4092 
-Q 1497 4750 2381 4750 
-Q 2619 4750 2861 4703 
-Q 3103 4656 3366 4563 
+M 2247 1075 
+Q 2247 1559 2066 1819 
+Q 1900 2063 1613 2063 
+Q 1241 2063 1119 1741 
+Q 1063 1591 1063 1325 
+Q 1063 638 1322 353 
+Q 1469 191 1691 191 
+Q 2247 191 2247 1075 
 z
 " transform="scale(0.015625)"/>
        </defs>
-       <use xlink:href="#DejaVuSans-36"/>
+       <use xlink:href="#PalatinoLinotype-Bold-36"/>
       </g>
      </g>
     </g>
     <g id="xtick_5">
      <g id="line2d_9">
-      <path d="M 482.876136 419.51625 
-L 482.876136 31.43625 
-" clip-path="url(#p446db72492)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
+      <path d="M 471.213636 419.115 
+L 471.213636 31.035 
+" clip-path="url(#pb08da19801)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
      </g>
      <g id="line2d_10">
       <g>
-       <use xlink:href="#meb04bb0c65" x="482.876136" y="419.51625" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m643aae4801" x="471.213636" y="419.115" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_5">
       <!-- 8 -->
-      <g transform="translate(476.513636 441.713125) scale(0.2 -0.2)">
+      <g transform="translate(466.213636 440.665) scale(0.2 -0.2)">
        <defs>
-        <path id="DejaVuSans-38" d="M 2034 2216 
-Q 1584 2216 1326 1975 
-Q 1069 1734 1069 1313 
-Q 1069 891 1326 650 
-Q 1584 409 2034 409 
-Q 2484 409 2743 651 
-Q 3003 894 3003 1313 
-Q 3003 1734 2745 1975 
-Q 2488 2216 2034 2216 
+        <path id="PalatinoLinotype-Bold-38" d="M 2981 1325 
+Q 2981 959 2850 678 
+Q 2600 144 2038 -53 
+Q 1806 -134 1475 -134 
+Q 769 -134 391 397 
+Q 222 634 222 1022 
+Q 222 1494 525 1791 
+Q 625 1888 966 2072 
+Q 338 2425 338 3069 
+Q 338 3797 1000 4134 
+Q 1288 4281 1653 4281 
+Q 2191 4281 2500 4013 
+Q 2794 3756 2794 3344 
+Q 2794 2784 2197 2431 
+Q 2634 2247 2816 1975 
+Q 2981 1728 2981 1325 
 z
-M 1403 2484 
-Q 997 2584 770 2862 
-Q 544 3141 544 3541 
-Q 544 4100 942 4425 
-Q 1341 4750 2034 4750 
-Q 2731 4750 3128 4425 
-Q 3525 4100 3525 3541 
-Q 3525 3141 3298 2862 
-Q 3072 2584 2669 2484 
-Q 3125 2378 3379 2068 
-Q 3634 1759 3634 1313 
-Q 3634 634 3220 271 
-Q 2806 -91 2034 -91 
-Q 1263 -91 848 271 
-Q 434 634 434 1313 
-Q 434 1759 690 2068 
-Q 947 2378 1403 2484 
+M 2263 3256 
+Q 2263 3563 2080 3748 
+Q 1897 3934 1584 3934 
+Q 1303 3934 1138 3759 
+Q 984 3597 984 3356 
+Q 984 3119 1184 2925 
+Q 1291 2822 1497 2722 
+Q 1569 2684 1716 2616 
+L 1884 2544 
+Q 2263 2788 2263 3256 
 z
-M 1172 3481 
-Q 1172 3119 1398 2916 
-Q 1625 2713 2034 2713 
-Q 2441 2713 2670 2916 
-Q 2900 3119 2900 3481 
-Q 2900 3844 2670 4047 
-Q 2441 4250 2034 4250 
-Q 1625 4250 1398 4047 
-Q 1172 3844 1172 3481 
+M 2284 966 
+Q 2284 1416 1881 1644 
+Q 1619 1794 1319 1916 
+L 1234 1950 
+Q 791 1609 791 1097 
+Q 791 800 900 616 
+Q 1144 203 1588 203 
+Q 1897 203 2090 417 
+Q 2284 631 2284 966 
 z
 " transform="scale(0.015625)"/>
        </defs>
-       <use xlink:href="#DejaVuSans-38"/>
+       <use xlink:href="#PalatinoLinotype-Bold-38"/>
       </g>
      </g>
     </g>
     <g id="xtick_6">
      <g id="line2d_11">
-      <path d="M 574.185227 419.51625 
-L 574.185227 31.43625 
-" clip-path="url(#p446db72492)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
+      <path d="M 562.522727 419.115 
+L 562.522727 31.035 
+" clip-path="url(#pb08da19801)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
      </g>
      <g id="line2d_12">
       <g>
-       <use xlink:href="#meb04bb0c65" x="574.185227" y="419.51625" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m643aae4801" x="562.522727" y="419.115" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_6">
       <!-- 10 -->
-      <g transform="translate(561.460227 441.713125) scale(0.2 -0.2)">
+      <g transform="translate(552.522727 440.665) scale(0.2 -0.2)">
        <defs>
-        <path id="DejaVuSans-31" d="M 794 531 
-L 1825 531 
-L 1825 4091 
-L 703 3866 
-L 703 4441 
-L 1819 4666 
-L 2450 4666 
-L 2450 531 
-L 3481 531 
-L 3481 0 
-L 794 0 
-L 794 531 
+        <path id="PalatinoLinotype-Bold-31" d="M 2919 9 
+L 2884 -28 
+Q 2447 0 1816 0 
+Q 1200 0 519 -28 
+L 484 6 
+L 484 197 
+L 522 228 
+Q 681 247 831 259 
+Q 1100 281 1175 313 
+Q 1228 338 1266 428 
+Q 1325 575 1325 1616 
+L 1325 2394 
+Q 1325 2744 1313 3281 
+L 1306 3516 
+Q 1306 3672 1241 3672 
+Q 1213 3672 1056 3600 
+Q 628 3403 322 3253 
+L 284 3275 
+Q 266 3453 219 3672 
+L 222 3697 
+Q 1084 3941 2150 4350 
+L 2216 4303 
+Q 2203 4119 2181 3756 
+Q 2172 3619 2163 3019 
+L 2153 1791 
+Q 2153 472 2197 375 
+Q 2228 303 2291 288 
+Q 2403 256 2878 231 
+L 2919 200 
+L 2919 9 
 z
 " transform="scale(0.015625)"/>
        </defs>
-       <use xlink:href="#DejaVuSans-31"/>
-       <use xlink:href="#DejaVuSans-30" transform="translate(63.623047 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-31"/>
+       <use xlink:href="#PalatinoLinotype-Bold-30" transform="translate(50 0)"/>
       </g>
      </g>
     </g>
     <g id="text_7">
      <!-- Lambda -->
-     <g style="fill: #0f172a" transform="translate(305.646875 465.069375) scale(0.2 -0.2)">
+     <g style="fill: #0f172a" transform="translate(297.082812 464.5275) scale(0.2 -0.2)">
       <defs>
-       <path id="DejaVuSans-4c" d="M 628 4666 
-L 1259 4666 
-L 1259 531 
-L 3531 531 
-L 3531 0 
-L 628 0 
-L 628 4666 
+       <path id="PalatinoLinotype-Bold-4c" d="M 3641 1044 
+Q 3572 588 3572 13 
+L 3541 -19 
+L 1269 0 
+Q 700 0 466 -19 
+L 434 13 
+L 434 100 
+L 450 138 
+Q 681 284 700 322 
+Q 728 378 734 738 
+L 744 1438 
+L 744 3022 
+Q 744 3766 703 3991 
+Q 688 4081 597 4106 
+Q 550 4119 231 4138 
+L 200 4169 
+L 200 4381 
+L 231 4409 
+Q 553 4391 1175 4391 
+Q 1819 4391 2153 4409 
+L 2184 4381 
+L 2184 4166 
+L 2153 4138 
+Q 1834 4119 1788 4106 
+Q 1697 4081 1681 3991 
+Q 1641 3766 1641 3022 
+L 1641 1153 
+Q 1641 744 1656 359 
+L 2081 359 
+Q 2994 359 3200 431 
+Q 3234 444 3250 466 
+Q 3281 509 3309 653 
+L 3384 1041 
+L 3416 1075 
+L 3606 1075 
+L 3641 1044 
 z
 " transform="scale(0.015625)"/>
-       <path id="DejaVuSans-61" d="M 2194 1759 
-Q 1497 1759 1228 1600 
-Q 959 1441 959 1056 
-Q 959 750 1161 570 
-Q 1363 391 1709 391 
-Q 2188 391 2477 730 
-Q 2766 1069 2766 1631 
-L 2766 1759 
-L 2194 1759 
+       <path id="PalatinoLinotype-Bold-61" d="M 3053 19 
+L 3019 -16 
+Q 2756 0 2416 0 
+Q 2150 0 1906 -16 
+L 1878 19 
+L 1906 438 
+L 1300 -25 
+Q 1228 -78 1094 -91 
+Q 1041 -97 969 -97 
+Q 622 -97 436 112 
+Q 250 322 250 691 
+Q 250 1178 559 1381 
+Q 894 1603 1906 1781 
+Q 1906 2278 1644 2447 
+Q 1484 2550 1263 2550 
+Q 1019 2550 878 2450 
+L 759 2159 
+L 719 2138 
+L 559 2175 
+L 538 2219 
+L 553 2588 
+Q 1069 2969 1328 3019 
+Q 1438 3041 1613 3041 
+Q 2228 3041 2491 2719 
+Q 2681 2484 2681 2000 
+Q 2681 1881 2672 1619 
+Q 2656 1181 2656 1034 
+Q 2656 563 2672 433 
+Q 2688 303 2745 268 
+Q 2803 234 3022 228 
+L 3053 194 
+L 3053 19 
 z
-M 3341 1997 
-L 3341 0 
-L 2766 0 
-L 2766 531 
-Q 2569 213 2275 61 
-Q 1981 -91 1556 -91 
-Q 1019 -91 701 211 
-Q 384 513 384 1019 
-Q 384 1609 779 1909 
-Q 1175 2209 1959 2209 
-L 2766 2209 
-L 2766 2266 
-Q 2766 2663 2505 2880 
-Q 2244 3097 1772 3097 
-Q 1472 3097 1187 3025 
-Q 903 2953 641 2809 
-L 641 3341 
-Q 956 3463 1253 3523 
-Q 1550 3584 1831 3584 
-Q 2591 3584 2966 3190 
-Q 3341 2797 3341 1997 
+M 1906 747 
+L 1906 1516 
+Q 1391 1403 1211 1273 
+Q 1031 1144 1031 878 
+Q 1031 453 1403 453 
+Q 1719 453 1906 747 
 z
-" transform="scale(0.015625)"/>
-       <path id="DejaVuSans-6d" d="M 3328 2828 
-Q 3544 3216 3844 3400 
-Q 4144 3584 4550 3584 
-Q 5097 3584 5394 3201 
-Q 5691 2819 5691 2113 
-L 5691 0 
-L 5113 0 
-L 5113 2094 
-Q 5113 2597 4934 2840 
-Q 4756 3084 4391 3084 
-Q 3944 3084 3684 2787 
-Q 3425 2491 3425 1978 
-L 3425 0 
-L 2847 0 
-L 2847 2094 
-Q 2847 2600 2669 2842 
-Q 2491 3084 2119 3084 
-Q 1678 3084 1418 2786 
-Q 1159 2488 1159 1978 
-L 1159 0 
-L 581 0 
-L 581 3500 
-L 1159 3500 
-L 1159 2956 
-Q 1356 3278 1631 3431 
-Q 1906 3584 2284 3584 
-Q 2666 3584 2933 3390 
-Q 3200 3197 3328 2828 
+M 1656 3181 
+L 1656 3181 
+z
+M 1656 -244 
+L 1656 -244 
 z
 " transform="scale(0.015625)"/>
-       <path id="DejaVuSans-62" d="M 3116 1747 
-Q 3116 2381 2855 2742 
-Q 2594 3103 2138 3103 
-Q 1681 3103 1420 2742 
-Q 1159 2381 1159 1747 
-Q 1159 1113 1420 752 
-Q 1681 391 2138 391 
-Q 2594 391 2855 752 
-Q 3116 1113 3116 1747 
-z
-M 1159 2969 
-Q 1341 3281 1617 3432 
-Q 1894 3584 2278 3584 
-Q 2916 3584 3314 3078 
-Q 3713 2572 3713 1747 
-Q 3713 922 3314 415 
-Q 2916 -91 2278 -91 
-Q 1894 -91 1617 61 
-Q 1341 213 1159 525 
-L 1159 0 
-L 581 0 
-L 581 4863 
-L 1159 4863 
-L 1159 2969 
+       <path id="PalatinoLinotype-Bold-6d" d="M 5547 16 
+L 5516 -19 
+Q 5334 0 4872 0 
+Q 4488 0 4325 -19 
+L 4281 41 
+Q 4331 819 4331 1175 
+L 4331 1459 
+Q 4331 1919 4303 2075 
+Q 4269 2263 4147 2375 
+Q 4025 2488 3816 2488 
+Q 3581 2488 3425 2356 
+Q 3269 2225 3269 2022 
+L 3269 1091 
+L 3281 597 
+Q 3288 397 3316 334 
+Q 3334 294 3400 275 
+Q 3456 259 3703 234 
+L 3738 203 
+L 3738 16 
+L 3700 -19 
+Q 3322 0 2934 0 
+Q 2453 0 2109 -19 
+L 2075 16 
+L 2075 200 
+L 2106 238 
+Q 2303 256 2378 272 
+Q 2434 284 2459 366 
+Q 2478 425 2481 713 
+L 2488 1722 
+Q 2488 2072 2434 2222 
+Q 2391 2341 2269 2419 
+Q 2159 2491 1981 2491 
+Q 1700 2491 1534 2303 
+Q 1456 2216 1442 2162 
+Q 1428 2109 1428 1928 
+L 1428 1250 
+Q 1428 1050 1441 731 
+Q 1453 403 1466 350 
+Q 1484 284 1570 261 
+Q 1656 238 1831 234 
+L 1863 203 
+L 1863 13 
+L 1831 -19 
+Q 1566 0 1038 0 
+Q 478 0 184 -22 
+L 153 9 
+L 153 200 
+L 184 231 
+Q 484 241 556 278 
+Q 619 306 625 428 
+Q 647 834 647 1300 
+L 647 1747 
+Q 647 2372 600 2466 
+Q 569 2528 466 2544 
+Q 428 2550 194 2559 
+L 163 2591 
+L 163 2766 
+L 194 2800 
+Q 756 2853 1378 3059 
+L 1447 3019 
+L 1441 2522 
+L 1997 2972 
+Q 2150 3041 2359 3041 
+Q 2719 3041 2919 2923 
+Q 3119 2806 3241 2513 
+L 3809 2972 
+Q 3963 3044 4181 3044 
+Q 4784 3044 5019 2606 
+Q 5122 2413 5122 2013 
+Q 5122 1847 5119 1766 
+L 5116 1647 
+Q 5109 1497 5109 1447 
+L 5109 1041 
+Q 5109 569 5125 439 
+Q 5141 309 5197 275 
+Q 5253 241 5516 234 
+L 5547 200 
+L 5547 16 
 z
 " transform="scale(0.015625)"/>
-       <path id="DejaVuSans-64" d="M 2906 2969 
-L 2906 4863 
-L 3481 4863 
-L 3481 0 
-L 2906 0 
-L 2906 525 
-Q 2725 213 2448 61 
-Q 2172 -91 1784 -91 
-Q 1150 -91 751 415 
-Q 353 922 353 1747 
-Q 353 2572 751 3078 
-Q 1150 3584 1784 3584 
-Q 2172 3584 2448 3432 
-Q 2725 3281 2906 2969 
+       <path id="PalatinoLinotype-Bold-62" d="M 3578 1797 
+Q 3578 1231 3309 819 
+Q 3194 641 3100 569 
+Q 3006 497 2703 284 
+Q 2638 238 2350 34 
+Q 2200 -72 2009 -113 
+Q 1891 -138 1744 -138 
+Q 1375 -138 959 122 
+L 669 -113 
+L 528 -63 
+Q 588 931 588 1669 
+L 588 2897 
+Q 588 3059 572 3653 
+Q 569 3819 556 3950 
+Q 541 4113 391 4141 
+Q 356 4147 131 4156 
+L 100 4191 
+L 100 4363 
+L 131 4397 
+Q 728 4459 1341 4656 
+L 1409 4619 
+Q 1369 3450 1369 2809 
+L 1369 2478 
+L 1747 2794 
+Q 2028 3028 2394 3028 
+Q 3150 3028 3441 2428 
+Q 3578 2144 3578 1797 
 z
-M 947 1747 
-Q 947 1113 1208 752 
-Q 1469 391 1925 391 
-Q 2381 391 2643 752 
-Q 2906 1113 2906 1747 
-Q 2906 2381 2643 2742 
-Q 2381 3103 1925 3103 
-Q 1469 3103 1208 2742 
-Q 947 2381 947 1747 
+M 2775 1447 
+Q 2775 1906 2564 2181 
+Q 2353 2456 1997 2456 
+Q 1791 2456 1600 2347 
+Q 1441 2256 1369 2138 
+L 1369 663 
+Q 1603 316 2016 316 
+Q 2384 316 2584 634 
+Q 2775 938 2775 1447 
+z
+" transform="scale(0.015625)"/>
+       <path id="PalatinoLinotype-Bold-64" d="M 3750 9 
+L 3719 -22 
+Q 3413 0 3166 0 
+Q 2931 0 2531 -22 
+L 2503 0 
+Q 2516 153 2516 513 
+Q 2403 419 2194 225 
+Q 1934 -16 1856 -63 
+Q 1756 -109 1531 -109 
+Q 997 -109 669 294 
+Q 341 697 341 1338 
+Q 341 1959 594 2306 
+Q 659 2397 981 2628 
+Q 1356 2897 1528 2969 
+Q 1678 3031 1909 3031 
+Q 2234 3031 2516 2894 
+L 2516 3069 
+Q 2516 3891 2475 4038 
+Q 2453 4119 2347 4138 
+Q 2297 4147 2059 4156 
+L 2028 4191 
+L 2028 4363 
+L 2059 4397 
+Q 2659 4459 3269 4656 
+L 3338 4619 
+Q 3338 4606 3325 4309 
+Q 3297 3638 3297 2291 
+L 3297 1281 
+Q 3297 403 3338 316 
+Q 3363 263 3406 250 
+Q 3475 228 3719 209 
+L 3750 178 
+L 3750 9 
+z
+M 2516 1641 
+L 2516 2228 
+Q 2291 2497 2084 2572 
+Q 1944 2622 1784 2622 
+Q 1353 2622 1228 2178 
+Q 1159 1931 1159 1628 
+Q 1159 981 1463 669 
+Q 1622 503 1891 503 
+Q 2113 503 2303 644 
+Q 2475 769 2506 913 
+Q 2516 956 2516 1641 
 z
 " transform="scale(0.015625)"/>
       </defs>
-      <use xlink:href="#DejaVuSans-4c"/>
-      <use xlink:href="#DejaVuSans-61" transform="translate(55.712891 0)"/>
-      <use xlink:href="#DejaVuSans-6d" transform="translate(116.992188 0)"/>
-      <use xlink:href="#DejaVuSans-62" transform="translate(214.404297 0)"/>
-      <use xlink:href="#DejaVuSans-64" transform="translate(277.880859 0)"/>
-      <use xlink:href="#DejaVuSans-61" transform="translate(341.357422 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-4c"/>
+      <use xlink:href="#PalatinoLinotype-Bold-61" transform="translate(60.595703 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-6d" transform="translate(110.595703 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-62" transform="translate(199.511719 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-64" transform="translate(260.595703 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-61" transform="translate(321.679688 0)"/>
      </g>
     </g>
    </g>
    <g id="matplotlib.axis_2">
     <g id="ytick_1">
      <g id="line2d_13">
-      <path d="M 94.8125 393.941781 
-L 597.0125 393.941781 
-" clip-path="url(#p446db72492)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
+      <path d="M 83.15 393.540531 
+L 585.35 393.540531 
+" clip-path="url(#pb08da19801)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
      </g>
      <g id="line2d_14">
       <defs>
-       <path id="m6696927f5e" d="M 0 0 
+       <path id="m49cfb1aaf5" d="M 0 0 
 L -3.5 0 
 " style="stroke: #000000; stroke-width: 0.8"/>
       </defs>
       <g>
-       <use xlink:href="#m6696927f5e" x="94.8125" y="393.941781" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m49cfb1aaf5" x="83.15" y="393.540531" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_8">
       <!-- 0.004 -->
-      <g transform="translate(30.55625 401.540219) scale(0.2 -0.2)">
+      <g transform="translate(31.15 400.815531) scale(0.2 -0.2)">
        <defs>
-        <path id="DejaVuSans-2e" d="M 684 794 
-L 1344 794 
-L 1344 0 
-L 684 0 
-L 684 794 
+        <path id="PalatinoLinotype-Bold-2e" d="M 800 894 
+Q 1000 894 1144 751 
+Q 1288 609 1288 397 
+Q 1288 191 1144 47 
+Q 1000 -97 800 -97 
+Q 600 -97 454 48 
+Q 309 194 309 397 
+Q 309 603 453 748 
+Q 597 894 800 894 
 z
 " transform="scale(0.015625)"/>
        </defs>
-       <use xlink:href="#DejaVuSans-30"/>
-       <use xlink:href="#DejaVuSans-2e" transform="translate(63.623047 0)"/>
-       <use xlink:href="#DejaVuSans-30" transform="translate(95.410156 0)"/>
-       <use xlink:href="#DejaVuSans-30" transform="translate(159.033203 0)"/>
-       <use xlink:href="#DejaVuSans-34" transform="translate(222.65625 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-30"/>
+       <use xlink:href="#PalatinoLinotype-Bold-2e" transform="translate(50 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-30" transform="translate(75 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-30" transform="translate(125 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-34" transform="translate(175 0)"/>
       </g>
      </g>
     </g>
     <g id="ytick_2">
      <g id="line2d_15">
-      <path d="M 94.8125 345.860597 
-L 597.0125 345.860597 
-" clip-path="url(#p446db72492)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
+      <path d="M 83.15 345.459347 
+L 585.35 345.459347 
+" clip-path="url(#pb08da19801)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
      </g>
      <g id="line2d_16">
       <g>
-       <use xlink:href="#m6696927f5e" x="94.8125" y="345.860597" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m49cfb1aaf5" x="83.15" y="345.459347" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_9">
       <!-- 0.006 -->
-      <g transform="translate(30.55625 353.459034) scale(0.2 -0.2)">
-       <use xlink:href="#DejaVuSans-30"/>
-       <use xlink:href="#DejaVuSans-2e" transform="translate(63.623047 0)"/>
-       <use xlink:href="#DejaVuSans-30" transform="translate(95.410156 0)"/>
-       <use xlink:href="#DejaVuSans-30" transform="translate(159.033203 0)"/>
-       <use xlink:href="#DejaVuSans-36" transform="translate(222.65625 0)"/>
+      <g transform="translate(31.15 352.734347) scale(0.2 -0.2)">
+       <use xlink:href="#PalatinoLinotype-Bold-30"/>
+       <use xlink:href="#PalatinoLinotype-Bold-2e" transform="translate(50 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-30" transform="translate(75 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-30" transform="translate(125 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-36" transform="translate(175 0)"/>
       </g>
      </g>
     </g>
     <g id="ytick_3">
      <g id="line2d_17">
-      <path d="M 94.8125 297.779412 
-L 597.0125 297.779412 
-" clip-path="url(#p446db72492)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
+      <path d="M 83.15 297.378162 
+L 585.35 297.378162 
+" clip-path="url(#pb08da19801)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
      </g>
      <g id="line2d_18">
       <g>
-       <use xlink:href="#m6696927f5e" x="94.8125" y="297.779412" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m49cfb1aaf5" x="83.15" y="297.378162" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_10">
       <!-- 0.008 -->
-      <g transform="translate(30.55625 305.377849) scale(0.2 -0.2)">
-       <use xlink:href="#DejaVuSans-30"/>
-       <use xlink:href="#DejaVuSans-2e" transform="translate(63.623047 0)"/>
-       <use xlink:href="#DejaVuSans-30" transform="translate(95.410156 0)"/>
-       <use xlink:href="#DejaVuSans-30" transform="translate(159.033203 0)"/>
-       <use xlink:href="#DejaVuSans-38" transform="translate(222.65625 0)"/>
+      <g transform="translate(31.15 304.653162) scale(0.2 -0.2)">
+       <use xlink:href="#PalatinoLinotype-Bold-30"/>
+       <use xlink:href="#PalatinoLinotype-Bold-2e" transform="translate(50 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-30" transform="translate(75 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-30" transform="translate(125 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-38" transform="translate(175 0)"/>
       </g>
      </g>
     </g>
     <g id="ytick_4">
      <g id="line2d_19">
-      <path d="M 94.8125 249.698227 
-L 597.0125 249.698227 
-" clip-path="url(#p446db72492)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
+      <path d="M 83.15 249.296977 
+L 585.35 249.296977 
+" clip-path="url(#pb08da19801)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
      </g>
      <g id="line2d_20">
       <g>
-       <use xlink:href="#m6696927f5e" x="94.8125" y="249.698227" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m49cfb1aaf5" x="83.15" y="249.296977" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_11">
       <!-- 0.010 -->
-      <g transform="translate(30.55625 257.296664) scale(0.2 -0.2)">
-       <use xlink:href="#DejaVuSans-30"/>
-       <use xlink:href="#DejaVuSans-2e" transform="translate(63.623047 0)"/>
-       <use xlink:href="#DejaVuSans-30" transform="translate(95.410156 0)"/>
-       <use xlink:href="#DejaVuSans-31" transform="translate(159.033203 0)"/>
-       <use xlink:href="#DejaVuSans-30" transform="translate(222.65625 0)"/>
+      <g transform="translate(31.15 256.571977) scale(0.2 -0.2)">
+       <use xlink:href="#PalatinoLinotype-Bold-30"/>
+       <use xlink:href="#PalatinoLinotype-Bold-2e" transform="translate(50 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-30" transform="translate(75 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-31" transform="translate(125 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-30" transform="translate(175 0)"/>
       </g>
      </g>
     </g>
     <g id="ytick_5">
      <g id="line2d_21">
-      <path d="M 94.8125 201.617042 
-L 597.0125 201.617042 
-" clip-path="url(#p446db72492)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
+      <path d="M 83.15 201.215792 
+L 585.35 201.215792 
+" clip-path="url(#pb08da19801)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
      </g>
      <g id="line2d_22">
       <g>
-       <use xlink:href="#m6696927f5e" x="94.8125" y="201.617042" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m49cfb1aaf5" x="83.15" y="201.215792" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_12">
       <!-- 0.012 -->
-      <g transform="translate(30.55625 209.215479) scale(0.2 -0.2)">
-       <use xlink:href="#DejaVuSans-30"/>
-       <use xlink:href="#DejaVuSans-2e" transform="translate(63.623047 0)"/>
-       <use xlink:href="#DejaVuSans-30" transform="translate(95.410156 0)"/>
-       <use xlink:href="#DejaVuSans-31" transform="translate(159.033203 0)"/>
-       <use xlink:href="#DejaVuSans-32" transform="translate(222.65625 0)"/>
+      <g transform="translate(31.15 208.490792) scale(0.2 -0.2)">
+       <use xlink:href="#PalatinoLinotype-Bold-30"/>
+       <use xlink:href="#PalatinoLinotype-Bold-2e" transform="translate(50 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-30" transform="translate(75 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-31" transform="translate(125 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-32" transform="translate(175 0)"/>
       </g>
      </g>
     </g>
     <g id="ytick_6">
      <g id="line2d_23">
-      <path d="M 94.8125 153.535857 
-L 597.0125 153.535857 
-" clip-path="url(#p446db72492)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
+      <path d="M 83.15 153.134607 
+L 585.35 153.134607 
+" clip-path="url(#pb08da19801)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
      </g>
      <g id="line2d_24">
       <g>
-       <use xlink:href="#m6696927f5e" x="94.8125" y="153.535857" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m49cfb1aaf5" x="83.15" y="153.134607" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_13">
       <!-- 0.014 -->
-      <g transform="translate(30.55625 161.134295) scale(0.2 -0.2)">
-       <use xlink:href="#DejaVuSans-30"/>
-       <use xlink:href="#DejaVuSans-2e" transform="translate(63.623047 0)"/>
-       <use xlink:href="#DejaVuSans-30" transform="translate(95.410156 0)"/>
-       <use xlink:href="#DejaVuSans-31" transform="translate(159.033203 0)"/>
-       <use xlink:href="#DejaVuSans-34" transform="translate(222.65625 0)"/>
+      <g transform="translate(31.15 160.409607) scale(0.2 -0.2)">
+       <use xlink:href="#PalatinoLinotype-Bold-30"/>
+       <use xlink:href="#PalatinoLinotype-Bold-2e" transform="translate(50 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-30" transform="translate(75 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-31" transform="translate(125 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-34" transform="translate(175 0)"/>
       </g>
      </g>
     </g>
     <g id="ytick_7">
      <g id="line2d_25">
-      <path d="M 94.8125 105.454672 
-L 597.0125 105.454672 
-" clip-path="url(#p446db72492)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
+      <path d="M 83.15 105.053422 
+L 585.35 105.053422 
+" clip-path="url(#pb08da19801)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
      </g>
      <g id="line2d_26">
       <g>
-       <use xlink:href="#m6696927f5e" x="94.8125" y="105.454672" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m49cfb1aaf5" x="83.15" y="105.053422" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_14">
       <!-- 0.016 -->
-      <g transform="translate(30.55625 113.05311) scale(0.2 -0.2)">
-       <use xlink:href="#DejaVuSans-30"/>
-       <use xlink:href="#DejaVuSans-2e" transform="translate(63.623047 0)"/>
-       <use xlink:href="#DejaVuSans-30" transform="translate(95.410156 0)"/>
-       <use xlink:href="#DejaVuSans-31" transform="translate(159.033203 0)"/>
-       <use xlink:href="#DejaVuSans-36" transform="translate(222.65625 0)"/>
+      <g transform="translate(31.15 112.328422) scale(0.2 -0.2)">
+       <use xlink:href="#PalatinoLinotype-Bold-30"/>
+       <use xlink:href="#PalatinoLinotype-Bold-2e" transform="translate(50 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-30" transform="translate(75 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-31" transform="translate(125 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-36" transform="translate(175 0)"/>
       </g>
      </g>
     </g>
     <g id="ytick_8">
      <g id="line2d_27">
-      <path d="M 94.8125 57.373487 
-L 597.0125 57.373487 
-" clip-path="url(#p446db72492)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
+      <path d="M 83.15 56.972237 
+L 585.35 56.972237 
+" clip-path="url(#pb08da19801)" style="fill: none; stroke: #c7ccd6; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: square"/>
      </g>
      <g id="line2d_28">
       <g>
-       <use xlink:href="#m6696927f5e" x="94.8125" y="57.373487" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m49cfb1aaf5" x="83.15" y="56.972237" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_15">
       <!-- 0.018 -->
-      <g transform="translate(30.55625 64.971925) scale(0.2 -0.2)">
-       <use xlink:href="#DejaVuSans-30"/>
-       <use xlink:href="#DejaVuSans-2e" transform="translate(63.623047 0)"/>
-       <use xlink:href="#DejaVuSans-30" transform="translate(95.410156 0)"/>
-       <use xlink:href="#DejaVuSans-31" transform="translate(159.033203 0)"/>
-       <use xlink:href="#DejaVuSans-38" transform="translate(222.65625 0)"/>
+      <g transform="translate(31.15 64.247237) scale(0.2 -0.2)">
+       <use xlink:href="#PalatinoLinotype-Bold-30"/>
+       <use xlink:href="#PalatinoLinotype-Bold-2e" transform="translate(50 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-30" transform="translate(75 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-31" transform="translate(125 0)"/>
+       <use xlink:href="#PalatinoLinotype-Bold-38" transform="translate(175 0)"/>
       </g>
      </g>
     </g>
     <g id="text_16">
      <!-- MSE Fidelity -->
-     <g style="fill: #0f172a" transform="translate(22.396875 285.65125) rotate(-90) scale(0.2 -0.2)">
+     <g style="fill: #0f172a" transform="translate(21.75 285.30625) rotate(-90) scale(0.2 -0.2)">
       <defs>
-       <path id="DejaVuSans-4d" d="M 628 4666 
-L 1569 4666 
-L 2759 1491 
-L 3956 4666 
-L 4897 4666 
-L 4897 0 
-L 4281 0 
-L 4281 4097 
-L 3078 897 
-L 2444 897 
-L 1241 4097 
-L 1241 0 
-L 628 0 
-L 628 4666 
+       <path id="PalatinoLinotype-Bold-4d" d="M 6175 13 
+L 6144 -19 
+Q 5834 0 5181 0 
+Q 4513 0 4219 -19 
+L 4191 9 
+L 4191 222 
+L 4222 253 
+Q 4541 272 4588 284 
+Q 4678 309 4694 400 
+Q 4734 625 4734 1369 
+L 4734 3481 
+L 4038 2053 
+Q 3978 1934 3631 1178 
+L 3059 -72 
+L 2850 -72 
+Q 2688 316 2409 906 
+L 1972 1834 
+L 1153 3538 
+L 1153 1369 
+Q 1153 625 1194 400 
+Q 1209 309 1300 284 
+Q 1347 272 1666 253 
+L 1697 222 
+L 1697 9 
+L 1666 -19 
+Q 1306 0 997 0 
+Q 638 0 275 -19 
+L 244 9 
+L 244 222 
+L 275 253 
+Q 594 272 641 284 
+Q 731 309 747 400 
+Q 788 625 788 1369 
+L 788 3022 
+Q 788 3766 747 3991 
+Q 731 4081 641 4106 
+Q 594 4119 275 4138 
+L 244 4169 
+L 244 4381 
+L 275 4409 
+Q 600 4391 1097 4391 
+Q 1478 4391 1763 4409 
+Q 1866 4172 2056 3741 
+L 2256 3309 
+L 3250 1231 
+L 3728 2200 
+L 4475 3797 
+Q 4606 4081 4731 4409 
+Q 5084 4391 5206 4391 
+Q 5819 4391 6144 4409 
+L 6175 4381 
+L 6175 4166 
+L 6144 4138 
+Q 5825 4119 5778 4106 
+Q 5688 4081 5672 3991 
+Q 5631 3766 5631 3022 
+L 5631 1369 
+Q 5631 625 5672 400 
+Q 5688 309 5778 284 
+Q 5825 272 6144 253 
+L 6175 222 
+L 6175 13 
 z
 " transform="scale(0.015625)"/>
-       <path id="DejaVuSans-53" d="M 3425 4513 
-L 3425 3897 
-Q 3066 4069 2747 4153 
-Q 2428 4238 2131 4238 
-Q 1616 4238 1336 4038 
-Q 1056 3838 1056 3469 
-Q 1056 3159 1242 3001 
-Q 1428 2844 1947 2747 
-L 2328 2669 
-Q 3034 2534 3370 2195 
-Q 3706 1856 3706 1288 
-Q 3706 609 3251 259 
-Q 2797 -91 1919 -91 
-Q 1588 -91 1214 -16 
-Q 841 59 441 206 
-L 441 856 
-Q 825 641 1194 531 
-Q 1563 422 1919 422 
-Q 2459 422 2753 634 
-Q 3047 847 3047 1241 
-Q 3047 1584 2836 1778 
-Q 2625 1972 2144 2069 
-L 1759 2144 
-Q 1053 2284 737 2584 
-Q 422 2884 422 3419 
-Q 422 4038 858 4394 
-Q 1294 4750 2059 4750 
-Q 2388 4750 2728 4690 
-Q 3069 4631 3425 4513 
+       <path id="PalatinoLinotype-Bold-53" d="M 3575 1444 
+Q 3575 928 3281 534 
+Q 3025 188 2609 19 
+Q 2228 -138 1700 -138 
+Q 1044 -138 413 163 
+L 375 231 
+Q 463 591 463 1253 
+L 494 1284 
+L 694 1284 
+L 722 1253 
+L 722 1181 
+Q 722 1006 759 719 
+Q 872 519 1163 375 
+Q 1466 225 1794 225 
+Q 2413 225 2650 656 
+Q 2772 878 2772 1116 
+Q 2772 1516 2438 1688 
+Q 2272 1772 1903 1828 
+Q 1069 1956 806 2150 
+Q 409 2444 409 3059 
+Q 409 3700 841 4081 
+Q 1297 4481 2109 4481 
+Q 2841 4481 3291 4247 
+L 3313 4172 
+Q 3238 3800 3222 3278 
+L 3188 3247 
+L 2991 3247 
+L 2959 3278 
+Q 2950 3653 2928 3766 
+Q 2831 3913 2591 4016 
+Q 2334 4122 2056 4122 
+Q 1638 4122 1394 3900 
+Q 1166 3691 1166 3359 
+Q 1166 3000 1425 2831 
+Q 1594 2722 2222 2622 
+Q 2288 2613 2588 2559 
+Q 2772 2528 2928 2469 
+Q 3244 2350 3403 2106 
+Q 3575 1841 3575 1444 
 z
 " transform="scale(0.015625)"/>
-       <path id="DejaVuSans-45" d="M 628 4666 
-L 3578 4666 
-L 3578 4134 
-L 1259 4134 
-L 1259 2753 
-L 3481 2753 
-L 3481 2222 
-L 1259 2222 
-L 1259 531 
-L 3634 531 
-L 3634 0 
-L 628 0 
-L 628 4666 
+       <path id="PalatinoLinotype-Bold-45" d="M 3641 1044 
+Q 3572 588 3572 13 
+L 3541 -19 
+L 1269 0 
+Q 700 0 466 -19 
+L 434 13 
+L 434 100 
+L 450 138 
+Q 681 284 700 322 
+Q 728 381 734 738 
+L 744 1438 
+L 744 3022 
+Q 744 3766 703 3991 
+Q 688 4081 597 4106 
+Q 550 4119 231 4138 
+L 200 4169 
+L 200 4381 
+L 231 4409 
+Q 547 4391 1206 4391 
+Q 1794 4391 3441 4409 
+L 3475 4384 
+L 3434 4038 
+Q 3416 3872 3406 3756 
+L 3384 3466 
+L 3353 3431 
+L 3172 3431 
+L 3141 3463 
+Q 3138 3888 3091 3947 
+Q 3056 3991 2754 4016 
+Q 2453 4041 2225 4041 
+Q 1953 4041 1675 4019 
+Q 1641 3691 1641 3109 
+L 1641 2463 
+Q 1888 2447 2041 2447 
+L 2450 2450 
+Q 2738 2453 2775 2497 
+Q 2825 2553 2841 2919 
+L 2872 2950 
+L 3066 2950 
+L 3097 2919 
+Q 3084 2569 3084 2278 
+Q 3084 1963 3097 1588 
+L 3066 1559 
+L 2856 1559 
+L 2825 1591 
+Q 2825 1950 2775 2017 
+Q 2725 2084 2472 2106 
+Q 2281 2122 2066 2122 
+Q 1838 2122 1641 2106 
+L 1641 1153 
+Q 1641 744 1656 359 
+L 2081 359 
+Q 2994 359 3200 431 
+Q 3234 444 3250 466 
+Q 3281 509 3309 653 
+L 3384 1041 
+L 3416 1075 
+L 3606 1075 
+L 3641 1044 
+z
+M 2056 -244 
+L 2056 -244 
+z
+M 2056 4588 
+L 2056 4588 
 z
 " transform="scale(0.015625)"/>
-       <path id="DejaVuSans-20" transform="scale(0.015625)"/>
-       <path id="DejaVuSans-46" d="M 628 4666 
-L 3309 4666 
-L 3309 4134 
-L 1259 4134 
-L 1259 2759 
-L 3109 2759 
-L 3109 2228 
-L 1259 2228 
-L 1259 0 
-L 628 0 
-L 628 4666 
+       <path id="PalatinoLinotype-Bold-20" transform="scale(0.015625)"/>
+       <path id="PalatinoLinotype-Bold-46" d="M 3331 4384 
+L 3291 4028 
+Q 3278 3909 3263 3716 
+L 3244 3466 
+L 3213 3431 
+L 3031 3431 
+L 3000 3463 
+Q 2994 3884 2950 3944 
+Q 2878 4041 2078 4041 
+Q 1950 4041 1675 4022 
+Q 1641 3703 1641 2878 
+L 1641 2456 
+L 1994 2447 
+Q 2153 2444 2584 2459 
+Q 2669 2463 2697 2506 
+Q 2744 2581 2753 2919 
+L 2784 2950 
+L 2978 2950 
+L 3009 2919 
+Q 2997 2569 2997 2278 
+Q 2997 1963 3009 1588 
+L 2978 1559 
+L 2769 1559 
+L 2738 1591 
+Q 2738 1919 2709 1975 
+Q 2656 2084 2388 2106 
+Q 2203 2122 2025 2122 
+Q 1809 2122 1641 2113 
+L 1641 1369 
+Q 1641 628 1681 400 
+Q 1697 309 1788 284 
+Q 1809 278 2234 253 
+L 2266 222 
+L 2266 13 
+L 2231 -19 
+L 975 0 
+Q 706 3 231 -19 
+L 200 9 
+L 200 222 
+L 231 253 
+Q 550 272 597 284 
+Q 688 309 703 400 
+Q 744 628 744 1369 
+L 744 3022 
+Q 744 3763 703 3991 
+Q 688 4081 597 4106 
+Q 550 4119 231 4138 
+L 200 4169 
+L 200 4381 
+L 231 4409 
+Q 531 4391 1194 4391 
+Q 1622 4391 3300 4409 
+L 3331 4384 
 z
 " transform="scale(0.015625)"/>
-       <path id="DejaVuSans-69" d="M 603 3500 
-L 1178 3500 
-L 1178 0 
-L 603 0 
-L 603 3500 
+       <path id="PalatinoLinotype-Bold-69" d="M 1522 4088 
+Q 1522 3888 1381 3745 
+Q 1241 3603 1044 3603 
+Q 844 3603 703 3745 
+Q 563 3888 563 4088 
+Q 563 4294 705 4434 
+Q 847 4575 1044 4575 
+Q 1238 4575 1380 4434 
+Q 1522 4294 1522 4088 
 z
-M 603 4863 
-L 1178 4863 
-L 1178 4134 
-L 603 4134 
-L 603 4863 
+M 1953 9 
+L 1922 -22 
+Q 1625 0 1066 0 
+Q 506 0 213 -22 
+L 181 9 
+L 181 200 
+L 213 231 
+Q 513 241 584 278 
+Q 647 306 653 428 
+Q 675 834 675 1300 
+L 675 1747 
+Q 675 2353 628 2466 
+Q 603 2528 494 2544 
+Q 456 2550 222 2559 
+L 191 2591 
+L 191 2766 
+L 222 2800 
+Q 822 2853 1431 3059 
+L 1497 3019 
+Q 1456 2450 1456 2059 
+L 1456 1063 
+Q 1456 834 1478 428 
+Q 1484 306 1547 278 
+Q 1619 241 1919 231 
+L 1953 200 
+L 1953 9 
 z
-" transform="scale(0.015625)"/>
-       <path id="DejaVuSans-65" d="M 3597 1894 
-L 3597 1613 
-L 953 1613 
-Q 991 1019 1311 708 
-Q 1631 397 2203 397 
-Q 2534 397 2845 478 
-Q 3156 559 3463 722 
-L 3463 178 
-Q 3153 47 2828 -22 
-Q 2503 -91 2169 -91 
-Q 1331 -91 842 396 
-Q 353 884 353 1716 
-Q 353 2575 817 3079 
-Q 1281 3584 2069 3584 
-Q 2775 3584 3186 3129 
-Q 3597 2675 3597 1894 
-z
-M 3022 2063 
-Q 3016 2534 2758 2815 
-Q 2500 3097 2075 3097 
-Q 1594 3097 1305 2825 
-Q 1016 2553 972 2059 
-L 3022 2063 
-z
-" transform="scale(0.015625)"/>
-       <path id="DejaVuSans-6c" d="M 603 4863 
-L 1178 4863 
-L 1178 0 
-L 603 0 
-L 603 4863 
+M 1066 -244 
+L 1066 -244 
 z
 " transform="scale(0.015625)"/>
-       <path id="DejaVuSans-74" d="M 1172 4494 
-L 1172 3500 
-L 2356 3500 
-L 2356 3053 
-L 1172 3053 
-L 1172 1153 
-Q 1172 725 1289 603 
-Q 1406 481 1766 481 
-L 2356 481 
-L 2356 0 
-L 1766 0 
-Q 1100 0 847 248 
-Q 594 497 594 1153 
-L 594 3053 
-L 172 3053 
-L 172 3500 
-L 594 3500 
-L 594 4494 
-L 1172 4494 
+       <path id="PalatinoLinotype-Bold-65" d="M 2975 1753 
+Q 2975 1700 2972 1594 
+L 2938 1550 
+Q 2525 1438 1844 1438 
+Q 1722 1438 1475 1433 
+Q 1228 1428 1103 1428 
+Q 1122 969 1388 669 
+Q 1666 347 2113 347 
+Q 2413 347 2825 553 
+L 2900 463 
+L 2763 153 
+Q 2306 -138 1772 -138 
+Q 1069 -138 680 259 
+Q 291 656 291 1391 
+Q 291 2263 706 2584 
+Q 1281 3028 1797 3028 
+Q 2356 3028 2663 2706 
+Q 2975 2375 2975 1753 
+z
+M 2159 1834 
+Q 2159 2678 1634 2678 
+Q 1081 2678 1081 1841 
+L 1081 1772 
+Q 1263 1744 1725 1744 
+Q 1966 1744 2156 1772 
+Q 2159 1816 2159 1834 
+z
+M 1781 -244 
+L 1781 -244 
+z
+M 1781 3181 
+L 1781 3181 
 z
 " transform="scale(0.015625)"/>
-       <path id="DejaVuSans-79" d="M 2059 -325 
-Q 1816 -950 1584 -1140 
-Q 1353 -1331 966 -1331 
-L 506 -1331 
-L 506 -850 
-L 844 -850 
-Q 1081 -850 1212 -737 
-Q 1344 -625 1503 -206 
-L 1606 56 
-L 191 3500 
-L 800 3500 
-L 1894 763 
-L 2988 3500 
-L 3597 3500 
-L 2059 -325 
+       <path id="PalatinoLinotype-Bold-6c" d="M 1953 9 
+L 1922 -22 
+Q 1625 0 1066 0 
+Q 506 0 213 -22 
+L 181 9 
+L 181 200 
+L 213 231 
+Q 513 241 584 278 
+Q 647 306 653 428 
+Q 675 834 675 1850 
+L 675 2897 
+Q 675 3553 653 3959 
+Q 647 4075 584 4111 
+Q 522 4147 222 4156 
+L 191 4191 
+L 191 4363 
+L 222 4397 
+Q 825 4463 1431 4656 
+L 1497 4619 
+Q 1497 4534 1488 4309 
+Q 1456 3563 1456 2656 
+L 1456 1850 
+Q 1456 834 1478 428 
+Q 1484 306 1547 278 
+Q 1619 241 1919 231 
+L 1953 200 
+L 1953 9 
+z
+" transform="scale(0.015625)"/>
+       <path id="PalatinoLinotype-Bold-74" d="M 2081 409 
+Q 2059 384 1947 278 
+Q 1763 103 1631 -41 
+Q 1478 -91 1322 -91 
+Q 888 -91 688 163 
+Q 603 272 575 416 
+Q 544 588 547 866 
+L 556 1613 
+L 556 2394 
+L 472 2394 
+L 306 2388 
+L 178 2388 
+L 144 2416 
+L 144 2497 
+L 169 2544 
+Q 225 2581 344 2656 
+Q 484 2744 556 2803 
+L 556 3228 
+Q 556 3494 531 3791 
+Q 766 3866 911 3923 
+Q 1056 3981 1322 4113 
+L 1403 4050 
+Q 1366 3663 1350 3356 
+L 1322 2816 
+L 1425 2816 
+Q 1766 2816 2013 2838 
+L 2047 2803 
+L 2003 2438 
+L 1972 2406 
+L 1322 2406 
+L 1322 1347 
+Q 1322 838 1334 747 
+Q 1350 616 1445 534 
+Q 1541 453 1703 453 
+Q 1831 453 2013 522 
+L 2081 409 
+z
+" transform="scale(0.015625)"/>
+       <path id="PalatinoLinotype-Bold-79" d="M 3491 2728 
+L 3463 2700 
+Q 3256 2700 3181 2581 
+Q 3141 2513 2959 2122 
+Q 2550 1231 2281 566 
+L 1778 -678 
+Q 1544 -1256 1275 -1500 
+Q 1022 -1728 656 -1728 
+Q 425 -1728 209 -1619 
+Q 263 -1397 319 -997 
+L 400 -981 
+Q 563 -1213 841 -1213 
+Q 1169 -1213 1444 -572 
+L 1572 -272 
+L 559 2359 
+Q 472 2588 398 2642 
+Q 325 2697 109 2700 
+L 78 2731 
+L 78 2919 
+L 113 2950 
+Q 313 2941 878 2941 
+Q 1403 2941 1731 2950 
+L 1763 2919 
+L 1763 2731 
+L 1731 2700 
+Q 1375 2700 1375 2572 
+Q 1375 2516 1406 2434 
+Q 1456 2291 1559 2006 
+L 2016 800 
+L 2291 1459 
+Q 2694 2425 2694 2588 
+Q 2694 2700 2331 2700 
+L 2300 2731 
+L 2300 2919 
+L 2334 2950 
+Q 2516 2941 2947 2941 
+Q 3191 2941 3456 2950 
+L 3491 2919 
+L 3491 2728 
+z
+M 2534 -244 
+L 2534 -244 
+z
+M 1813 3181 
+L 1813 3181 
 z
 " transform="scale(0.015625)"/>
       </defs>
-      <use xlink:href="#DejaVuSans-4d"/>
-      <use xlink:href="#DejaVuSans-53" transform="translate(86.279297 0)"/>
-      <use xlink:href="#DejaVuSans-45" transform="translate(149.755859 0)"/>
-      <use xlink:href="#DejaVuSans-20" transform="translate(212.939453 0)"/>
-      <use xlink:href="#DejaVuSans-46" transform="translate(244.726562 0)"/>
-      <use xlink:href="#DejaVuSans-69" transform="translate(294.996094 0)"/>
-      <use xlink:href="#DejaVuSans-64" transform="translate(322.779297 0)"/>
-      <use xlink:href="#DejaVuSans-65" transform="translate(386.255859 0)"/>
-      <use xlink:href="#DejaVuSans-6c" transform="translate(447.779297 0)"/>
-      <use xlink:href="#DejaVuSans-69" transform="translate(475.5625 0)"/>
-      <use xlink:href="#DejaVuSans-74" transform="translate(503.345703 0)"/>
-      <use xlink:href="#DejaVuSans-79" transform="translate(542.554688 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-4d"/>
+      <use xlink:href="#PalatinoLinotype-Bold-53" transform="translate(100 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-45" transform="translate(161.083984 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-20" transform="translate(221.679688 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-46" transform="translate(246.679688 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-69" transform="translate(302.441406 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-64" transform="translate(335.742188 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-65" transform="translate(396.826172 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-6c" transform="translate(446.826172 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-69" transform="translate(480.126953 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-74" transform="translate(513.427734 0)"/>
+      <use xlink:href="#PalatinoLinotype-Bold-79" transform="translate(546.728516 0)"/>
      </g>
     </g>
    </g>
    <g id="line2d_29">
-    <path d="M 117.639773 401.87625 
-L 117.685427 400.706318 
-L 118.096318 386.050253 
-L 122.205227 364.766074 
-L 140.467045 364.036286 
-L 163.294318 363.895009 
-L 345.9125 322.219461 
-L 574.185227 49.07625 
-" clip-path="url(#p446db72492)" style="fill: none; stroke: #1f77b4; stroke-width: 3; stroke-linecap: square"/>
+    <path d="M 105.977273 401.475 
+L 106.022927 400.305068 
+L 106.433818 385.649003 
+L 110.542727 364.364824 
+L 128.804545 363.635036 
+L 151.631818 363.493759 
+L 334.25 321.818211 
+L 562.522727 48.675 
+" clip-path="url(#pb08da19801)" style="fill: none; stroke: #1f77b4; stroke-width: 3; stroke-linecap: square"/>
     <defs>
-     <path id="m89cdbc1aa1" d="M 0 5 
+     <path id="m23cfd8ff2d" d="M 0 5 
 C 1.326016 5 2.597899 4.473168 3.535534 3.535534 
 C 4.473168 2.597899 5 1.326016 5 0 
 C 5 -1.326016 4.473168 -2.597899 3.535534 -3.535534 
@@ -842,215 +1281,346 @@ C -2.597899 4.473168 -1.326016 5 0 5
 z
 " style="stroke: #1f77b4"/>
     </defs>
-    <g clip-path="url(#p446db72492)">
-     <use xlink:href="#m89cdbc1aa1" x="117.639773" y="401.87625" style="fill: #1f77b4; stroke: #1f77b4"/>
-     <use xlink:href="#m89cdbc1aa1" x="117.685427" y="400.706318" style="fill: #1f77b4; stroke: #1f77b4"/>
-     <use xlink:href="#m89cdbc1aa1" x="118.096318" y="386.050253" style="fill: #1f77b4; stroke: #1f77b4"/>
-     <use xlink:href="#m89cdbc1aa1" x="122.205227" y="364.766074" style="fill: #1f77b4; stroke: #1f77b4"/>
-     <use xlink:href="#m89cdbc1aa1" x="140.467045" y="364.036286" style="fill: #1f77b4; stroke: #1f77b4"/>
-     <use xlink:href="#m89cdbc1aa1" x="163.294318" y="363.895009" style="fill: #1f77b4; stroke: #1f77b4"/>
-     <use xlink:href="#m89cdbc1aa1" x="345.9125" y="322.219461" style="fill: #1f77b4; stroke: #1f77b4"/>
-     <use xlink:href="#m89cdbc1aa1" x="574.185227" y="49.07625" style="fill: #1f77b4; stroke: #1f77b4"/>
+    <g clip-path="url(#pb08da19801)">
+     <use xlink:href="#m23cfd8ff2d" x="105.977273" y="401.475" style="fill: #1f77b4; stroke: #1f77b4"/>
+     <use xlink:href="#m23cfd8ff2d" x="106.022927" y="400.305068" style="fill: #1f77b4; stroke: #1f77b4"/>
+     <use xlink:href="#m23cfd8ff2d" x="106.433818" y="385.649003" style="fill: #1f77b4; stroke: #1f77b4"/>
+     <use xlink:href="#m23cfd8ff2d" x="110.542727" y="364.364824" style="fill: #1f77b4; stroke: #1f77b4"/>
+     <use xlink:href="#m23cfd8ff2d" x="128.804545" y="363.635036" style="fill: #1f77b4; stroke: #1f77b4"/>
+     <use xlink:href="#m23cfd8ff2d" x="151.631818" y="363.493759" style="fill: #1f77b4; stroke: #1f77b4"/>
+     <use xlink:href="#m23cfd8ff2d" x="334.25" y="321.818211" style="fill: #1f77b4; stroke: #1f77b4"/>
+     <use xlink:href="#m23cfd8ff2d" x="562.522727" y="48.675" style="fill: #1f77b4; stroke: #1f77b4"/>
     </g>
    </g>
    <g id="patch_3">
-    <path d="M 94.8125 419.51625 
-L 94.8125 31.43625 
+    <path d="M 83.15 419.115 
+L 83.15 31.035 
 " style="fill: none; stroke: #1f2937; stroke-width: 1.1; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_4">
-    <path d="M 597.0125 419.51625 
-L 597.0125 31.43625 
+    <path d="M 585.35 419.115 
+L 585.35 31.035 
 " style="fill: none; stroke: #1f2937; stroke-width: 1.1; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_5">
-    <path d="M 94.8125 419.51625 
-L 597.0125 419.51625 
+    <path d="M 83.15 419.115 
+L 585.35 419.115 
 " style="fill: none; stroke: #1f2937; stroke-width: 1.1; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_6">
-    <path d="M 94.8125 31.43625 
-L 597.0125 31.43625 
+    <path d="M 83.15 31.035 
+L 585.35 31.035 
 " style="fill: none; stroke: #1f2937; stroke-width: 1.1; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_17">
     <!-- Trade-off: MSE_fid vs Lambda -->
-    <g style="fill: #0f172a" transform="translate(169.266875 25.43625) scale(0.24 -0.24)">
+    <g style="fill: #0f172a" transform="translate(165.929375 24.66) scale(0.24 -0.24)">
      <defs>
-      <path id="DejaVuSans-54" d="M -19 4666 
-L 3928 4666 
-L 3928 4134 
-L 2272 4134 
-L 2272 0 
-L 1638 0 
-L 1638 4134 
-L -19 4134 
-L -19 4666 
+      <path id="PalatinoLinotype-Bold-54" d="M 4141 4391 
+Q 4103 4159 4100 3913 
+L 4094 3391 
+L 4063 3359 
+L 3866 3359 
+L 3831 3388 
+Q 3816 3788 3797 3856 
+Q 3759 3981 3597 4003 
+Q 3534 4013 3009 4013 
+L 2591 4013 
+Q 2584 3903 2584 3144 
+L 2584 1369 
+Q 2584 625 2625 400 
+Q 2641 309 2731 284 
+Q 2778 272 3097 253 
+L 3128 222 
+L 3128 13 
+L 3097 -19 
+Q 2788 0 2134 0 
+Q 1466 0 1172 -19 
+L 1144 9 
+L 1144 222 
+L 1175 253 
+Q 1494 272 1541 284 
+Q 1631 309 1647 400 
+Q 1688 625 1688 1369 
+L 1688 3144 
+Q 1688 3916 1678 4013 
+L 1231 4013 
+Q 672 4013 578 3978 
+Q 528 3959 509 3931 
+Q 481 3881 463 3731 
+Q 441 3566 434 3391 
+L 403 3359 
+L 206 3359 
+L 172 3391 
+L 166 3925 
+Q 163 4150 128 4391 
+L 156 4422 
+Q 341 4391 1500 4391 
+L 2766 4391 
+Q 3834 4391 4109 4422 
+L 4141 4391 
 z
 " transform="scale(0.015625)"/>
-      <path id="DejaVuSans-72" d="M 2631 2963 
-Q 2534 3019 2420 3045 
-Q 2306 3072 2169 3072 
-Q 1681 3072 1420 2755 
-Q 1159 2438 1159 1844 
-L 1159 0 
-L 581 0 
-L 581 3500 
-L 1159 3500 
-L 1159 2956 
-Q 1341 3275 1631 3429 
-Q 1922 3584 2338 3584 
-Q 2397 3584 2469 3576 
-Q 2541 3569 2628 3553 
-L 2631 2963 
+      <path id="PalatinoLinotype-Bold-72" d="M 2484 3019 
+L 2463 2463 
+Q 2459 2325 2450 2150 
+L 2319 2109 
+Q 2172 2322 1913 2322 
+Q 1678 2322 1525 2134 
+Q 1431 2019 1431 1794 
+L 1431 1063 
+Q 1431 834 1453 428 
+Q 1459 313 1518 278 
+Q 1578 244 1953 231 
+L 1984 203 
+L 1984 13 
+L 1953 -19 
+Q 1494 0 1041 0 
+Q 481 0 188 -22 
+L 156 9 
+L 156 200 
+L 188 231 
+Q 488 241 559 278 
+Q 622 306 628 428 
+Q 650 834 650 1300 
+L 650 1747 
+Q 650 2372 603 2466 
+Q 572 2528 469 2544 
+Q 431 2550 197 2559 
+L 166 2591 
+L 166 2766 
+L 197 2800 
+Q 759 2853 1381 3059 
+L 1450 3019 
+L 1444 2406 
+Q 1638 2631 1913 2931 
+Q 2041 3056 2263 3056 
+Q 2394 3056 2484 3019 
 z
 " transform="scale(0.015625)"/>
-      <path id="DejaVuSans-2d" d="M 313 2009 
-L 1997 2009 
-L 1997 1497 
-L 313 1497 
-L 313 2009 
+      <path id="PalatinoLinotype-Bold-2d" d="M 1816 1225 
+L 153 1225 
+L 106 1275 
+Q 156 1356 228 1597 
+Q 300 1838 316 1931 
+L 1963 1931 
+L 2022 1869 
+Q 1900 1663 1816 1225 
 z
 " transform="scale(0.015625)"/>
-      <path id="DejaVuSans-6f" d="M 1959 3097 
-Q 1497 3097 1228 2736 
-Q 959 2375 959 1747 
-Q 959 1119 1226 758 
-Q 1494 397 1959 397 
-Q 2419 397 2687 759 
-Q 2956 1122 2956 1747 
-Q 2956 2369 2687 2733 
-Q 2419 3097 1959 3097 
+      <path id="PalatinoLinotype-Bold-6f" d="M 3303 1550 
+Q 3303 444 2559 53 
+Q 2197 -138 1731 -138 
+Q 1013 -138 636 278 
+Q 259 694 259 1469 
+Q 259 2541 991 2897 
+Q 1350 3072 1825 3072 
+Q 2822 3072 3147 2381 
+Q 3303 2050 3303 1550 
 z
-M 1959 3584 
-Q 2709 3584 3137 3096 
-Q 3566 2609 3566 1747 
-Q 3566 888 3137 398 
-Q 2709 -91 1959 -91 
-Q 1206 -91 779 398 
-Q 353 888 353 1747 
-Q 353 2609 779 3096 
-Q 1206 3584 1959 3584 
+M 2438 1294 
+Q 2438 2072 2267 2408 
+Q 2097 2744 1747 2744 
+Q 1125 2744 1125 1622 
+Q 1125 181 1822 181 
+Q 2256 181 2375 659 
+Q 2438 909 2438 1294 
 z
-" transform="scale(0.015625)"/>
-      <path id="DejaVuSans-66" d="M 2375 4863 
-L 2375 4384 
-L 1825 4384 
-Q 1516 4384 1395 4259 
-Q 1275 4134 1275 3809 
-L 1275 3500 
-L 2222 3500 
-L 2222 3053 
-L 1275 3053 
-L 1275 0 
-L 697 0 
-L 697 3053 
-L 147 3053 
-L 147 3500 
-L 697 3500 
-L 697 3744 
-Q 697 4328 969 4595 
-Q 1241 4863 1831 4863 
-L 2375 4863 
+M 1813 -244 
+L 1813 -244 
+z
+M 1813 3181 
+L 1813 3181 
 z
 " transform="scale(0.015625)"/>
-      <path id="DejaVuSans-3a" d="M 750 794 
-L 1409 794 
-L 1409 0 
-L 750 0 
-L 750 794 
-z
-M 750 3309 
-L 1409 3309 
-L 1409 2516 
-L 750 2516 
-L 750 3309 
+      <path id="PalatinoLinotype-Bold-66" d="M 2438 4628 
+L 2425 4294 
+L 2431 3981 
+L 2334 3925 
+Q 2184 4081 1953 4081 
+Q 1591 4081 1547 3803 
+Q 1525 3663 1525 3241 
+L 1525 2803 
+L 1809 2803 
+Q 2022 2803 2359 2828 
+L 2403 2794 
+L 2331 2438 
+L 2300 2406 
+L 1853 2409 
+Q 1616 2409 1525 2406 
+L 1525 1850 
+Q 1525 431 1569 334 
+Q 1594 278 1653 263 
+Q 1747 241 2084 231 
+L 2116 200 
+L 2116 9 
+L 2084 -22 
+L 1853 -13 
+Q 1522 0 1134 0 
+Q 575 0 281 -22 
+L 250 9 
+L 250 200 
+L 281 231 
+Q 581 241 653 278 
+Q 716 306 722 428 
+Q 744 834 744 1850 
+L 744 2406 
+Q 675 2409 659 2409 
+Q 625 2409 478 2400 
+Q 406 2397 281 2391 
+L 250 2422 
+L 250 2519 
+L 278 2563 
+L 556 2706 
+Q 638 2744 728 2797 
+Q 744 2816 744 2853 
+L 744 2900 
+Q 744 3381 806 3556 
+Q 841 3650 938 3769 
+Q 966 3803 1344 4163 
+L 1538 4347 
+Q 1622 4431 1753 4547 
+Q 1925 4672 2172 4672 
+Q 2303 4672 2438 4628 
 z
 " transform="scale(0.015625)"/>
-      <path id="DejaVuSans-5f" d="M 3263 -1063 
-L 3263 -1509 
-L -63 -1509 
-L -63 -1063 
-L 3263 -1063 
+      <path id="PalatinoLinotype-Bold-3a" d="M 800 2916 
+Q 1003 2916 1145 2769 
+Q 1288 2622 1288 2422 
+Q 1288 2219 1145 2072 
+Q 1003 1925 800 1925 
+Q 597 1925 453 2070 
+Q 309 2216 309 2422 
+Q 309 2628 453 2772 
+Q 597 2916 800 2916 
+z
+M 800 894 
+Q 1000 894 1144 751 
+Q 1288 609 1288 397 
+Q 1288 191 1144 47 
+Q 1000 -97 800 -97 
+Q 600 -97 454 48 
+Q 309 194 309 397 
+Q 309 603 453 748 
+Q 597 894 800 894 
 z
 " transform="scale(0.015625)"/>
-      <path id="DejaVuSans-76" d="M 191 3500 
-L 800 3500 
-L 1894 563 
-L 2988 3500 
-L 3597 3500 
-L 2284 0 
-L 1503 0 
-L 191 3500 
+      <path id="PalatinoLinotype-Bold-5f" d="M 3200 -1041 
+L 0 -1041 
+L 0 -659 
+L 3200 -659 
+L 3200 -1041 
 z
 " transform="scale(0.015625)"/>
-      <path id="DejaVuSans-73" d="M 2834 3397 
-L 2834 2853 
-Q 2591 2978 2328 3040 
-Q 2066 3103 1784 3103 
-Q 1356 3103 1142 2972 
-Q 928 2841 928 2578 
-Q 928 2378 1081 2264 
-Q 1234 2150 1697 2047 
-L 1894 2003 
-Q 2506 1872 2764 1633 
-Q 3022 1394 3022 966 
-Q 3022 478 2636 193 
-Q 2250 -91 1575 -91 
-Q 1294 -91 989 -36 
-Q 684 19 347 128 
-L 347 722 
-Q 666 556 975 473 
-Q 1284 391 1588 391 
-Q 1994 391 2212 530 
-Q 2431 669 2431 922 
-Q 2431 1156 2273 1281 
-Q 2116 1406 1581 1522 
-L 1381 1569 
-Q 847 1681 609 1914 
-Q 372 2147 372 2553 
-Q 372 3047 722 3315 
-Q 1072 3584 1716 3584 
-Q 2034 3584 2315 3537 
-Q 2597 3491 2834 3397 
+      <path id="PalatinoLinotype-Bold-76" d="M 3494 2728 
+L 3463 2694 
+Q 3272 2681 3213 2647 
+Q 3169 2622 3106 2509 
+Q 3044 2397 2872 2003 
+L 2275 619 
+Q 2244 544 2006 -53 
+L 1459 -53 
+Q 1284 441 1078 956 
+Q 750 1778 519 2369 
+Q 416 2631 297 2675 
+Q 228 2700 113 2703 
+L 78 2738 
+L 78 2919 
+L 113 2950 
+Q 400 2941 947 2941 
+Q 1428 2941 1700 2950 
+L 1734 2919 
+L 1734 2734 
+L 1700 2700 
+Q 1469 2694 1400 2672 
+Q 1331 2650 1331 2588 
+Q 1331 2500 1716 1488 
+Q 1919 947 1981 809 
+Q 2181 1278 2363 1728 
+Q 2659 2463 2659 2588 
+Q 2659 2653 2595 2673 
+Q 2531 2694 2288 2703 
+L 2253 2734 
+L 2253 2919 
+L 2288 2950 
+Q 2528 2941 2856 2941 
+Q 3209 2941 3463 2950 
+L 3494 2919 
+L 3494 2728 
+z
+" transform="scale(0.015625)"/>
+      <path id="PalatinoLinotype-Bold-73" d="M 2622 981 
+Q 2622 478 2242 170 
+Q 1863 -138 1250 -138 
+Q 816 -138 319 50 
+L 284 97 
+Q 313 384 319 544 
+L 334 938 
+L 366 972 
+L 550 972 
+L 588 938 
+Q 600 588 616 525 
+Q 881 184 1313 184 
+Q 1588 184 1753 318 
+Q 1919 453 1919 678 
+Q 1919 963 1669 1056 
+Q 1563 1097 1247 1163 
+Q 731 1272 556 1413 
+Q 291 1625 291 2041 
+Q 291 2494 619 2769 
+Q 963 3056 1550 3056 
+Q 2050 3056 2381 2888 
+L 2409 2838 
+Q 2375 2697 2356 2116 
+L 2322 2084 
+L 2144 2084 
+L 2109 2116 
+Q 2097 2341 2066 2481 
+Q 1869 2731 1494 2731 
+Q 1250 2731 1094 2612 
+Q 938 2494 938 2300 
+Q 938 2041 1203 1953 
+Q 1322 1916 1666 1847 
+Q 2191 1744 2359 1609 
+Q 2622 1400 2622 981 
 z
 " transform="scale(0.015625)"/>
      </defs>
-     <use xlink:href="#DejaVuSans-54"/>
-     <use xlink:href="#DejaVuSans-72" transform="translate(46.333984 0)"/>
-     <use xlink:href="#DejaVuSans-61" transform="translate(87.447266 0)"/>
-     <use xlink:href="#DejaVuSans-64" transform="translate(148.726562 0)"/>
-     <use xlink:href="#DejaVuSans-65" transform="translate(212.203125 0)"/>
-     <use xlink:href="#DejaVuSans-2d" transform="translate(273.726562 0)"/>
-     <use xlink:href="#DejaVuSans-6f" transform="translate(311.685547 0)"/>
-     <use xlink:href="#DejaVuSans-66" transform="translate(372.867188 0)"/>
-     <use xlink:href="#DejaVuSans-66" transform="translate(408.072266 0)"/>
-     <use xlink:href="#DejaVuSans-3a" transform="translate(439.652344 0)"/>
-     <use xlink:href="#DejaVuSans-20" transform="translate(473.34375 0)"/>
-     <use xlink:href="#DejaVuSans-4d" transform="translate(505.130859 0)"/>
-     <use xlink:href="#DejaVuSans-53" transform="translate(591.410156 0)"/>
-     <use xlink:href="#DejaVuSans-45" transform="translate(654.886719 0)"/>
-     <use xlink:href="#DejaVuSans-5f" transform="translate(718.070312 0)"/>
-     <use xlink:href="#DejaVuSans-66" transform="translate(768.070312 0)"/>
-     <use xlink:href="#DejaVuSans-69" transform="translate(803.275391 0)"/>
-     <use xlink:href="#DejaVuSans-64" transform="translate(831.058594 0)"/>
-     <use xlink:href="#DejaVuSans-20" transform="translate(894.535156 0)"/>
-     <use xlink:href="#DejaVuSans-76" transform="translate(926.322266 0)"/>
-     <use xlink:href="#DejaVuSans-73" transform="translate(985.501953 0)"/>
-     <use xlink:href="#DejaVuSans-20" transform="translate(1037.601562 0)"/>
-     <use xlink:href="#DejaVuSans-4c" transform="translate(1069.388672 0)"/>
-     <use xlink:href="#DejaVuSans-61" transform="translate(1125.101562 0)"/>
-     <use xlink:href="#DejaVuSans-6d" transform="translate(1186.380859 0)"/>
-     <use xlink:href="#DejaVuSans-62" transform="translate(1283.792969 0)"/>
-     <use xlink:href="#DejaVuSans-64" transform="translate(1347.269531 0)"/>
-     <use xlink:href="#DejaVuSans-61" transform="translate(1410.746094 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-54"/>
+     <use xlink:href="#PalatinoLinotype-Bold-72" transform="translate(59.324219 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-61" transform="translate(98.240234 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-64" transform="translate(148.240234 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-65" transform="translate(209.324219 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-2d" transform="translate(259.324219 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-6f" transform="translate(292.625 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-66" transform="translate(348.240234 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-66" transform="translate(387.15625 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-3a" transform="translate(426.072266 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-20" transform="translate(451.072266 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-4d" transform="translate(476.072266 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-53" transform="translate(576.072266 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-45" transform="translate(637.15625 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-5f" transform="translate(697.751953 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-66" transform="translate(747.751953 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-69" transform="translate(786.667969 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-64" transform="translate(819.96875 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-20" transform="translate(881.052734 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-76" transform="translate(906.052734 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-73" transform="translate(961.619141 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-20" transform="translate(1006.003906 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-4c" transform="translate(1031.003906 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-61" transform="translate(1091.599609 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-6d" transform="translate(1141.599609 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-62" transform="translate(1230.515625 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-64" transform="translate(1291.599609 0)"/>
+     <use xlink:href="#PalatinoLinotype-Bold-61" transform="translate(1352.683594 0)"/>
     </g>
    </g>
   </g>
  </g>
  <defs>
-  <clipPath id="p446db72492">
-   <rect x="94.8125" y="31.43625" width="502.2" height="388.08"/>
+  <clipPath id="pb08da19801">
+   <rect x="83.15" y="31.035" width="502.2" height="388.08"/>
   </clipPath>
  </defs>
 </svg>
