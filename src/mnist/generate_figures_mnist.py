@@ -12,6 +12,8 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import numpy as np
@@ -61,8 +63,8 @@ def plot_complex_robustness_curve(
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 10), sharex=True, gridspec_kw={'height_ratios': [2, 1]})
     
     # Ax1: Main metrics
-    ax1.plot(a, v_old, marker=viz.CLASS_MARKERS[0], label="$T_{old}$", color=viz.COLOR_CYCLE[0], linewidth=3, markersize=10)
-    ax1.plot(a, v_new, marker=viz.CLASS_MARKERS[1], label="$T_{new}$", color=viz.COLOR_CYCLE[1], linewidth=3, markersize=10)
+    ax1.plot(a, v_old, marker=viz.CLASS_MARKERS[0], label="$T_{old}$", color=viz.COLOR_CYCLE[0], linewidth=4, markersize=viz.LINE_MARKER_SIZE)
+    ax1.plot(a, v_new, marker=viz.CLASS_MARKERS[1], label="$T_{new}$", color=viz.COLOR_CYCLE[1], linewidth=4, markersize=viz.LINE_MARKER_SIZE)
     ax1.set_ylabel(ylabel)
     ax1.set_title(title)
     ax1.legend(loc="upper center", ncol=2, frameon=False, prop={'weight': 'bold'})
@@ -72,7 +74,7 @@ def plot_complex_robustness_curve(
     ratio = v_new / v_old
     ratio_label = "Advantage ($T_{new} / T_{old}$)"
     
-    ax2.plot(a, ratio, marker='s', color='#800080', linewidth=3, markersize=8, label=ratio_label)
+    ax2.plot(a, ratio, marker='s', color='#800080', linewidth=3, markersize=viz.LINE_MARKER_SIZE, label=ratio_label)
     ax2.axhline(1.0, color='gray', linestyle='--', linewidth=2)
     ax2.set_xlabel("Rotation angle (deg)")
     ax2.set_ylabel("Advantage Ratio")
@@ -176,17 +178,18 @@ def plot_extended_scatter(
     
     n_static = len(labels)
     n_rot_old = old_rot_2d.shape[0]
-    # For faint background, replicate labels
-    labels_rot = np.tile(labels, n_rot_old // n_static) if n_rot_old > n_static else labels
+    # For faint background, replicate labels robustly
+    # We tile enough times then slice to exact length
+    labels_rot = np.tile(labels, (n_rot_old // n_static) + 1)[:n_rot_old]
     
     def _plot_side(ax, static_2d, rot_2d, title):
         # 1. Rotated (Background)
+        # Using class colors with low alpha to match synthetic "Light Color" pattern
         ax.scatter(
             rot_2d[:, 0], rot_2d[:, 1],
-            c="lightgray", # Or use tabulated colors but very faint
-            s=60, alpha=0.3, # Increased size slightly for visibility
+            c=labels_rot, cmap="tab10",
+            s=viz.MARKER_SIZE_SMALL, alpha=0.2, 
             edgecolor='none',
-            label="Rotated",
             zorder=1
         )
         
@@ -194,7 +197,7 @@ def plot_extended_scatter(
         ax.scatter(
             static_2d[:, 0], static_2d[:, 1],
             c=labels, cmap="tab10",
-            s=150, alpha=1.0,
+            s=viz.MARKER_SIZE_LARGE, alpha=1.0,
             edgecolor='black', linewidth=1.5,
             label="Static",
             zorder=2
@@ -223,13 +226,16 @@ def plot_extended_scatter(
     plt.subplots_adjust(bottom=0.15)
     viz.save_figure(fig, out_dir, stem)
 
-def plot_symmetry_bar_train_test(train_metrics: dict, test_metrics: dict, out_dir: Path, stem: str) -> None:
+def plot_symmetry_bar_train_test(train_metrics: dict, test_metrics: dict, out_dir: Path, stem: str, ax: Optional[plt.Axes] = None) -> None:
     sym_old_train = float(train_metrics["symmetry_error_fro"]["old"])
     sym_new_train = float(train_metrics["symmetry_error_fro"]["new"])
     sym_old_test = float(test_metrics["symmetry_error_fro"]["old"])
     sym_new_test = float(test_metrics["symmetry_error_fro"]["new"])
 
-    fig, ax = plt.subplots(figsize=(5.5, 3.2), dpi=200)
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(5.5, 3.2), dpi=200)
+    else:
+        fig = ax.figure
     groups = ["Train", "Test"]
     x = np.arange(len(groups))
     width = 0.35
@@ -243,7 +249,9 @@ def plot_symmetry_bar_train_test(train_metrics: dict, test_metrics: dict, out_di
     ax.set_title("SymDef (log scale)")
     ax.grid(axis='y', **viz.MAJOR_GRID_STYLE)
     
-    viz.save_figure(fig, out_dir, stem)
+    viz.enforce_bold_text(ax)
+    if stem:
+        viz.save_figure(fig, out_dir, stem)
 
 
 def plot_lambda_sweep_symerr(lambda_sweep: dict, out_dir: Path, stem: str, highlight_lambda: float = 0.5, ax: Optional[plt.Axes] = None) -> None:
@@ -266,7 +274,7 @@ def plot_lambda_sweep_symerr(lambda_sweep: dict, out_dir: Path, stem: str, highl
 
     for xv, l, se in zip(x_vals, lambdas, sym_err):
         if abs(l - highlight_lambda) < 1e-12:
-            ax.scatter([xv], [se], s=40, zorder=5)
+            ax.scatter([xv], [se], s=viz.MARKER_SIZE_SMALL, zorder=5)
             ax.annotate(rf"$\lambda={highlight_lambda}$", (xv, se), textcoords="offset points",
                         xytext=(6, 6), fontsize=7, fontweight='bold')
     
@@ -311,6 +319,7 @@ def plot_extended_robustness_curves(metrics_test: dict, out_dir: Path) -> None:
     ax.set_title("MNIST Robustness (Test): SSIM vs Rotation, ±90°")
     ax.legend(frameon=False, fontsize=7)
     ax.grid(True, **viz.MAJOR_GRID_STYLE)
+    viz.enforce_bold_text(ax)
     viz.save_figure(fig, out_dir, "14a_robustness_ssim_vs_angle_test_90deg")
 
     # 14b: PSNR
@@ -322,6 +331,7 @@ def plot_extended_robustness_curves(metrics_test: dict, out_dir: Path) -> None:
     ax.set_title("MNIST Robustness (Test): PSNR vs Rotation, ±90°")
     ax.legend(frameon=False, fontsize=7)
     ax.grid(True, **viz.MAJOR_GRID_STYLE)
+    viz.enforce_bold_text(ax)
     viz.save_figure(fig, out_dir, "14b_robustness_psnr_vs_angle_test_90deg")
 
     # 14c: Delta SSIM
@@ -332,6 +342,7 @@ def plot_extended_robustness_curves(metrics_test: dict, out_dir: Path) -> None:
     ax.set_ylabel(r"$\Delta$SSIM (ETM - Baseline)")
     ax.set_title("MNIST Robustness Gain: SSIM Difference vs Rotation")
     ax.grid(True, **viz.MAJOR_GRID_STYLE)
+    viz.enforce_bold_text(ax)
     viz.save_figure(fig, out_dir, "14c_delta_ssim_vs_angle_test_90deg")
 
     # 14d: Delta PSNR
@@ -342,6 +353,7 @@ def plot_extended_robustness_curves(metrics_test: dict, out_dir: Path) -> None:
     ax.set_ylabel(r"$\Delta$PSNR (ETM - Baseline)")
     ax.set_title("MNIST Robustness Gain: PSNR Difference vs Rotation")
     ax.grid(True, **viz.MAJOR_GRID_STYLE)
+    viz.enforce_bold_text(ax)
     viz.save_figure(fig, out_dir, "14d_delta_psnr_vs_angle_test_90deg")
 
 
@@ -596,7 +608,7 @@ def generate_chaos_variants(
             axs[0, i].imshow(orig_np[i], cmap="gray", vmin=0, vmax=1)
             axs[0, i].axis("off")
             title_text = f"{i}\n({angles[i]:.0f}°)" if angle_mag > 0 else f"{i}"
-            axs[0, i].set_title(title_text, fontsize=viz.BASE_FONT_SIZE + 2)
+            axs[0, i].set_title(title_text, fontsize=viz.TITLE_FONT_SIZE, fontweight="bold")
             
             # Row 1: Old
             axs[1, i].imshow(recon_old[i], cmap="gray", vmin=0, vmax=1)
@@ -624,10 +636,17 @@ def generate_chaos_variants(
         cbar.set_ticks([improvement.min(), 0, improvement.max()])
         cbar.ax.set_yticklabels(["Worse", "0", "Better"])
         
-        fig.suptitle(f"Reconstruction & Robustness Analysis ({subset})\nAngle Magnitude: {angle_mag}°", fontsize=viz.TITLE_FONT_SIZE)
+        fig.suptitle(f"Reconstruction & Robustness Analysis ({subset})\nAngle Magnitude: {angle_mag}°", fontsize=viz.TITLE_FONT_SIZE, fontweight='bold')
         
         # Separate axes clearly (handled by subplots, but we ensure spacing)
         plt.subplots_adjust(wspace=0.1, hspace=0.1)
+        
+        # Enforce bold title (suptitle)
+        # Note: enforce_bold_text works on AXES. Suptitle is figure level.
+        # But we can set the font weight explicitly for suptitle where we create it.
+        # Line 627: fig.suptitle(..., fontsize=viz.TITLE_FONT_SIZE) -> should also be bold.
+        # We'll fix line 627 too. 
+        # But here let's ensure axis titles are bold (already set in 599).
         
         viz.save_figure(fig, out_dir, stem)
 

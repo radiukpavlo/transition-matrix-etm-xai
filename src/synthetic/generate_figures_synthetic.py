@@ -251,7 +251,7 @@ def plot_displacement_vectors(demo_data: Dict[str, Any], out_dir: Path) -> None:
                 end[idx, 0], end[idx, 1],
                 color=LIGHT_COLORS[c],
                 marker=CLASS_MARKERS[c],
-                s=200,
+                s=MARKER_SIZE_LARGE,
                 alpha=0.9,
                 edgecolor=CLASS_COLORS[c],
                 linewidth=0.8,

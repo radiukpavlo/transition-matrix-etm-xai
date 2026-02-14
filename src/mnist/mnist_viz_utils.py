@@ -15,6 +15,13 @@ DARK_EDGE_COLOR = "#1f2937"
 DARK_TEXT_COLOR = "#0f172a"
 MAJOR_GRID_STYLE = {"color": "#c7ccd6", "linewidth": 1.2, "alpha": 0.7}
 
+# --- MARKER SIZES ---
+# Matched with synthetic/viz_utils.py
+MARKER_SIZE_LARGE = 200
+MARKER_SIZE_MEDIUM = 100
+MARKER_SIZE_SMALL = 60
+LINE_MARKER_SIZE = 10
+
 # --- COLORS ---
 # Standard tab10 for digits 0-9
 COLOR_CYCLE = mpl.colormaps["tab10"].colors
