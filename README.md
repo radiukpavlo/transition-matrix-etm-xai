@@ -197,11 +197,11 @@ ETM offers a rigorous, mathematically grounded framework for "opening the black 
 If you use this code or methodology in your research, please cite:
 
 ```bibtex
-@article{etm_xai_2026,
-  title={Equivariant Transition Matrices for Explainable Deep Learning},
-  author={Radiuk, Pavlo},
-  journal={arXiv inference},
-  year={2026}
+@misc{radiuk2026equivariant,
+  title        = {Equivariant Transition Matrices for Explainable Deep Learning: A Lie Group Linearization Approach},
+  author       = {Radiuk, Pavlo and Barmak, Oleksander and Bedratyuk, Leonid and Krak, Iurii},
+  year         = {2026},
+  note         = {Submitted for publication}
 }
 ```
 
