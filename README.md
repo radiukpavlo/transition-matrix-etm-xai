@@ -114,7 +114,7 @@ To generate a visual representation of the methodology using PaperBanana:
 
 ```bash
 # Ensure you have the GOOGLE_API_KEY in .env
-python -m paperbanana.cli generate --input method.txt --caption "Graphical Abstract" --vlm-model "models/gemini-2.5-flash" --output assets/graphical_abstract.png
+python -m paperbanana.cli generate --input method.txt --caption "Graphical Abstract" --vlm-model "models/gemini-2.5-flash" --output assets/temp.png
 ```
 
 **Note:** The generated diagram will be saved in the `assets/` directory.
