@@ -1,12 +1,22 @@
+<div align="center">
+
 # Equivariant Transition Matrices for Explainable Deep Learning (ETM-XAI)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![Status: Research](https://img.shields.io/badge/Status-Research-orange)
 
-This repository contains the official implementation, experimental verification, and scientific analysis of **Equivariant Transition Matrices (ETM)**. This method introduces a novel approach for linearizing deep neural networks by explicitly aligning the infinitesimal actions of Lie Groups between the input manifold and the latent representation.
+![Graphical Abstract](assets/graphical_abstract.png)
 
-Unlike classical local linear approximation methods (e.g., SVD-based approaches) which often yield unstable and uninterpretable projections, **ETM** enforces symmetry preservation (equivariance). This results in transition matrices that respect the geometric structure of the data, providing robust and semantically meaningful explanations.
+*A novel Lie Group Linearization approach for interpreting Deep Neural Networks.*
+
+</div>
+
+---
+
+**Equivariant Transition Matrices (ETM)** introduces a rigorous framework for linearizing deep neural networks by explicitly aligning the infinitesimal actions of Lie Groups between the input manifold and the latent representation.
+
+> **Key Insight:** Unlike classical local linear approximation methods (e.g., SVD-based approaches) which often yield unstable and uninterpretable projections, **ETM** enforces symmetry preservation (equivariance). This results in transition matrices that respect the geometric structure of the data, providing robust and semantically meaningful explanations.
 
 ---
 
