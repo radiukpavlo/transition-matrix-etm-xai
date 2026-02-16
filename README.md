@@ -45,6 +45,7 @@ The project is organized to support reproducibility and clear separation of conc
 
 ```plaintext
 .
+├── assets/         # Generated diagrams and visual assets
 ├── configs/        # Configuration files (YAML) for experiments
 ├── inputs/         # Source matrices and raw datasets
 ├── outputs/        # Generated artifacts (figures, matrices, logs)
@@ -96,6 +97,17 @@ Run all experiments sequentially:
 ```bash
 python run_all.py --all
 ```
+
+### 4. Generate Methodology Diagram
+
+To generate a visual representation of the methodology using PaperBanana:
+
+```bash
+# Ensure you have the GOOGLE_API_KEY in .env
+python -m paperbanana.cli generate --input method.txt --caption "Graphical Abstract" --vlm-model "models/gemini-2.5-flash" --output assets/graphical_abstract.png
+```
+
+**Note:** The generated diagram will be saved in the `assets/` directory.
 
 **Note:** Results, including figures and matrices, will be saved to the `outputs/` directory.
 
