@@ -75,8 +75,26 @@ The project is organized to support reproducibility and clear separation of conc
 Ensure you have Python 3.8+ installed. Install the required dependencies:
 
 ```bash
+
 pip install -r requirements.txt
 ```
+
+### Setup & Security
+
+1. **Environment Variables**:
+    Copy the example environment file and configure your keys (e.g., `GOOGLE_API_KEY`):
+
+    ```bash
+    cp .env.example .env
+    # Edit .env with your actual keys
+    ```
+
+2. **Security Hooks**:
+    Install the pre-commit hooks to prevent accidental secret commits:
+
+    ```bash
+    pre-commit install
+    ```
 
 ---
 
@@ -110,11 +128,11 @@ python run_all.py --all
 
 ### 4. Generate Methodology Diagram
 
-To generate a visual representation of the methodology using PaperBanana:
+To generate a visual representation of the methodology:
 
 ```bash
-# Ensure you have the GOOGLE_API_KEY in .env
-python -m paperbanana.cli generate --input method.txt --caption "Graphical Abstract" --vlm-model "models/gemini-2.5-flash" --output assets/temp.png
+# Ensure you have configured .env
+python generate_diagram.py generate --input method.txt --caption "Graphical Abstract" --vlm-model "models/gemini-2.5-flash" --output assets/graphical_abstract.png
 ```
 
 **Note:** The generated diagram will be saved in the `assets/` directory.

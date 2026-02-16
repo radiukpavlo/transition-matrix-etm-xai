@@ -48,7 +48,7 @@ def run_extended_experiments():
     print("Loading matrices...")
     A = load_json_matrix(PROJECT_ROOT / "inputs" / "synthetic" / "A.json")
     B = load_json_matrix(PROJECT_ROOT / "inputs" / "synthetic" / "B.json")
-    
+
     # Load learned matrices
     # T_old_ls_kxl.json -> W_old (k x l)
     W_old = load_json_matrix(matrices_dir / "T_old_ls_kxl.json")
@@ -67,7 +67,7 @@ def run_extended_experiments():
     # To ensure consistency, let's use the same random state from config.
     # Note: src.etm.synthetic.estimate_generator_via_bridge does the whole thing.
     # We just need A_2d and the decoders.
-    
+
     print("Re-estimating decoders for simulation...")
     random_state = cfg.get("mds_random_state", 42)
     normalized_stress = cfg.get("mds_normalized_stress", False)
@@ -83,7 +83,7 @@ def run_extended_experiments():
     # --- 1. EXTENDED ROTATION LOOP ---
     range_deg = cfg.get("robustness_range_degrees", [-60, 60]) # Fallback if not set
     step_deg = cfg.get("robustness_step_degrees", 5)
-    
+
     start_deg, end_deg = range_deg[0], range_deg[1]
     # np.arange excludes endpoint, so add a tiny bit
     angles_deg = np.arange(start_deg, end_deg + 1e-9, step_deg)
@@ -96,29 +96,29 @@ def run_extended_experiments():
 
     # To visualize "Displacement Vectors", we need a specific (large) angle
     # Let's pick the max angle in the positive direction for the demo plot.
-    demo_angle_deg = end_deg 
+    demo_angle_deg = end_deg
     demo_idx = -1 # Index of the demo angle
-    
+
     # Store demo data: targets and predictions for Old/New
-    demo_data = {} 
+    demo_data = {}
 
     for i, angle in enumerate(angles_rad):
         # 1. Rotate latent space
         A2 = rotate_2d(A_2d, angle)
         B2 = rotate_2d(B_2d, angle)
-        
+
         # 2. Decode to ambient space ("Ground Truth" for this rotation)
         A_rot = decoderA.predict(A2)
         B_target = decoderB.predict(B2)
-        
+
         # 3. Predict using Transition Matrix
         B_pred_old = A_rot @ W_old
         B_pred_new = A_rot @ W_new
-        
+
         # 4. Compute MSE
         mse_old = mse_fid(B_target, B_pred_old)
         mse_new = mse_fid(B_target, B_pred_new)
-        
+
         results_old.append(mse_old)
         results_new.append(mse_new)
 
@@ -126,7 +126,7 @@ def run_extended_experiments():
         if i == len(angles_rad) - 1: # Just taking the last one for now or match specific
              # Wait, finding exactly demo_angle_deg might be safer by value
              pass
-        
+
         if abs(angles_deg[i] - demo_angle_deg) < 1e-5:
             demo_data = {
                 "angle_deg": float(angles_deg[i]),
@@ -156,7 +156,7 @@ def run_extended_experiments():
              "B_pred_old": (decoderA.predict(rotate_2d(A_2d, angles_rad[-1])) @ W_old).tolist(),
              "B_pred_new": (decoderA.predict(rotate_2d(A_2d, angles_rad[-1])) @ W_new).tolist()
         }
-    
+
     save_json(matrices_dir / "displacement_test_data.json", demo_data)
     print("Saved extended metrics and demo data to matrices/")
 

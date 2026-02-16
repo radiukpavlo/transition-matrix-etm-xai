@@ -53,7 +53,7 @@ def plot_complex_robustness_curve(
     a = angles[mask]
     v_old = np.array(vals_old)[mask]
     v_new = np.array(vals_new)[mask]
-    
+
     if parent_gs is not None and fig is not None:
         # Create nested gridspec
         gs_inner = mpl.gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=parent_gs, height_ratios=[2, 1], hspace=0.1)
@@ -61,7 +61,7 @@ def plot_complex_robustness_curve(
         ax2 = fig.add_subplot(gs_inner[1], sharex=ax1)
     else:
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 10), sharex=True, gridspec_kw={'height_ratios': [2, 1]})
-    
+
     # Ax1: Main metrics
     ax1.plot(a, v_old, marker=viz.CLASS_MARKERS[0], label="$T_{old}$", color=viz.COLOR_CYCLE[0], linewidth=4, markersize=viz.LINE_MARKER_SIZE)
     ax1.plot(a, v_new, marker=viz.CLASS_MARKERS[1], label="$T_{new}$", color=viz.COLOR_CYCLE[1], linewidth=4, markersize=viz.LINE_MARKER_SIZE)
@@ -69,11 +69,11 @@ def plot_complex_robustness_curve(
     ax1.set_title(title)
     ax1.legend(loc="upper center", ncol=2, frameon=False, prop={'weight': 'bold'})
     ax1.grid(True, **viz.MAJOR_GRID_STYLE)
-    
+
     # Ax2: Advantage Ratio
     ratio = v_new / v_old
     ratio_label = "Advantage ($T_{new} / T_{old}$)"
-    
+
     ax2.plot(a, ratio, marker='s', color='#800080', linewidth=3, markersize=viz.LINE_MARKER_SIZE, label=ratio_label)
     ax2.axhline(1.0, color='gray', linestyle='--', linewidth=2)
     ax2.set_xlabel("Rotation angle (deg)")
@@ -81,10 +81,10 @@ def plot_complex_robustness_curve(
     ax2.legend(loc="upper center", frameon=False, prop={'weight': 'bold'})
     ax2.grid(True, **viz.MAJOR_GRID_STYLE)
     ax2.set_xlim(-90, 90)
-    
+
     viz.enforce_bold_text(ax1)
     viz.enforce_bold_text(ax2)
-    
+
     if stem:
         viz.save_figure(fig, out_dir, stem)
 
@@ -104,16 +104,16 @@ def plot_symmetry_bar(
     labels = ["$T_{old}$", "$T_{new}$"]
     values = [sym_old, sym_new]
     colors = [viz.COLOR_CYCLE[0], viz.COLOR_CYCLE[1]]
-    
+
     bars = ax.bar(labels, values, color=colors, edgecolor=viz.DARK_EDGE_COLOR, width=0.6)
     ax.bar_label(bars, fmt="%.2e", padding=3, fontweight="bold")
-    
+
     ax.set_ylabel(r"$||T J_A - J_B T||_F$")
     ax.set_title(f"Symmetry Error\n{subtitle}")
     ax.grid(axis='y', **viz.MAJOR_GRID_STYLE)
-    
+
     viz.enforce_bold_text(ax)
-    
+
     if stem:
         viz.save_figure(fig, out_dir, stem)
 
@@ -128,11 +128,11 @@ def plot_embeddings(
 ) -> None:
     """Plot Old vs New embeddings side-by-side."""
     fig, axs = plt.subplots(1, 2, figsize=(16, 7))
-    
+
     # Common settings
     pt_size = 15
     alpha = 0.7
-    
+
     # Left: Old
     sc0 = axs[0].scatter(
         old_2d[:, 0], old_2d[:, 1], c=labels, cmap="tab10", s=pt_size, alpha=alpha, edgecolor='none'
@@ -141,7 +141,7 @@ def plot_embeddings(
     axs[0].set_xlabel(f"{method_name}-1")
     axs[0].set_ylabel(f"{method_name}-2")
     axs[0].grid(True, **viz.MAJOR_GRID_STYLE)
-    
+
     # Right: New
     sc1 = axs[1].scatter(
         new_2d[:, 0], new_2d[:, 1], c=labels, cmap="tab10", s=pt_size, alpha=alpha, edgecolor='none'
@@ -150,12 +150,12 @@ def plot_embeddings(
     axs[1].set_xlabel(f"{method_name}-1")
     axs[1].set_ylabel(f"{method_name}-2")
     axs[1].grid(True, **viz.MAJOR_GRID_STYLE)
-    
+
     # Colorbar (sharedish)
     cbar = fig.colorbar(sc1, ax=axs, orientation='vertical', fraction=0.02, pad=0.04)
     cbar.set_label("Digit Class")
     cbar.set_ticks(range(10))
-    
+
     fig.suptitle(f"{method_name} Projection - {subtitle}", fontsize=viz.TITLE_FONT_SIZE)
     viz.save_figure(fig, out_dir, stem)
 
@@ -175,24 +175,24 @@ def plot_extended_scatter(
     Right: New (Rotated Light vs Static Vivid)
     """
     fig, axs = plt.subplots(1, 2, figsize=(22, 10))
-    
+
     n_static = len(labels)
     n_rot_old = old_rot_2d.shape[0]
     # For faint background, replicate labels robustly
     # We tile enough times then slice to exact length
     labels_rot = np.tile(labels, (n_rot_old // n_static) + 1)[:n_rot_old]
-    
+
     def _plot_side(ax, static_2d, rot_2d, title):
         # 1. Rotated (Background)
         # Using class colors with low alpha to match synthetic "Light Color" pattern
         ax.scatter(
             rot_2d[:, 0], rot_2d[:, 1],
             c=labels_rot, cmap="tab10",
-            s=viz.MARKER_SIZE_SMALL, alpha=0.2, 
+            s=viz.MARKER_SIZE_SMALL, alpha=0.2,
             edgecolor='none',
             zorder=1
         )
-        
+
         # 2. Static (Foreground)
         ax.scatter(
             static_2d[:, 0], static_2d[:, 1],
@@ -202,18 +202,18 @@ def plot_extended_scatter(
             label="Static",
             zorder=2
         )
-        
+
         ax.set_title(title)
         ax.set_xlabel(f"{method_name}-1")
         ax.set_ylabel(f"{method_name}-2")
         ax.grid(True, **viz.MAJOR_GRID_STYLE)
-        
+
     # Left: Old
     _plot_side(axs[0], old_static_2d, old_rot_2d, f"{method_name}: $B^*_{{old}}$ (Rotated vs Static)")
-    
+
     # Right: New
     _plot_side(axs[1], new_static_2d, new_rot_2d, f"{method_name}: $B^*_{{new}}$ (Rotated vs Static)")
-    
+
     # Add Colorbar for class identification "outside the figure plot"
     # To match Figure 09 style:
     sm = plt.cm.ScalarMappable(cmap="tab10", norm=plt.Normalize(vmin=0, vmax=9))
@@ -222,7 +222,7 @@ def plot_extended_scatter(
     cbar = fig.colorbar(sm, ax=axs, orientation='vertical', fraction=0.02, pad=0.04)
     cbar.set_label("Digit Class")
     cbar.set_ticks(range(10))
-    
+
     plt.subplots_adjust(bottom=0.15)
     viz.save_figure(fig, out_dir, stem)
 
@@ -248,7 +248,7 @@ def plot_symmetry_bar_train_test(train_metrics: dict, test_metrics: dict, out_di
     ax.legend(frameon=False, fontsize=7)
     ax.set_title("SymDef (log scale)")
     ax.grid(axis='y', **viz.MAJOR_GRID_STYLE)
-    
+
     viz.enforce_bold_text(ax)
     if stem:
         viz.save_figure(fig, out_dir, stem)
@@ -277,7 +277,7 @@ def plot_lambda_sweep_symerr(lambda_sweep: dict, out_dir: Path, stem: str, highl
             ax.scatter([xv], [se], s=viz.MARKER_SIZE_SMALL, zorder=5)
             ax.annotate(rf"$\lambda={highlight_lambda}$", (xv, se), textcoords="offset points",
                         xytext=(6, 6), fontsize=7, fontweight='bold')
-    
+
     viz.enforce_bold_text(ax)
 
     if stem:
@@ -296,9 +296,9 @@ def plot_generator_singular_values(gen_sv: dict, out_dir: Path, stem: str) -> No
     ax.set_title("Generator Estimation: Singular Value Spectra")
     ax.legend(frameon=False, fontsize=9, prop={'weight': 'bold'})
     ax.grid(True, **viz.MAJOR_GRID_STYLE)
-    
+
     viz.enforce_bold_text(ax)
-    
+
     viz.save_figure(fig, out_dir, stem)
 
 
@@ -371,44 +371,44 @@ def plot_mega_panel(
     (d) SSIM vs Ang (e) PSNR vs Ang (f) Lambda Sweep
     """
     print(f"Generating Mega Panel (Vector): {stem}")
-    
+
     # Create main figure with GridSpec
     fig = plt.figure(figsize=(22, 12))
     gs = fig.add_gridspec(2, 3, wspace=0.25, hspace=0.3)
-    
+
     # Subplot (a): SSIM Histogram (Test)
-    # Re-compute metrics or load histograms? 
+    # Re-compute metrics or load histograms?
     # Current script computes hist on fly in run_mnist_viz but doesn't save raw hist values easily accesible here unless passed.
     # However, run_mnist_viz computes them. We might need to change run_mnist_viz to pass them or just skip re-plotting if data missing.
-    # Actually, plot_mega_panel in original code relied on pngs. 
+    # Actually, plot_mega_panel in original code relied on pngs.
     # To fully support vector, we need the *data*.
     # run_mnist_viz has `metrics` dict with "ssim" and "psnr" lists.
     # We should pass this `metrics` dict to plot_mega_panel.
-    
-    # Since I cannot easily change the signature in this edit step to accept `metrics` without changing caller first, 
+
+    # Since I cannot easily change the signature in this edit step to accept `metrics` without changing caller first,
     # I will assume `test_metrics` contains the robustness curves, but for histograms we need raw data.
     # The raw data is computed in `compute_metrics` inside this script.
     # I will modify `run_mnist_viz` to pass `metrics` (raw) to `plot_mega_panel`.
     pass # valid replacement will happen, but we depend on caller having data.
-    
+
     # ... Wait, I can't access `metrics` (raw values) from `test_metrics` (summary stats).
     # I need to change `run_mnist_viz` to pass `metrics`.
-    
+
     # Let's write the function to accept `raw_metrics` arg.
     # For now, I'll write the logic assuming arguments are available, and I'll update caller in next step.
-    
+
     # Valid placeholders for now if data missing?
     # Actually, let's use the provided `test_metrics` for curves, and we need `raw_metrics` for histograms.
     # If raw_metrics missing, we can't plot (a) and (b) properly as vector histograms.
-    # BUT, the user prompt says "refactor all figures...". 
+    # BUT, the user prompt says "refactor all figures...".
     # I will update `run_mnist_viz` to pass `metrics` to this function.
-   
-    # This replacement content will just be the function definition. 
+
+    # This replacement content will just be the function definition.
     # I will handle the caller update next.
-    
-    # For now, I will define the function to take `raw_metrics` as an optional kwarg, 
+
+    # For now, I will define the function to take `raw_metrics` as an optional kwarg,
     # or just separate args.
-    
+
     pass
 
 def plot_mega_panel_vector(
@@ -421,16 +421,16 @@ def plot_mega_panel_vector(
 ) -> None:
     # Font for labels
     label_font = {'weight': 'bold', 'size': viz.TITLE_FONT_SIZE}
-    
+
     fig = plt.figure(figsize=(24, 14))
     gs = fig.add_gridspec(2, 3, wspace=0.3, hspace=0.35, left=0.05, right=0.98, top=0.95, bottom=0.05)
-    
+
     # (a) SSIM Histogram
     ax_a = fig.add_subplot(gs[0, 0])
     if raw_metrics:
         plot_metric_histogram(raw_metrics["ssim"]["T_old"], raw_metrics["ssim"]["T_new"], "SSIM", out_dir, "", ax=ax_a)
     ax_a.text(-0.15, 1.05, "(a)", transform=ax_a.transAxes, **label_font)
-    
+
     # (b) PSNR Histogram
     ax_b = fig.add_subplot(gs[0, 1])
     if raw_metrics:
@@ -441,30 +441,30 @@ def plot_mega_panel_vector(
     ax_c = fig.add_subplot(gs[0, 2])
     plot_symmetry_bar_train_test(train_metrics, test_metrics, out_dir, "", ax=ax_c)
     ax_c.text(-0.15, 1.05, "(c)", transform=ax_c.transAxes, **label_font)
-    
+
     # (d) SSIM vs Angle
     # plot_complex_robustness_curve takes simple lists
     rob = test_metrics["robustness"]
     angles = np.array(rob["angles_deg"])
     plot_complex_robustness_curve(
-        angles, rob["mean_ssim_old"], rob["mean_ssim_new"], 
-        "Mean SSIM", "Robustness: SSIM (Test)", out_dir, "", 
+        angles, rob["mean_ssim_old"], rob["mean_ssim_new"],
+        "Mean SSIM", "Robustness: SSIM (Test)", out_dir, "",
         parent_gs=gs[1, 0], fig=fig
     )
-    # We need to add label to the sub-figure. 
+    # We need to add label to the sub-figure.
     # Since complex curve creates 2 subplots in the gs slot, we can add text to the top one?
     # Easier: add text relative to the gs slot using a dummy axes or the first axes created.
     # But we don't return the axes.
     # We can add a text artist to the figure at coordinates? No, nice relative coordinates are better.
     # Let's add it to the top-left of the slot.
     # Actually, we can get the axes from fig.axes[-2] (top one) and fig.axes[-1] (bottom one).
-    ax_d = fig.axes[-2] 
+    ax_d = fig.axes[-2]
     ax_d.text(-0.15, 1.05, "(d)", transform=ax_d.transAxes, **label_font)
 
     # (e) PSNR vs Angle
     plot_complex_robustness_curve(
-        angles, rob["mean_psnr_old"], rob["mean_psnr_new"], 
-        "Mean PSNR", "Robustness: PSNR (Test)", out_dir, "", 
+        angles, rob["mean_psnr_old"], rob["mean_psnr_new"],
+        "Mean PSNR", "Robustness: PSNR (Test)", out_dir, "",
         parent_gs=gs[1, 1], fig=fig
     )
     ax_e = fig.axes[-2]
@@ -474,7 +474,7 @@ def plot_mega_panel_vector(
     ax_f = fig.add_subplot(gs[1, 2])
     plot_lambda_sweep_symerr(lambda_sweep, out_dir, "", ax=ax_f)
     ax_f.text(-0.15, 1.05, "(f)", transform=ax_f.transAxes, **label_font)
-    
+
     viz.save_figure(fig, out_dir, stem)
 BATCH_SIZE = 256
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -488,27 +488,27 @@ from src.etm.utils import load_json_matrix
 
 def load_data_and_model(out_dir: Path) -> Tuple[torch.nn.Module, torch.utils.data.DataLoader, Dict[str, np.ndarray]]:
     print(f"Loading resources (device={DEVICE})...")
-    
+
     # 1. Model
     model_path = out_dir / "models" / "mnist_cnn_k490.pt"
     if not model_path.exists():
         raise FileNotFoundError(f"Model not found at {model_path}")
-        
+
     ckpt = torch.load(model_path, map_location=DEVICE)
     cfg_dict = ckpt.get("cfg", {})
     model_cfg = CNNConfig(**cfg_dict)
     model = MNISTCNN(model_cfg).to(DEVICE)
     model.load_state_dict(ckpt["model_state"])
     model.eval()
-    
+
     # 2. Data
     _, test_loader = get_raw_dataloaders(PROJECT_ROOT, BATCH_SIZE, num_workers=0, device=torch.device(DEVICE))
-    
+
     # 3. Transition Matrices
     matrices_dir = out_dir / "matrices"
-    T_old = load_json_matrix(matrices_dir / "T_old_kxl.json") 
-    T_new = load_json_matrix(matrices_dir / "T_new_kxl.json") 
-    
+    T_old = load_json_matrix(matrices_dir / "T_old_kxl.json")
+    T_new = load_json_matrix(matrices_dir / "T_new_kxl.json")
+
     matrices = {"T_old": T_old, "T_new": T_new}
     return model, test_loader, matrices
 
@@ -518,16 +518,16 @@ def reconstruct_batch(model, W_kxl: np.ndarray, x: torch.Tensor) -> np.ndarray:
     x_norm = (x.to(DEVICE) - NORM_MEAN) / NORM_STD
     with torch.no_grad():
         A = model.penultimate(x_norm).cpu().numpy().astype(np.float64) # (N, k)
-    
+
     B_hat = A @ W_kxl # (N, l)
     recon = np.clip(B_hat.reshape(-1, 28, 28), 0.0, 1.0)
     return recon
 
 def generate_chaos_variants(
-    model, 
-    test_loader, 
-    matrices: Dict[str, np.ndarray], 
-    out_dir: Path, 
+    model,
+    test_loader,
+    matrices: Dict[str, np.ndarray],
+    out_dir: Path,
     subset: str
 ) -> None:
     """
@@ -549,25 +549,25 @@ def generate_chaos_variants(
                 break
         if len(samples_by_digit) == 10:
             break
-            
+
     # Sort 0-9
     digits = [samples_by_digit[i] for i in range(10)]
     input_batch = torch.cat(digits, dim=0).to(DEVICE) # (10, 1, 28, 28)
-    
+
     # 2. Define Variants
     variants = [
         ("10a", 0.0),
         ("10b", 45.0),
         ("10c", 90.0)
     ]
-    
+
     # Fixed seed for angle signs
     rng = np.random.default_rng(42)
-    
+
     for stem_prefix, angle_mag in variants:
         stem = f"{stem_prefix}_chaos_figure_{subset}"
         print(f"Generating {stem} (Angle magnitude: {angle_mag})...")
-        
+
         # Prepare Rotated Inputs
         if angle_mag == 0:
             angles = np.zeros(10)
@@ -575,15 +575,15 @@ def generate_chaos_variants(
             # Random sign per digit
             signs = rng.choice([-1, 1], size=10)
             angles = signs * angle_mag
-            
+
         theta = torch.tensor(angles * math.pi / 180.0, device=DEVICE, dtype=torch.float32)
         rotated_inputs = rotate_batch(input_batch, theta).detach() # (10, 1, 28, 28)
-        
+
         # Reconstruct
         recon_old = reconstruct_batch(model, matrices["T_old"], rotated_inputs.cpu())
         recon_new = reconstruct_batch(model, matrices["T_new"], rotated_inputs.cpu())
         orig_np = rotated_inputs.cpu().numpy().reshape(-1, 28, 28)
-        
+
         # Compute Visual Advantage (Difference Row)
         # Improvement = Error_Old - Error_New
         # Error = |Input - Recon|
@@ -591,43 +591,43 @@ def generate_chaos_variants(
         err_old = np.abs(orig_np - recon_old)
         err_new = np.abs(orig_np - recon_new)
         improvement = err_old - err_new
-        
+
         # Plotting
         n = 10
         fig, axs = plt.subplots(4, n, figsize=(n * 2.0, 9)) # Taller/Wider for clarity
-        
+
         row_titles = ["Input", "Recon ($T_{old}$)", "Recon ($T_{new}$)", "Advantage\n($T_{new}$ vs $T_{old}$)"]
-        
+
         # Global color scale for difference map
         # centered at 0. Green for positive (better), Red for negative (worse)
         div_norm = mcolors.TwoSlopeNorm(vmin=improvement.min(), vcenter=0., vmax=improvement.max())
         cmap_diff = plt.cm.RdBu # Red-Blue (Red=Deterioration, Blue=Improvement)
-        
+
         for i in range(n):
             # Row 0: Input
             axs[0, i].imshow(orig_np[i], cmap="gray", vmin=0, vmax=1)
             axs[0, i].axis("off")
             title_text = f"{i}\n({angles[i]:.0f}°)" if angle_mag > 0 else f"{i}"
             axs[0, i].set_title(title_text, fontsize=viz.TITLE_FONT_SIZE, fontweight="bold")
-            
+
             # Row 1: Old
             axs[1, i].imshow(recon_old[i], cmap="gray", vmin=0, vmax=1)
             axs[1, i].axis("off")
-            
+
             # Row 2: New
             axs[2, i].imshow(recon_new[i], cmap="gray", vmin=0, vmax=1)
             axs[2, i].axis("off")
-            
+
             # Row 3: Difference (Advantage)
             im_diff = axs[3, i].imshow(improvement[i], cmap=cmap_diff, norm=div_norm)
             axs[3, i].axis("off")
-            
+
         # Row Labels (Far Left)
         for r, txt in enumerate(row_titles):
             # Place text reasonably to the left
-            axs[r, 0].text(-0.25, 0.5, txt, transform=axs[r, 0].transAxes, 
+            axs[r, 0].text(-0.25, 0.5, txt, transform=axs[r, 0].transAxes,
                            rotation=90, va='center', ha='right', fontsize=viz.BASE_FONT_SIZE)
-        
+
         # Add colorbar for the difference row
         # Position it to the right of the bottom row
         cbar_ax = fig.add_axes([0.92, 0.15, 0.015, 0.15]) # [left, bottom, width, height]
@@ -635,19 +635,19 @@ def generate_chaos_variants(
         cbar.set_label("Improvement", fontsize=viz.LEGEND_FONT_SIZE)
         cbar.set_ticks([improvement.min(), 0, improvement.max()])
         cbar.ax.set_yticklabels(["Worse", "0", "Better"])
-        
+
         fig.suptitle(f"Reconstruction & Robustness Analysis ({subset})\nAngle Magnitude: {angle_mag}°", fontsize=viz.TITLE_FONT_SIZE, fontweight='bold')
-        
+
         # Separate axes clearly (handled by subplots, but we ensure spacing)
         plt.subplots_adjust(wspace=0.1, hspace=0.1)
-        
+
         # Enforce bold title (suptitle)
         # Note: enforce_bold_text works on AXES. Suptitle is figure level.
         # But we can set the font weight explicitly for suptitle where we create it.
         # Line 627: fig.suptitle(..., fontsize=viz.TITLE_FONT_SIZE) -> should also be bold.
-        # We'll fix line 627 too. 
+        # We'll fix line 627 too.
         # But here let's ensure axis titles are bold (already set in 599).
-        
+
         viz.save_figure(fig, out_dir, stem)
 
 
@@ -657,69 +657,69 @@ def compute_metrics(model, matrices: Dict[str, np.ndarray], loader) -> Dict[str,
         "ssim": {"T_old": [], "T_new": []},
         "psnr": {"T_old": [], "T_new": []}
     }
-    
+
     for x, _ in tqdm(loader, desc="Evaluating"):
         x_np = x.numpy().reshape(-1, 28, 28)
-        
+
         rec_old = reconstruct_batch(model, matrices["T_old"], x)
         rec_new = reconstruct_batch(model, matrices["T_new"], x)
-        
+
         for i in range(x.shape[0]):
             orig = x_np[i]
             r_o = rec_old[i]
             r_n = rec_new[i]
-            
+
             metrics["ssim"]["T_old"].append(ssim(orig, r_o, data_range=1.0))
             metrics["ssim"]["T_new"].append(ssim(orig, r_n, data_range=1.0))
-            
+
             metrics["psnr"]["T_old"].append(psnr(orig, r_o, data_range=1.0))
             metrics["psnr"]["T_new"].append(psnr(orig, r_n, data_range=1.0))
-            
+
     return metrics
 
 def plot_reconstructions(
-    model, 
-    W_kxl: np.ndarray, 
-    loader, 
-    title: str, 
-    out_dir: Path, 
+    model,
+    W_kxl: np.ndarray,
+    loader,
+    title: str,
+    out_dir: Path,
     filename: str
 ) -> None:
     x_batch, y_batch = next(iter(loader))
     n_samples = 8
     x_sample = x_batch[:n_samples]
-    
+
     recon = reconstruct_batch(model, W_kxl, x_sample)
     orig = x_sample.numpy().reshape(-1, 28, 28)
-    
+
     fig, axs = plt.subplots(2, n_samples, figsize=(n_samples * 1.5, 3.5))
-    
+
     for i in range(n_samples):
         axs[0, i].imshow(orig[i], cmap="gray", vmin=0, vmax=1)
         axs[0, i].axis("off")
         if i == 0:
-            axs[0, i].text(-0.2, 0.5, "Original", transform=axs[0, i].transAxes, 
+            axs[0, i].text(-0.2, 0.5, "Original", transform=axs[0, i].transAxes,
                            rotation=90, va='center', ha='right', fontsize=viz.BASE_FONT_SIZE)
 
         axs[1, i].imshow(recon[i], cmap="gray", vmin=0, vmax=1)
         axs[1, i].axis("off")
         if i == 0:
-            axs[1, i].text(-0.2, 0.5, "Reconstructed", transform=axs[1, i].transAxes, 
+            axs[1, i].text(-0.2, 0.5, "Reconstructed", transform=axs[1, i].transAxes,
                            rotation=90, va='center', ha='right', fontsize=viz.BASE_FONT_SIZE)
-            
+
     fig.suptitle(title, fontsize=viz.TITLE_FONT_SIZE, fontweight='bold')
     plt.tight_layout()
-    
+
     for ax in axs.flatten():
         viz.enforce_bold_text(ax)
-        
+
     viz.save_figure(fig, out_dir, filename)
 
 def plot_metric_histogram(
-    vals_old: list, 
-    vals_new: list, 
-    metric_name: str, 
-    out_dir: Path, 
+    vals_old: list,
+    vals_new: list,
+    metric_name: str,
+    out_dir: Path,
     filename: str,
     ax: Optional[plt.Axes] = None
 ) -> None:
@@ -727,21 +727,21 @@ def plot_metric_histogram(
         fig, ax = plt.subplots(figsize=(8, 6))
     else:
         fig = ax.figure
-    
+
     bins = 50
     alpha = 0.6
-    
+
     ax.hist(vals_old, bins=bins, alpha=alpha, label="$T_{old}$", color=viz.COLOR_CYCLE[0], density=True)
     ax.hist(vals_new, bins=bins, alpha=alpha, label="$T_{new}$", color=viz.COLOR_CYCLE[1], density=True)
-    
+
     ax.set_xlabel(metric_name)
     ax.set_ylabel("Density")
     ax.set_title(f"{metric_name} Distribution (Test Set)")
     ax.legend(prop={'weight': 'bold'})
     ax.grid(True, **viz.MAJOR_GRID_STYLE)
-    
+
     viz.enforce_bold_text(ax)
-    
+
     if filename:
         viz.save_figure(fig, out_dir, filename)
 
@@ -756,37 +756,37 @@ def run_mnist_viz(out_dir: Path) -> None:
     # We need model interactions for Figures 03-06 (Recons/Hist) AND 10 (Chaos Variants)
     try:
         model, test_loader, matrices = load_data_and_model(out_dir)
-        
+
         # 03. Reconstructions T_old
         plot_reconstructions(
-            model, matrices["T_old"], test_loader, 
+            model, matrices["T_old"], test_loader,
             "Reconstructions ($T_{old}$)", out_dir, "03_reconstructions_T_old"
         )
-        
+
         # 04. Reconstructions T_new
         plot_reconstructions(
-            model, matrices["T_new"], test_loader, 
+            model, matrices["T_new"], test_loader,
             "Reconstructions ($T_{new}$)", out_dir, "04_reconstructions_T_new"
         )
-        
+
         # Calculate metrics (SSIM/PSNR distributions)
         metrics = compute_metrics(model, matrices, test_loader)
-        
+
         # 05. SSIM
         plot_metric_histogram(
-            metrics["ssim"]["T_old"], metrics["ssim"]["T_new"], 
+            metrics["ssim"]["T_old"], metrics["ssim"]["T_new"],
             "SSIM", out_dir, "05_ssim_comparison"
         )
-        
+
         # 06. PSNR
         plot_metric_histogram(
-            metrics["psnr"]["T_old"], metrics["psnr"]["T_new"], 
+            metrics["psnr"]["T_old"], metrics["psnr"]["T_new"],
             "PSNR (dB)", out_dir, "06_psnr_comparison"
         )
-        
+
         # 10. Chaos Variants (10a, 10b, 10c) for "test" subset (represented by loader)
         generate_chaos_variants(model, test_loader, matrices, out_dir, "test")
-        
+
     except Exception as e:
         print(f"Warning: Could not generate on-the-fly figures (03-06, 10): {e}")
         import traceback
@@ -795,7 +795,7 @@ def run_mnist_viz(out_dir: Path) -> None:
     # --- Part 2: Pre-computed subset figures (Figures 07-11/13 etc) ---
     for subset in ["train", "test"]:
         generate_subset_figures(subset, matrices_dir, out_dir)
-        
+
     # --- Part 3: Mega Panel & Extra Figures (from legacy generate_mnist_mega...) ---
     try:
         print("Generating consolidated mega figures...")
@@ -803,26 +803,26 @@ def run_mnist_viz(out_dir: Path) -> None:
         test_metrics = load_json(matrices_dir / "mnist_metrics_test.json")
         lambda_sweep = load_json(matrices_dir / "lambda_sweep.json")
         gen_sv = load_json(matrices_dir / "generator_singular_values.json")
-        
+
         # 12a. Symmetry Bar (Train vs Test)
         plot_symmetry_bar_train_test(
-            train_metrics, test_metrics, 
+            train_metrics, test_metrics,
             out_dir, "12a_symmetry_bar_train_test"
         )
-        
+
         # 12b. Lambda Sweep
         plot_lambda_sweep_symerr(
             lambda_sweep, out_dir, "12b_lambda_sweep_symerr"
         )
-        
+
         # 13. Generator SV
         plot_generator_singular_values(
             gen_sv, out_dir, "13_generator_singular_values"
         )
-        
+
         # 14. Extended Robustness (Test 90deg)
         plot_extended_robustness_curves(test_metrics, out_dir)
-        
+
         # 12. Mega Panel (Vector Version)
         # We need raw metrics from the on-the-fly computation.
         # If 'metrics' variable exists (from Part 1), use it.
@@ -832,16 +832,16 @@ def run_mnist_viz(out_dir: Path) -> None:
         else:
             print("Warning: Raw metrics not available for Mega Panel histograms.")
             raw_metrics = None
-            
+
         plot_mega_panel_vector(
             raw_metrics,
             train_metrics,
             test_metrics,
             lambda_sweep,
-            out_dir, 
+            out_dir,
             "12_mega_mnist_panel"
         )
-        
+
     except FileNotFoundError as e:
         print(f"Skipping Mega Figures due to missing data: {e}")
     except Exception as e:
@@ -851,32 +851,32 @@ def run_mnist_viz(out_dir: Path) -> None:
 
 def generate_subset_figures(subset: str, matrices_dir: Path, out_dir: Path) -> None:
     print(f"--- Generating figures for subset: {subset} ---")
-    
+
     # 1. Metrics JSON
     metrics_path = matrices_dir / f"mnist_metrics_{subset}.json"
     if not metrics_path.exists():
         print(f"Metrics not found: {metrics_path}")
         return
-        
+
     metrics = load_json(metrics_path)
     rob = metrics["robustness"]
     angles = np.array(rob["angles_deg"])
-    
+
     # Robustness Curves (Complex)
     plot_complex_robustness_curve(
-        angles, rob["mean_ssim_old"], rob["mean_ssim_new"], 
+        angles, rob["mean_ssim_old"], rob["mean_ssim_new"],
         "Mean SSIM", f"Robustness: SSIM vs Angle ({subset})", out_dir, f"08_robustness_ssim_vs_angle_{subset}"
     )
     plot_complex_robustness_curve(
-        angles, rob["mean_psnr_old"], rob["mean_psnr_new"], 
+        angles, rob["mean_psnr_old"], rob["mean_psnr_new"],
         "Mean PSNR (dB)", f"Robustness: PSNR vs Angle ({subset})", out_dir, f"09_robustness_psnr_vs_angle_{subset}"
     )
-    
+
     # Symmetry Bar
     sym_old = metrics["symmetry_error_fro"]["old"]
     sym_new = metrics["symmetry_error_fro"]["new"]
     plot_symmetry_bar(sym_old, sym_new, out_dir, f"07b_symmetry_bar_{subset}", subtitle=f"({subset})")
-    
+
     # 3. Scatter Plots
     emb_path = matrices_dir / f"mnist_embeddings_{subset}.npz"
     if emb_path.exists():
@@ -884,64 +884,64 @@ def generate_subset_figures(subset: str, matrices_dir: Path, out_dir: Path) -> N
         old_stack = data["B_star_old"]
         new_stack = data["B_star_new"]
         labels = data["labels"]
-        
+
         all_emb = np.vstack([old_stack, new_stack])
         n_old = old_stack.shape[0]
-        
+
         # Calculate Static vs Rotated
         try:
             static_angle_idx = np.where(angles == 0)[0][0]
             n_samples = n_old // len(angles)
             start = static_angle_idx * n_samples
             end = (static_angle_idx + 1) * n_samples
-            
+
             # Static embeddings indices
             print(f"Computing projections for {subset} (N={all_emb.shape[0]})...")
-            
+
             from sklearn.decomposition import PCA
             from sklearn.manifold import MDS, TSNE
             import warnings
             warnings.filterwarnings("ignore")
-            
+
             # Helper to run reduction and plot both types
             def run_and_plot(reducer, name, stem_simple, stem_complex):
                 # Ensure reproducibility of reducer
                 emb_all = reducer.fit_transform(all_emb)
-                
+
                 # Split Old/New
                 emb_old_all = emb_all[:n_old]
                 emb_new_all = emb_all[n_old:]
-                
+
                 # Split Static/Rotated for Complex Plot
                 emb_old_stat = emb_old_all[start:end]
                 emb_new_stat = emb_new_all[start:end]
-                
+
                 # 1. Simple Plot (09)
                 plot_embeddings(emb_old_all, emb_new_all, labels, name, out_dir, stem_simple, subset)
-                
+
                 # 2. Complex Plot (11)
                 plot_extended_scatter(
                     emb_old_stat, emb_old_all,
                     emb_new_stat, emb_new_all,
-                    labels[:n_samples], 
+                    labels[:n_samples],
                     name, out_dir, stem_complex
                 )
 
             # A. PCA
             pca = PCA(n_components=2, random_state=42)
             run_and_plot(pca, "PCA", f"09a_scatter_pca_{subset}", f"11a_robustness_pca_{subset}")
-            
+
             # B. MDS
             if all_emb.shape[0] <= 3000:
                 mds = MDS(n_components=2, random_state=42, normalized_stress='auto', n_init=1)
                 run_and_plot(mds, "MDS", f"09b_scatter_mds_{subset}", f"11b_robustness_mds_{subset}")
             else:
                 print("Skipping MDS (N too large)")
-                
+
             # C. t-SNE
             tsne = TSNE(n_components=2, random_state=42)
             run_and_plot(tsne, "t-SNE", f"09c_scatter_tsne_{subset}", f"11c_robustness_tsne_{subset}")
-            
+
             # D. UMAP
             try:
                 import umap
@@ -950,7 +950,7 @@ def generate_subset_figures(subset: str, matrices_dir: Path, out_dir: Path) -> N
                 run_and_plot(reducer, "UMAP", f"09d_scatter_umap_{subset}", complex_stem)
             except ImportError:
                 print("UMAP skipped")
-                
+
         except Exception as e:
             print(f"Error computing extended figures: {e}")
             import traceback
@@ -960,5 +960,5 @@ if __name__ == "__main__":
     out_dir_path = Path("outputs/mnist")
     if len(sys.argv) > 1:
         out_dir_path = Path(sys.argv[1])
-        
+
     run_mnist_viz(out_dir_path)

@@ -97,8 +97,8 @@ def run_stage1_train_extract(repo_root: Path, out_root: Path, cfg: MNISTPipeline
     # Train or load weights
     weights_path = out_root / "models" / "mnist_cnn_k490.pt"
     ensure_dir(weights_path.parent)
-    
-    # Check if we should retrain based on user intent? 
+
+    # Check if we should retrain based on user intent?
     # For now, if weights exist, we load them unless explicit overwrite logic is added (not requested).
     if weights_path.exists():
         logger.info(f"Loading existing model weights: {weights_path}")
@@ -149,7 +149,7 @@ def run_stage1_train_extract(repo_root: Path, out_root: Path, cfg: MNISTPipeline
     A_sub = np.vstack(A_list)
     B_sub = np.vstack(B_list)
     logger.info(f"Extracted transition data: A_sub={A_sub.shape}, B_sub={B_sub.shape}")
-    
+
     np.save(out_root / "matrices" / "A_sub.npy", A_sub)
     np.save(out_root / "matrices" / "B_sub.npy", B_sub)
     logger.info(f"Saved A_sub.npy and B_sub.npy to {out_root / 'matrices'}")
@@ -164,7 +164,7 @@ def run_stage2_experiments(repo_root: Path, out_root: Path, cfg: MNISTPipelineCo
     logger = configure_logger(log_path)
 
     logger.info("Starting MNIST Stage 2: Experiments")
-    
+
     seed_info = set_global_seed(cfg.seed, deterministic_torch=True)
     device = torch.device(cfg.device)
 
@@ -180,7 +180,7 @@ def run_stage2_experiments(repo_root: Path, out_root: Path, cfg: MNISTPipelineCo
     J_B = load_json_matrix(matrices_dir / "J_B.json")
     A_sub = np.load(matrices_dir / "A_sub.npy")
     B_sub = np.load(matrices_dir / "B_sub.npy")
-    
+
     # Load generation info if available
     gen_info = {}
     if (matrices_dir / "gen_info.json").exists():
@@ -260,7 +260,7 @@ def run_stage2_experiments(repo_root: Path, out_root: Path, cfg: MNISTPipelineCo
 
     # Evaluation & figures
     cfg.eval.device = cfg.device
-    
+
     logger.info("Evaluating on TRAIN subset...")
     metrics_train = evaluate_and_save(
         out_root,
@@ -292,12 +292,12 @@ def run_stage2_experiments(repo_root: Path, out_root: Path, cfg: MNISTPipelineCo
         logger=logger,
         subset_name="test",
     )
-    
+
     metrics = {
         "train": metrics_train,
         "test": metrics_test,
     }
-    
+
     manifest = {
         "run_id": run_id,
         "seed": cfg.seed,

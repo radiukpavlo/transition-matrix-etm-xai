@@ -57,4 +57,3 @@ Each run logs:
 - matrix shapes,
 - singular value spectra for SVD-based solves (synthetic) and Gram matrices (MNIST generators and baseline),
 - LSQR diagnostics (MNIST equivariant solve): iteration count, estimated condition number, and residual norms.
-

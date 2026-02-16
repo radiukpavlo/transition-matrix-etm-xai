@@ -15,7 +15,7 @@ T = TypeVar("T")
 def dataclass_from_dict(cls: Type[T], d: Dict[str, Any]) -> T:
     if not dataclasses.is_dataclass(cls):
         raise TypeError(f"{cls} is not a dataclass")
-    
+
     try:
         # Resolve forward references and string annotations
         types = typing.get_type_hints(cls)
@@ -28,10 +28,10 @@ def dataclass_from_dict(cls: Type[T], d: Dict[str, Any]) -> T:
         if f.name not in d:
             continue
         val = d[f.name]
-        
+
         # Get resolved type
         field_type = types.get(f.name, f.type)
-        
+
         # Handle recursive dataclasses
         if dataclasses.is_dataclass(field_type) and isinstance(val, dict):
             kwargs[f.name] = dataclass_from_dict(field_type, val)

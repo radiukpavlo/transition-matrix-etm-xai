@@ -76,15 +76,15 @@ def save_figure(fig: plt.Figure, out_dir: Path, stem: str) -> None:
         "pdf": {},
         "svg": {}
     }
-    
+
     base_figures_dir = out_dir / "figures"
-    
+
     for fmt, kwargs in formats.items():
         # Create specific subfolder for each format
         fmt_dir = base_figures_dir / fmt
         fmt_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Save figure
         fig.savefig(fmt_dir / f"{stem}.{fmt}", format=fmt, bbox_inches="tight", **kwargs)
-    
+
     plt.close(fig)

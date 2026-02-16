@@ -62,7 +62,7 @@ def train_cnn(
     opt = Adam(model.parameters(), lr=cfg_train.lr, weight_decay=cfg_train.weight_decay)
 
     history = {"epoch": [], "loss": [], "train_acc": [], "test_acc": [], "seconds": []}
-    
+
     logger.info(f"Starting training for {cfg_train.epochs} epochs (device={device})")
 
     for epoch in range(1, cfg_train.epochs + 1):
@@ -79,7 +79,7 @@ def train_cnn(
             loss.backward()
             opt.step()
             losses.append(float(loss.item()))
-            
+
             samples_seen += x.size(0)
             if cfg_train.n_train_samples and samples_seen >= cfg_train.n_train_samples:
                 break
@@ -131,9 +131,9 @@ def train_cnn(
     ax.set_ylabel("Cross-entropy loss")
     ax.set_title("MNIST CNN training loss")
     ax.grid(True, **viz.MAJOR_GRID_STYLE)
-    
+
     viz.enforce_bold_text(ax)
-    
+
     # Save 01_train_loss
     viz.save_figure(fig, out_root, "01_train_loss")
 
@@ -146,9 +146,9 @@ def train_cnn(
     ax.set_title("MNIST CNN accuracy")
     ax.legend()
     ax.grid(True, **viz.MAJOR_GRID_STYLE)
-    
+
     viz.enforce_bold_text(ax)
-    
+
     # Save 02_train_accuracy
     viz.save_figure(fig, out_root, "02_train_accuracy")
 

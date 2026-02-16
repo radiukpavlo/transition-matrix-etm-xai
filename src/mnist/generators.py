@@ -46,58 +46,58 @@ def _normalize(x: torch.Tensor, mean: float, std: float) -> torch.Tensor:
 
 def compute_A_and_dA(model, images01: torch.Tensor, device: torch.device, mean: float, std: float, eps: float = 1e-4) -> Tuple[torch.Tensor, torch.Tensor]:
     """Compute A(θ=0) and dA/dθ|_{θ=0} using finite differences.
-    
+
     We use central differences: dA/dθ ≈ (A(eps) - A(-eps)) / (2*eps)
     """
     images01 = images01.to(device)
-    
+
     with torch.no_grad():
         # A at theta=0
         x_n = _normalize(images01, mean, std)
         A = model.penultimate(x_n)
-        
+
         # A at theta=+eps
         theta_pos = torch.tensor(eps, device=device)
         x_rot_pos = rotate_batch(images01, theta_pos)
         x_n_pos = _normalize(x_rot_pos, mean, std)
         A_pos = model.penultimate(x_n_pos)
-        
+
         # A at theta=-eps
         theta_neg = torch.tensor(-eps, device=device)
         x_rot_neg = rotate_batch(images01, theta_neg)
         x_n_neg = _normalize(x_rot_neg, mean, std)
         A_neg = model.penultimate(x_n_neg)
-        
+
         # Central difference
         dA = (A_pos - A_neg) / (2.0 * eps)
-    
+
     return A, dA
 
 
 def compute_B_and_dB(images01: torch.Tensor, device: torch.device, eps: float = 1e-4) -> Tuple[torch.Tensor, torch.Tensor]:
     """Compute B(θ=0) and dB/dθ|_{θ=0} using finite differences.
-    
+
     We use central differences: dB/dθ ≈ (B(eps) - B(-eps)) / (2*eps)
     """
     images01 = images01.to(device)
-    
+
     with torch.no_grad():
         # B at theta=0
         B = images01.flatten(1)
-        
+
         # B at theta=+eps
         theta_pos = torch.tensor(eps, device=device)
         x_rot_pos = rotate_batch(images01, theta_pos)
         B_pos = x_rot_pos.flatten(1)
-        
+
         # B at theta=-eps
         theta_neg = torch.tensor(-eps, device=device)
         x_rot_neg = rotate_batch(images01, theta_neg)
         B_neg = x_rot_neg.flatten(1)
-        
+
         # Central difference
         dB = (B_pos - B_neg) / (2.0 * eps)
-    
+
     return B, dB
 
 

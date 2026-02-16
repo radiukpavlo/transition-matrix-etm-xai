@@ -101,7 +101,7 @@ def evaluate_and_save(
     images_list: List[torch.Tensor] = []
     labels_list: List[int] = []
     seen = 0
-    
+
     # Store reference to full loader iteration for digit selection
     all_images_for_digits = []
     all_labels_for_digits = []
@@ -113,7 +113,7 @@ def evaluate_and_save(
             images_list.append(x[:take])
             labels_list.extend(y[:take].tolist())
             seen += take
-        
+
         # Collect for digit selection (keep all until we have enough)
         if len(all_images_for_digits) * loader.batch_size < 5000: # Limit memory
             all_images_for_digits.append(x)
@@ -157,25 +157,25 @@ def evaluate_and_save(
     # Use a subset of labeled data
     scatter_angles = np.array([-90.0, -45.0, -5.0, 5.0, 45.0, 90.0])
     n_scatter = min(128, images01.shape[0])
-    
+
     images_scatter = images01[:n_scatter].to(device)
     labels_scatter = labels[:n_scatter]
-    
+
     recon_old_all = []
     recon_new_all = []
     all_labels = []
-    
+
     for deg in scatter_angles:
         theta = torch.tensor(float(deg) * math.pi / 180.0, device=device)
         x_rot = rotate_batch(images_scatter, theta).detach().cpu()
-        
+
         _, recon_old_s = reconstruct_images(model, W_old, x_rot, normalize_mean, normalize_std, device)
         _, recon_new_s = reconstruct_images(model, W_new, x_rot, normalize_mean, normalize_std, device)
-        
+
         recon_old_all.append(recon_old_s.reshape(n_scatter, -1))
         recon_new_all.append(recon_new_s.reshape(n_scatter, -1))
         all_labels.extend(labels_scatter.tolist())
-    
+
     recon_old_stacked = np.vstack(recon_old_all)
     recon_new_stacked = np.vstack(recon_new_all)
     all_labels = np.array(all_labels)
@@ -183,10 +183,10 @@ def evaluate_and_save(
     # 5. Extract specific rotated digit samples for "The Chaos Figure"
     # Select one random instance of each digit 0-9
     # Rotate by random angle in [-90, 90]
-    
+
     all_imgs = torch.cat(all_images_for_digits, dim=0)
     all_lbls = torch.cat(all_labels_for_digits, dim=0).cpu().numpy()
-    
+
     chaos_samples_orig = []
     chaos_samples_old = []
     chaos_samples_new = []
@@ -194,28 +194,28 @@ def evaluate_and_save(
     chaos_angles = []
 
     np.random.seed(42)  # For reproducibility of sample selection
-    
+
     for digit in range(10):
         # Find indices for this digit
         indices = np.where(all_lbls == digit)[0]
         if len(indices) == 0:
             continue
-            
+
         # Pick one random sample
         idx = np.random.choice(indices)
         img = all_imgs[idx:idx+1].to(device)
-        
+
         # Pick random angle in [-90, 90]
         angle_deg = np.random.uniform(-90, 90)
         theta = torch.tensor(float(angle_deg) * math.pi / 180.0, device=device)
-        
+
         # Rotate
         img_rot = rotate_batch(img, theta).detach().cpu()
-        
+
         # Reconstruct
         orig_rot, rec_old = reconstruct_images(model, W_old, img_rot, normalize_mean, normalize_std, device)
         _, rec_new = reconstruct_images(model, W_new, img_rot, normalize_mean, normalize_std, device)
-        
+
         chaos_samples_orig.append(orig_rot[0])
         chaos_samples_old.append(rec_old[0])
         chaos_samples_new.append(rec_new[0])
@@ -261,7 +261,7 @@ def evaluate_and_save(
         labels=all_labels,
         angles=scatter_angles
     )
-    
+
     np.savez(
         out_root / "matrices" / f"mnist_chaos_samples_{subset_name}.npz",
         orig=chaos_samples_orig,

@@ -18,10 +18,15 @@ Note: this script imports the MNIST pipeline lazily so synthetic runs do not dep
 from __future__ import annotations
 
 import argparse
+
 import sys
 from pathlib import Path
 
 import yaml
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "src"))
@@ -84,7 +89,7 @@ def main() -> None:
 
         mn_out = root / "outputs" / "mnist"
         ensure_dir(mn_out)
-        
+
         # Determine strict stages
         # If --mnist or --all, run both.
         # Else run selected.
@@ -95,7 +100,7 @@ def main() -> None:
             logger.info("Executing MNIST Stage 1...")
             out1 = run_stage1_train_extract(root, mn_out, mn_cfg)  # type: ignore
             manifest["mnist"]["stage1"] = out1
-        
+
         if run_s2:
             logger.info("Executing MNIST Stage 2...")
             out2 = run_stage2_experiments(root, mn_out, mn_cfg)  # type: ignore
