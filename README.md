@@ -132,7 +132,7 @@ To generate a visual representation of the methodology:
 
 ```bash
 # Ensure you have configured .env
-python generate_diagram.py generate --input method.txt --caption "Graphical Abstract" --vlm-model "models/gemini-2.5-flash" --output assets/graphical_abstract.png
+python assets/generate_diagram.py generate --input assets/prompt.txt --caption "Graphical Abstract" --vlm-model "models/gemini-2.5-flash" --output assets/graphical_abstract_1.png
 ```
 
 **Note:** The generated diagram will be saved in the `assets/` directory.

@@ -7,3 +7,4 @@ outputs/mnist/matrices/*.npy
 outputs/mnist/matrices/mnist_B_star_train.npz
 outputs/mnist/matrices/mnist_B_star_test.npz
 .env
+assets/
