@@ -9,3 +9,6 @@ outputs/mnist/matrices/mnist_B_star_test.npz
 .env
 assets/
 PROMPT.md
+tmp/
+skills/
+scripts/
